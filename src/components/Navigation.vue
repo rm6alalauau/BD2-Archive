@@ -6,13 +6,7 @@
     fixed
   >
     <v-container class="d-flex align-center justify-space-between pa-0">
-      <!-- 品牌區域 -->
       <div class="brand-section" @click="goHome">
-        <img 
-          src="https://www.browndust2.com/img/seo/favicon.png" 
-          alt="BD2 Logo" 
-          class="brand-logo"
-        />
         <span class="brand-text">The BD2 Pulse</span>
       </div>
 
