@@ -16,7 +16,7 @@ const DRIVE_LETTER_REGEX = /^[a-z]:/i;
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: "/TheBD2Pulse/",
+  base: "/",
   plugins: [
     VueRouter(),
     Layouts(),
