@@ -4,7 +4,7 @@
     <div class="media-header">
       <div class="header-content">
         <v-icon color="#e72857" size="24">mdi-youtube</v-icon>
-        <span class="header-title">官方媒體</span>
+        <span class="header-title">官方PV</span>
       </div>
       <v-progress-circular
         v-if="isLoading"
