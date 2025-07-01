@@ -93,8 +93,13 @@ export default {
       this.isLoading = true;
       this.error = null;
       try {
-        const proxyApiUrl = 'https://bd2-official-proxy.zzz-archive-back-end.workers.dev/media'; // 請確保這裡用了您的 Worker URL
-        const response = await fetch(proxyApiUrl); 
+        // 使用代理 URL，根據環境自動選擇
+        const originalUrl = 'https://bd2-official-proxy.zzz-archive-back-end.workers.dev/media';
+        const proxyApiUrl = this.$getApiUrl ? this.$getApiUrl(originalUrl) : originalUrl;
+        
+        console.log("Fetching media from:", proxyApiUrl);
+        
+        const response = await fetch(proxyApiUrl);
         
         if (!response.ok) {
           throw new Error(`代理伺服器回應錯誤: ${response.status}`);

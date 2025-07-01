@@ -188,8 +188,11 @@ export default {
         // 加上隨機參數避免快取
         const timestamp = Date.now();
         
-        // 直接使用代理過的網址
-        const apiUrl = `https://bd2-official-proxy.zzz-archive-back-end.workers.dev/news?v=${timestamp}`;
+        // 使用代理過的網址，並且根據環境自動選擇
+        const originalUrl = `https://bd2-official-proxy.zzz-archive-back-end.workers.dev/news?v=${timestamp}`;
+        const apiUrl = this.$getApiUrl ? this.$getApiUrl(originalUrl) : originalUrl;
+        
+        console.log("Fetching news from:", apiUrl);
         
         const response = await fetch(apiUrl);
 

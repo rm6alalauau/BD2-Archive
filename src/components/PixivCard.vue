@@ -199,7 +199,11 @@ export default {
           page: page,
         };
         const queryString = new URLSearchParams(params).toString();
-        const url = `https://api.obfs.dev/api/pixiv/search?${queryString}`;
+        const originalUrl = `https://api.obfs.dev/api/pixiv/search?${queryString}`;
+        const url = this.$getApiUrl ? this.$getApiUrl(originalUrl) : originalUrl;
+        
+        console.log("Fetching Pixiv data from:", url);
+        
         const response = await fetch(url);
         if (!response.ok) throw new Error(`API error: ${response.status}`);
         const data = await response.json();
