@@ -1,5 +1,6 @@
 // Utilities
 import { defineStore } from 'pinia'
+import { getApiUrl } from '@/plugins/index.js'
 
 // 重試工具函數
 const retryFetch = async (url, options = {}, maxRetries = 3, delayMs = 1000) => {
@@ -175,10 +176,11 @@ export const useAppStore = defineStore('app', {
     // iOS 順序加載策略
     async fetchDataSequentially() {
       const tasks = [
+        { name: 'redeemCodes', fn: () => this.fetchRedeemCodes() },
+        { name: 'forumData', fn: () => this.fetchForumData() },
         { name: 'news', fn: () => this.fetchNews() },
         { name: 'officialMedia', fn: () => this.fetchOfficialMedia() },
         { name: 'pixivCards', fn: () => this.fetchPixivCards() },
-        { name: 'forumData', fn: () => this.fetchForumData() },
       ];
       
       for (const task of tasks) {
@@ -199,10 +201,11 @@ export const useAppStore = defineStore('app', {
     // 非 iOS 並行加載策略
     async fetchDataInParallel() {
       const tasks = [
+        this.fetchRedeemCodes().catch(e => console.warn('📱 Parallel: Redeem codes fetch failed:', e)),
+        this.fetchForumData().catch(e => console.warn('📱 Parallel: Forum data fetch failed:', e)),
         this.fetchNews().catch(e => console.warn('📱 Parallel: News fetch failed:', e)),
         this.fetchOfficialMedia().catch(e => console.warn('📱 Parallel: Official media fetch failed:', e)),
         this.fetchPixivCards().catch(e => console.warn('📱 Parallel: Pixiv cards fetch failed:', e)),
-        this.fetchForumData().catch(e => console.warn('📱 Parallel: Forum data fetch failed:', e)),
       ];
       
       // 等待所有任務完成，即使某些失敗也不會影響其他
@@ -245,41 +248,101 @@ export const useAppStore = defineStore('app', {
       // 暫時保持空實現，等待具體的 API 端點
     },
     
-    // 獲取論壇數據（整合原有的全局 API）
-    async fetchForumData() {
-      console.log('💬 Fetching forum data...');
+    // 獲取兌換碼數據
+    async fetchRedeemCodes() {
+      console.log('🎫 Fetching redeem codes...');
       try {
-        const url = 'https://script.google.com/macros/s/AKfycbz0bIpZn-brdmlGLy7qHchcX1BBKtbH27EPVM3i3IYu2NwJ8Ufqa6lRz8MukOOGE2rt/exec';
-        console.log("Fetching forum data from:", url);
+        // 檢查是否為開發環境並使用代理 URL
+        const originalUrl = 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/redeem';
+        const apiUrl = getApiUrl(originalUrl);
         
-        const response = await retryFetch(url);
+        console.log("Fetching redeem codes from:", apiUrl);
+        
+        const response = await retryFetch(apiUrl);
         const data = await response.json();
-        console.log("Forum API Response:", data);
+        console.log("Redeem codes API Response:", data);
         
-        // 更新論壇相關數據
-        this.apiData.redeem = data.redeem || [];
-        this.apiData.baha = data.baha || [];
-        this.apiData.nga = data.nga || [];
-        this.apiData.ptt = data.ptt || [];
-        this.apiData.x = data.x || [];
-        this.apiData.reddit = data.reddit || [];
+        // 更新兌換碼數據
+        this.apiData.redeem = data || [];
         
-        this.lastUpdated = new Date();
-        console.log("Forum data updated successfully");
+        console.log("Redeem codes updated successfully");
         
       } catch (error) {
-        console.error("Error fetching forum data:", error);
+        console.error("Error fetching redeem codes:", error);
         
-        // 設置一些備用數據，避免完全空白
+        // 設置備用數據
         this.apiData.redeem = [
           {
             code: 'API_ERROR',
-            reward: '無法連接到服務器',
+            reward: '無法連接到兌換碼服務器',
             status: '錯誤'
           }
         ];
         
         throw error; // 重新拋出錯誤，讓上層處理
+      }
+    },
+
+    // 獲取論壇數據
+    async fetchForumData() {
+      console.log('💬 Fetching forum data...');
+      
+      // 定義所有論壇API端點
+      const forumApis = [
+        { name: 'baha', url: 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/baha', key: 'baha' },
+        { name: 'nga', url: 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/nga', key: 'nga' },
+        { name: 'ptt', url: 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/ptt', key: 'ptt' },
+        { name: 'reddit', url: 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/reddit', key: 'reddit' },
+        { name: 'x', url: 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/x', key: 'x' }
+      ];
+      
+      const results = await Promise.allSettled(
+        forumApis.map(async (forum) => {
+          try {
+            console.log(`📱 Fetching ${forum.name} data...`);
+            const apiUrl = getApiUrl(forum.url);
+            console.log(`${forum.name} API URL:`, apiUrl);
+            
+            const response = await retryFetch(apiUrl);
+            const data = await response.json();
+            
+            console.log(`${forum.name} API Response:`, data);
+            
+            // 更新對應的數據
+            this.apiData[forum.key] = data || [];
+            console.log(`${forum.name} data updated successfully`);
+            
+            return { forum: forum.name, success: true };
+          } catch (error) {
+            console.error(`Error fetching ${forum.name} data:`, error);
+            
+            // 設置空數組，避免UI錯誤
+            this.apiData[forum.key] = [];
+            
+            return { forum: forum.name, success: false, error: error.message };
+          }
+        })
+      );
+      
+      // 檢查結果
+      const successful = results.filter(r => r.status === 'fulfilled' && r.value.success).length;
+      const failed = results.length - successful;
+      
+      console.log(`💬 Forum data fetch completed - Success: ${successful}, Failed: ${failed}`);
+      
+      if (failed > 0) {
+        const failedForums = results
+          .filter(r => r.status === 'fulfilled' && !r.value.success)
+          .map(r => r.value.forum);
+        console.warn('Failed forums:', failedForums);
+      }
+      
+      // 更新最後更新時間
+      this.lastUpdated = new Date();
+      
+      // 即使部分失敗也不拋出錯誤，讓其他數據能正常顯示
+      if (successful === 0) {
+        throw new Error('All forum APIs failed to load');
       }
     },
   },

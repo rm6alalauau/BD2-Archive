@@ -56,7 +56,7 @@ export default defineConfig({
     extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
   },
   server: {
-    port: 3000,
+    port: 3001,
     hmr: {
       overlay: false
     },
@@ -76,6 +76,11 @@ export default defineConfig({
             console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
           });
         },
+      },
+      '/api/db2pulse': {
+        target: 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/db2pulse/, ''),
       },
       '/api/redeem': {
         target: 'https://bd2redeem.zzz-archive-back-end.workers.dev',
