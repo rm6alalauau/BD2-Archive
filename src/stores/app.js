@@ -5,16 +5,25 @@ import { defineStore } from 'pinia'
 const retryFetch = async (url, options = {}, maxRetries = 3, delayMs = 1000) => {
   let lastError;
   
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+  // 檢測是否為 iOS 設備
+  const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  
+  // iOS 設備使用更保守的重試策略
+  const effectiveMaxRetries = isIOSDevice ? 2 : maxRetries; // iOS 減少重試次數
+  const effectiveDelay = isIOSDevice ? delayMs * 0.5 : delayMs; // iOS 使用更短的延遲
+  
+  for (let attempt = 1; attempt <= effectiveMaxRetries; attempt++) {
     try {
-      console.log(`API Request attempt ${attempt}/${maxRetries} to:`, url);
-      
-      // 設置合理的超時時間
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15秒超時
+      console.log(`API Request attempt ${attempt}/${effectiveMaxRetries} to:`, url);
       
       // 檢查是否為 Google Apps Script URL，使用不同的配置
       const isGoogleAppsScript = url.includes('script.google.com');
+      
+      // iOS 設備使用更短的超時
+      const timeoutMs = isIOSDevice ? 8000 : 15000;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
       
       let fetchOptions;
       if (isGoogleAppsScript) {
@@ -22,7 +31,12 @@ const retryFetch = async (url, options = {}, maxRetries = 3, delayMs = 1000) => 
         fetchOptions = {
           ...options,
           signal: controller.signal,
-          // 不添加任何自定義 headers，保持簡單請求
+          // iOS 特殊優化
+          ...(isIOSDevice && {
+            cache: 'no-store',
+            mode: 'cors',
+            credentials: 'omit',
+          }),
         };
       } else {
         // 對其他 API 使用完整配置
@@ -32,7 +46,13 @@ const retryFetch = async (url, options = {}, maxRetries = 3, delayMs = 1000) => 
           headers: {
             'Content-Type': 'application/json',
             ...options.headers
-          }
+          },
+          // iOS 特殊優化
+          ...(isIOSDevice && {
+            cache: 'no-store',
+            mode: 'cors',
+            credentials: 'omit',
+          }),
         };
       }
       
@@ -46,7 +66,7 @@ const retryFetch = async (url, options = {}, maxRetries = 3, delayMs = 1000) => 
       }
       
       // 5xx 錯誤值得重試，4xx 錯誤通常不值得重試
-      if (response.status >= 500 && attempt < maxRetries) {
+      if (response.status >= 500 && attempt < effectiveMaxRetries) {
         throw new Error(`Server error ${response.status}, will retry...`);
       } else if (response.status >= 400) {
         throw new Error(`Client error ${response.status}: ${response.statusText}`);
@@ -59,7 +79,7 @@ const retryFetch = async (url, options = {}, maxRetries = 3, delayMs = 1000) => 
       console.warn(`API Request attempt ${attempt} failed:`, error.message);
       
       // 如果是最後一次嘗試，拋出錯誤
-      if (attempt === maxRetries) {
+      if (attempt === effectiveMaxRetries) {
         throw error;
       }
       
@@ -76,9 +96,9 @@ const retryFetch = async (url, options = {}, maxRetries = 3, delayMs = 1000) => 
         throw error;
       }
       
-      // 指數退避：每次重試延遲時間加倍
-      const delay = delayMs * Math.pow(2, attempt - 1);
-      console.log(`Waiting ${delay}ms before retry...`);
+      // 指數退避：每次重試延遲時間加倍，iOS 使用更短的延遲
+      const delay = effectiveDelay * Math.pow(2, attempt - 1);
+      console.log(`Waiting ${delay}ms before retry... (iOS device: ${isIOSDevice})`);
       await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
@@ -102,57 +122,91 @@ export const useAppStore = defineStore('app', {
     // 錯誤狀態
     error: null,
     // 最後更新時間
-    lastUpdated: null
+    lastUpdated: null,
+    // 最後加載時間
+    lastFetchTime: null
   }),
   
   actions: {
+    // 通用數據獲取方法，支持緩存和重試
     async fetchAllData() {
-      if (this.loading) {
-        console.log("Already loading, skipping...");
-        return; // 避免重複請求
-      }
+      console.log('📱 Starting data fetch...');
       
-      console.log("Starting to fetch all data...");
+      // 檢測設備類型
+      const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      console.log('📱 Device detection - iOS:', isIOSDevice);
+      
       this.loading = true;
       this.error = null;
       
+      // 檢查是否已有緩存數據（5分鐘內）
+      const now = Date.now();
+      const cacheValid = this.lastFetchTime && (now - this.lastFetchTime < 5 * 60 * 1000);
+      
+      if (cacheValid && this.hasValidData()) {
+        console.log('📱 Using cached data (valid for', Math.round((5 * 60 * 1000 - (now - this.lastFetchTime)) / 1000), 'more seconds)');
+        this.loading = false;
+        return;
+      }
+      
       try {
-        const url = 'https://script.google.com/macros/s/AKfycbz0bIpZn-brdmlGLy7qHchcX1BBKtbH27EPVM3i3IYu2NwJ8Ufqa6lRz8MukOOGE2rt/exec';
-        console.log("Fetching from:", url);
+        // iOS 使用順序載入，避免併發請求問題
+        if (isIOSDevice) {
+          console.log('📱 iOS detected - using sequential loading strategy');
+          await this.fetchDataSequentially();
+        } else {
+          console.log('📱 Non-iOS device - using parallel loading strategy');
+          await this.fetchDataInParallel();
+        }
         
-        const response = await retryFetch(url);
-        
-        const data = await response.json();
-        console.log("Global API Response:", data);
-        
-        // 更新所有數據
-        this.apiData.redeem = data.redeem || [];
-        this.apiData.baha = data.baha || [];
-        this.apiData.nga = data.nga || [];
-        this.apiData.ptt = data.ptt || [];
-        this.apiData.x = data.x || [];
-        this.apiData.reddit = data.reddit || [];
-        
-        this.lastUpdated = new Date();
-        console.log("Data updated successfully");
+        // 記錄成功的加載時間
+        this.lastFetchTime = now;
+        console.log('📱 All data fetched successfully!');
         
       } catch (error) {
-        console.error("Error fetching global data:", error);
-        this.error = error.message;
-        
-        // 設置一些備用數據，避免完全空白
-        this.apiData.redeem = [
-          {
-            code: 'API_ERROR',
-            reward: '無法連接到服務器',
-            status: '錯誤'
-          }
-        ];
-        
+        console.error('📱 Error fetching data:', error);
+        this.error = error.message || 'Failed to fetch data';
       } finally {
         this.loading = false;
-        console.log("Fetch completed, loading:", this.loading);
       }
+    },
+    
+    // iOS 順序加載策略
+    async fetchDataSequentially() {
+      const tasks = [
+        { name: 'news', fn: () => this.fetchNews() },
+        { name: 'officialMedia', fn: () => this.fetchOfficialMedia() },
+        { name: 'pixivCards', fn: () => this.fetchPixivCards() },
+        { name: 'forumData', fn: () => this.fetchForumData() },
+      ];
+      
+      for (const task of tasks) {
+        try {
+          console.log(`📱 iOS Sequential: Loading ${task.name}...`);
+          await task.fn();
+          console.log(`📱 iOS Sequential: ${task.name} loaded successfully`);
+          
+          // 在 iOS 上添加小延遲，避免請求過於密集
+          await new Promise(resolve => setTimeout(resolve, 200));
+        } catch (error) {
+          console.warn(`📱 iOS Sequential: Failed to load ${task.name}:`, error);
+          // 不中斷整個流程，繼續載入其他數據
+        }
+      }
+    },
+    
+    // 非 iOS 並行加載策略
+    async fetchDataInParallel() {
+      const tasks = [
+        this.fetchNews().catch(e => console.warn('📱 Parallel: News fetch failed:', e)),
+        this.fetchOfficialMedia().catch(e => console.warn('📱 Parallel: Official media fetch failed:', e)),
+        this.fetchPixivCards().catch(e => console.warn('📱 Parallel: Pixiv cards fetch failed:', e)),
+        this.fetchForumData().catch(e => console.warn('📱 Parallel: Forum data fetch failed:', e)),
+      ];
+      
+      // 等待所有任務完成，即使某些失敗也不會影響其他
+      await Promise.allSettled(tasks);
     },
     
     // 手動重試API調用
@@ -168,7 +222,66 @@ export const useAppStore = defineStore('app', {
       
       // 調用原本的 fetch 方法
       return await this.fetchAllData();
-    }
+    },
+    
+    // 獲取新聞數據
+    async fetchNews() {
+      console.log('📰 Fetching news data...');
+      // 這裡可以添加具體的新聞 API 調用
+      // 暫時保持空實現，等待具體的 API 端點
+    },
+    
+    // 獲取官方媒體數據
+    async fetchOfficialMedia() {
+      console.log('📺 Fetching official media data...');
+      // 這裡可以添加具體的官方媒體 API 調用
+      // 暫時保持空實現，等待具體的 API 端點
+    },
+    
+    // 獲取 Pixiv 卡片數據
+    async fetchPixivCards() {
+      console.log('🎨 Fetching Pixiv cards data...');
+      // 這裡可以添加具體的 Pixiv API 調用
+      // 暫時保持空實現，等待具體的 API 端點
+    },
+    
+    // 獲取論壇數據（整合原有的全局 API）
+    async fetchForumData() {
+      console.log('💬 Fetching forum data...');
+      try {
+        const url = 'https://script.google.com/macros/s/AKfycbz0bIpZn-brdmlGLy7qHchcX1BBKtbH27EPVM3i3IYu2NwJ8Ufqa6lRz8MukOOGE2rt/exec';
+        console.log("Fetching forum data from:", url);
+        
+        const response = await retryFetch(url);
+        const data = await response.json();
+        console.log("Forum API Response:", data);
+        
+        // 更新論壇相關數據
+        this.apiData.redeem = data.redeem || [];
+        this.apiData.baha = data.baha || [];
+        this.apiData.nga = data.nga || [];
+        this.apiData.ptt = data.ptt || [];
+        this.apiData.x = data.x || [];
+        this.apiData.reddit = data.reddit || [];
+        
+        this.lastUpdated = new Date();
+        console.log("Forum data updated successfully");
+        
+      } catch (error) {
+        console.error("Error fetching forum data:", error);
+        
+        // 設置一些備用數據，避免完全空白
+        this.apiData.redeem = [
+          {
+            code: 'API_ERROR',
+            reward: '無法連接到服務器',
+            status: '錯誤'
+          }
+        ];
+        
+        throw error; // 重新拋出錯誤，讓上層處理
+      }
+    },
   },
   
   getters: {
@@ -183,6 +296,8 @@ export const useAppStore = defineStore('app', {
       RedditPosts: state.apiData.reddit
     }),
     // 是否有數據
-    hasData: (state) => state.lastUpdated !== null
+    hasData: (state) => state.lastUpdated !== null,
+    // 是否有有效數據
+    hasValidData: (state) => state.lastFetchTime && (Date.now() - state.lastFetchTime < 5 * 60 * 1000)
   }
 })

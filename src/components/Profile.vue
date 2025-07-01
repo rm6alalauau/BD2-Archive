@@ -227,6 +227,44 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
+
+  <!-- 移動端調試面板（iOS 設備顯示） -->
+  <v-card v-if="$isIOS && $isIOS() && showDebugPanel" class="ma-2" outlined>
+    <v-card-title class="text-h6">
+      🐛 iOS 調試訊息
+      <v-spacer></v-spacer>
+      <v-btn icon small @click="showDebugPanel = false">
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
+    </v-card-title>
+    <v-card-text>
+      <v-textarea
+        v-model="debugLog"
+        readonly
+        rows="8"
+        dense
+        class="debug-textarea"
+        label="錯誤日誌"
+      ></v-textarea>
+      <v-btn small @click="clearDebugLog" class="mr-2">清除日誌</v-btn>
+      <v-btn small @click="copyDebugLog">複製日誌</v-btn>
+    </v-card-text>
+  </v-card>
+
+  <!-- iOS 調試按鈕 -->
+  <v-btn 
+    v-if="$isIOS && $isIOS() && !showDebugPanel"
+    fab
+    small
+    fixed
+    bottom
+    right
+    color="orange"
+    @click="showDebugPanel = true"
+    style="z-index: 1000; margin-bottom: 80px;"
+  >
+    <v-icon>mdi-bug</v-icon>
+  </v-btn>
 </template>
 
 <script>
@@ -256,6 +294,8 @@ export default {
       ],
       // 頭像格式映射（JPG格式的頭像ID）
       jpgAvatars: [39, 40, 41, 42, 43, 44, 45, 46, 47, 48],
+      showDebugPanel: false,
+      debugLog: '',
     };
   },
   
@@ -492,41 +532,57 @@ export default {
       }
     },
 
-    // API 客戶端方法 - 添加重試機制
+    // API 客戶端方法 - 添加重試機制和 iOS 優化
     async claimCoupon(userId = '', code = '') {
       const maxRetries = 3;
       const baseDelay = 1000; // 1秒
       let lastError;
       
+      // iOS 設備使用更保守的策略
+      const isIOSDevice = this.$isIOS ? this.$isIOS() : false;
+      console.log('Device is iOS:', isIOSDevice);
+      
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
           console.log(`Coupon claim attempt ${attempt}/${maxRetries} for code: ${code}`);
-          
-          // 設置超時控制
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 20000); // 20秒超時
           
           // 使用代理 URL，根據環境自動選擇
           const apiUrl = this.$getApiUrl ? this.$getApiUrl(this.apiEndpoint) : this.apiEndpoint;
           console.log(`Attempting coupon claim to: ${apiUrl}`);
           
-          const response = await fetch(apiUrl, {
+          const requestConfig = {
             method: 'POST',
-            mode: 'cors',
-            cache: 'no-cache',
-            signal: controller.signal,
             headers: {
               'Content-Type': 'application/json',
-              'User-Agent': 'BD2-Archive-Frontend/1.0',
             },
             body: JSON.stringify({
               appId: this.appId,
               userId,
               code,
             }),
-          });
+          };
           
-          clearTimeout(timeoutId);
+          let response;
+          
+          if (isIOSDevice && this.$iosFetch) {
+            // iOS 設備使用優化的 fetch
+            console.log('Using iOS optimized fetch');
+            response = await this.$iosFetch(apiUrl, requestConfig);
+          } else {
+            // 非 iOS 設備使用原有邏輯
+            const controller = new AbortController();
+            const timeoutMs = isIOSDevice ? 10000 : 20000; // iOS 使用更短的超時
+            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+            
+            response = await fetch(apiUrl, {
+              ...requestConfig,
+              signal: controller.signal,
+              mode: 'cors',
+              cache: 'no-cache',
+            });
+            
+            clearTimeout(timeoutId);
+          }
           
           if (response.ok) {
             console.log(`Coupon claim successful on attempt ${attempt}`);
@@ -538,7 +594,10 @@ export default {
           try {
             errorData = await response.json();
           } catch {
-            errorData = { message: `HTTP ${response.status}: ${response.statusText}` };
+            errorData = { 
+              message: `HTTP ${response.status}: ${response.statusText}`,
+              errorCode: `HTTP_${response.status}`
+            };
           }
           
           console.log('API returned error:', errorData);
@@ -573,6 +632,7 @@ export default {
             error.message.includes('NetworkError') || // 網路問題
             error.message.includes('Server error') || // 5xx 錯誤
             error.message.includes('Rate limited') || // 429 錯誤
+            error.message.includes('iOS network timeout') || // iOS 超時
             error.message.includes('Load failed'); // 載入失敗
           
           if (!isRetryableError) {
@@ -580,8 +640,9 @@ export default {
             throw error;
           }
           
-          // 指數退避：每次重試延遲時間加倍
-          const delay = baseDelay * Math.pow(2, attempt - 1);
+          // iOS 設備使用更短的重試間隔
+          const delayMultiplier = isIOSDevice ? 0.5 : 1;
+          const delay = baseDelay * Math.pow(2, attempt - 1) * delayMultiplier;
           console.log(`Waiting ${delay}ms before coupon claim retry...`);
           await new Promise(resolve => setTimeout(resolve, delay));
         }
@@ -859,6 +920,90 @@ export default {
         
       } finally {
         this.retrying = false;
+      }
+    },
+
+    // 清除 iOS 調試日誌
+    clearDebugLog() {
+      this.debugLog = '';
+    },
+
+    // 複製 iOS 調試日誌
+    copyDebugLog() {
+      const textArea = document.createElement('textarea');
+      textArea.value = this.debugLog;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    },
+
+    // 處理兌換請求
+    async handleClaim() {
+      if (this.claimLoading) return;
+      
+      const userId = this.userId || '';
+      const code = this.couponCode;
+      
+      if (!code) {
+        this.showError('請輸入兌換碼');
+        return;
+      }
+      
+      this.claimLoading = true;
+      this.claimStatus = '';
+      this.claimMessage = '';
+      
+      // iOS 調試日誌
+      const isIOSDevice = this.$isIOS ? this.$isIOS() : false;
+      const logMessage = (msg) => {
+        console.log(msg);
+        if (isIOSDevice) {
+          const timestamp = new Date().toLocaleTimeString();
+          this.debugLog += `[${timestamp}] ${msg}\n`;
+        }
+      };
+      
+      logMessage(`開始兌換碼處理: ${code} (iOS: ${isIOSDevice})`);
+      
+      try {
+        const result = await this.claimCoupon(userId, code);
+        logMessage(`兌換碼 API 成功回應: ${JSON.stringify(result)}`);
+        
+        // 處理回應
+        if (result.success) {
+          this.claimStatus = 'success';
+          this.claimMessage = result.message || '兌換成功！';
+          logMessage(`兌換成功: ${this.claimMessage}`);
+        } else {
+          this.claimStatus = 'error';
+          this.claimMessage = result.message || '兌換失敗';
+          logMessage(`兌換失敗: ${this.claimMessage}`);
+        }
+        
+      } catch (error) {
+        logMessage(`兌換碼錯誤: ${error.message}`);
+        logMessage(`錯誤堆棧: ${error.stack || 'No stack trace'}`);
+        
+        this.claimStatus = 'error';
+        
+        // 用戶友好的錯誤訊息
+        if (error.message.includes('iOS network timeout')) {
+          this.claimMessage = 'iOS 網路超時，請檢查網路連線或稍後重試';
+        } else if (error.message.includes('Failed to fetch')) {
+          this.claimMessage = '網路連線失敗，請檢查網路狀態';
+        } else if (error.message.includes('timeout')) {
+          this.claimMessage = '請求超時，請稍後重試';
+        } else if (error.errorCode) {
+          this.claimMessage = `錯誤 ${error.errorCode}: ${error.message}`;
+        } else {
+          this.claimMessage = error.message || '兌換失敗，請稍後重試';
+        }
+        
+        logMessage(`最終錯誤訊息: ${this.claimMessage}`);
+      } finally {
+        this.claimLoading = false;
+        logMessage(`兌換碼處理完成，狀態: ${this.claimStatus}`);
       }
     },
   },

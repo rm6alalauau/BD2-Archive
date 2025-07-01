@@ -30,12 +30,85 @@ export const getApiUrl = (endpoint) => {
   return endpoint;
 };
 
+// iOS 檢測工具
+export const isIOS = () => {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+};
+
+// 獲取針對 iOS 優化的 fetch 配置
+export const getOptimizedFetchConfig = (config = {}) => {
+  const ios = isIOS();
+  
+  if (ios) {
+    // iOS 優化配置
+    return {
+      ...config,
+      // 減少超時時間，iOS Safari 對長時間請求不友好
+      timeout: Math.min(config.timeout || 10000, 10000),
+      // 添加 iOS 友好的 headers
+      headers: {
+        'Accept': 'application/json',
+        'Cache-Control': 'no-cache',
+        ...config.headers,
+        // 移除可能導致問題的 headers
+        'User-Agent': undefined,
+      },
+      // iOS Safari 需要明確的 mode 設置
+      mode: config.mode || 'cors',
+      // 禁用 cache 避免 iOS Safari 的緩存問題
+      cache: 'no-store',
+      // iOS Safari 對 credentials 敏感
+      credentials: config.credentials || 'omit',
+    };
+  }
+  
+  // 非 iOS 設備使用原始配置
+  return config;
+};
+
+// iOS 優化的 fetch 包裝器
+export const iosFetch = async (url, config = {}) => {
+  const optimizedConfig = getOptimizedFetchConfig(config);
+  const timeout = optimizedConfig.timeout || 10000;
+  
+  // 創建 AbortController 用於超時控制
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => {
+    console.log(`iOS fetch timeout after ${timeout}ms for:`, url);
+    controller.abort();
+  }, timeout);
+  
+  try {
+    const response = await fetch(url, {
+      ...optimizedConfig,
+      signal: controller.signal,
+    });
+    
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    
+    // iOS 特殊錯誤處理
+    if (error.name === 'AbortError') {
+      throw new Error(`iOS network timeout after ${timeout}ms`);
+    }
+    
+    throw error;
+  }
+};
+
 // 全局註冊工具函數
 export function registerGlobalUtils(app) {
   app.config.globalProperties.$getApiUrl = getApiUrl;
+  app.config.globalProperties.$isIOS = isIOS;
+  app.config.globalProperties.$iosFetch = iosFetch;
   
   // 也可以通過 provide/inject 提供
   app.provide('getApiUrl', getApiUrl);
+  app.provide('isIOS', isIOS);
+  app.provide('iosFetch', iosFetch);
 }
 
 export function registerPlugins (app) {
