@@ -33,6 +33,8 @@
               :src="newsItem.imageUrl" 
               :class="['news-image', { 'banner-image': newsItem.imageUrl.includes('banner-') }]"
               alt="news"
+              loading="lazy"
+              @error="handleImageError"
             />
             
             <!-- 標題和標籤覆蓋層 -->
@@ -78,7 +80,12 @@ export default {
     };
   },
   async mounted() {
-    await this.fetchNewsData();
+    // 延遲載入新聞數據，避免阻塞頁面初始渲染
+    this.$nextTick(() => {
+      setTimeout(() => {
+        this.fetchNewsData();
+      }, 200); // 延遲200ms，讓主要內容先載入
+    });
   },
   methods: {
     // 從 HTML 內容中提取第一個圖片 URL
@@ -164,6 +171,13 @@ export default {
         'issue': '遊戲已知問題'
       };
       return tagTexts[tag] || tag;
+    },
+    
+    // 圖片載入錯誤處理
+    handleImageError(event) {
+      console.warn('News image failed to load:', event.target.src);
+      // 使用預設圖片
+      event.target.src = this.getDefaultImageByTag('notice');
     },
     
     async fetchNewsData() {

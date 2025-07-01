@@ -57,10 +57,19 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    hmr: {
+      overlay: false
+    }
   },
   build: {
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
+        manualChunks: {
+          'vendor': ['vue', 'vue-router', 'pinia'],
+          'vuetify': ['vuetify'],
+          'utils': ['js-cookie']
+        },
         sanitizeFileName(name) {
           const match = DRIVE_LETTER_REGEX.exec(name);
           const driveLetter = match ? match[0] : "";
@@ -72,4 +81,7 @@ export default defineConfig({
       },
     },
   },
+  optimizeDeps: {
+    include: ['vue', 'vue-router', 'pinia', 'vuetify']
+  }
 });
