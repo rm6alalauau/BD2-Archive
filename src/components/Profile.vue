@@ -89,16 +89,17 @@
             <!-- 兌換碼列表 -->
             <div v-if="loading" class="loading-container">
               <v-progress-circular indeterminate color="primary"></v-progress-circular>
-              <div class="mt-2">載入兌換碼中...</div>
-              <div class="text-caption text-grey mt-1">正在等待API載入完成</div>
+              <div class="mt-2">{{ loadingMessage }}</div>
+              <div class="text-caption text-grey mt-1">{{ loadingSubMessage }}</div>
               <v-btn 
                 @click="retryLoadCouponCodes"
+                :disabled="retrying"
                 color="primary"
                 variant="outlined"
                 size="small"
                 class="mt-3"
               >
-                重新載入
+                {{ retrying ? '處理中...' : '重新載入' }}
               </v-btn>
             </div>
             
@@ -361,6 +362,33 @@ export default {
         case 'cors-error': return 'iOS Safari 兼容性問題';
         default: return '';
       }
+    },
+    
+    loadingMessage() {
+      if (this.retrying) {
+        return '重新載入兌換碼中...';
+      }
+      return '載入兌換碼中...';
+    },
+    
+    loadingSubMessage() {
+      const appStore = this.appStore;
+      
+      if (this.retrying) {
+        if (appStore.hasData && !appStore.error) {
+          return '正在更新兌換碼列表';
+        } else if (appStore.loading) {
+          return '等待API載入完成';
+        } else {
+          return '重新獲取最新資料';
+        }
+      }
+      
+      if (appStore.loading) {
+        return '正在等待API載入完成';
+      }
+      
+      return '正在處理兌換碼資料';
     }
   },
   
@@ -397,8 +425,64 @@ export default {
     console.log("Component mounted, isSubmitted:", this.isSubmitted, "nickname:", this.nickname);
     // 在 mounted 階段監聽 store 狀態
     this.watchStoreData();
+    
+    // 設置響應式監聽器，監聽store狀態變化
+    this.setupStoreWatcher();
   },
   methods: {
+    // 設置響應式監聽器
+    setupStoreWatcher() {
+      // 監聽store狀態變化
+      this.$watch(
+        () => ({
+          hasData: this.appStore.hasData,
+          loading: this.appStore.loading,
+          error: this.appStore.error,
+          lastFetchTime: this.appStore.lastFetchTime
+        }),
+        (newVal, oldVal) => {
+          console.log("Store狀態變化:", {
+            old: oldVal,
+            new: newVal,
+            isSubmitted: this.isSubmitted,
+            hasCouponCodes: this.couponCodes.length > 0
+          });
+          
+          // 只有當用戶已提交暱稱時才處理
+          if (!this.isSubmitted) {
+            return;
+          }
+          
+          // 如果已有正常的兌換碼，跳過（避免重複載入）
+          if (this.couponCodes.length > 0 && !this.isApiErrorCode(this.couponCodes[0].code)) {
+            return;
+          }
+          
+          // 如果API從載入中變為完成，載入兌換碼
+          if (oldVal.loading && !newVal.loading) {
+            console.log("API載入完成，自動載入兌換碼");
+            this.loadCouponCodesFromStore();
+            return;
+          }
+          
+          // 如果API從沒有數據變為有數據，載入兌換碼
+          if (!oldVal.hasData && newVal.hasData) {
+            console.log("API數據可用，自動載入兌換碼");
+            this.loadCouponCodesFromStore();
+            return;
+          }
+          
+          // 如果lastFetchTime更新（表示有新數據），載入兌換碼
+          if (oldVal.lastFetchTime !== newVal.lastFetchTime && newVal.lastFetchTime) {
+            console.log("API數據更新，自動載入兌換碼");
+            this.loadCouponCodesFromStore();
+            return;
+          }
+        },
+        { deep: true, immediate: false }
+      );
+    },
+    
     // 等待API載入完成並載入數據
     async waitForApiAndLoadData() {
       const appStore = useAppStore();
@@ -446,11 +530,43 @@ export default {
       const appStore = useAppStore();
       console.log("watchStoreData called, hasData:", appStore.hasData, "loading:", appStore.loading, "isSubmitted:", this.isSubmitted);
       
+      if (!this.isSubmitted) {
+        console.log("未提交暱稱，跳過監聽");
+        return;
+      }
+      
       // 如果已經提交暱稱且有數據，直接載入
-      if (this.isSubmitted && appStore.hasData) {
+      if (appStore.hasData) {
         console.log("Store has data, loading coupon codes...");
         this.loadCouponCodesFromStore();
+        return;
       }
+      
+      // 特殊情況：如果API不在載入且有lastFetchTime，也嘗試載入
+      if (!appStore.loading && appStore.lastFetchTime) {
+        console.log("API可能已完成但hasData為false，嘗試載入兌換碼...");
+        this.loadCouponCodesFromStore();
+        return;
+      }
+      
+      // 如果API正在載入，等待完成
+      if (appStore.loading) {
+        console.log("API正在載入，等待完成...");
+        this.loading = true;
+        this.waitForApiAndLoadData();
+        return;
+      }
+      
+      // 如果API沒有數據且不在載入中，觸發載入
+      console.log("API未載入，觸發載入...");
+      this.loading = true;
+      appStore.fetchAllData().then(() => {
+        this.loadCouponCodesFromStore();
+        this.loading = false;
+      }).catch(() => {
+        this.loadCouponCodesFromStore(); // 載入錯誤狀態
+        this.loading = false;
+      });
     },
     
     // 從 store 載入兌換碼數據
@@ -460,7 +576,15 @@ export default {
         const appStore = useAppStore();
         const redeemData = appStore.redeemCodes;
         
-        console.log("Store redeem data:", redeemData);
+        console.log("Store狀態詳細信息:", {
+          redeemData: redeemData,
+          hasData: appStore.hasData,
+          loading: appStore.loading,
+          error: appStore.error,
+          lastUpdated: appStore.lastUpdated,
+          lastFetchTime: appStore.lastFetchTime,
+          apiDataRedeem: appStore.apiData?.redeem
+        });
         
         if (redeemData && redeemData.length > 0) {
           // 檢查是否有 API 錯誤
@@ -1000,11 +1124,28 @@ export default {
         // 清除現有的兌換碼數據
         this.couponCodes = [];
         
-        // 重新觸發API載入
-        await appStore.fetchAllData();
+        // 智能判斷是否需要重新載入API
+        console.log("API狀態檢查:", {
+          hasData: appStore.hasData,
+          error: appStore.error,
+          loading: appStore.loading,
+          lastFetchTime: appStore.lastFetchTime
+        });
         
-        // 載入兌換碼
-        this.loadCouponCodesFromStore();
+        if (appStore.hasData && !appStore.error && !appStore.loading) {
+          // API已經有數據且沒有錯誤，直接載入兌換碼
+          console.log("✅ API已有數據，直接載入兌換碼");
+          this.loadCouponCodesFromStore();
+        } else if (appStore.loading) {
+          // API正在載入中，等待完成
+          console.log("⏳ API正在載入中，等待完成");
+          await this.waitForApiAndLoadData();
+        } else {
+          // API沒有數據或有錯誤，重新觸發載入
+          console.log("🔄 重新觸發API載入 (hasData:", appStore.hasData, "error:", appStore.error, ")");
+          await appStore.fetchAllData();
+          this.loadCouponCodesFromStore();
+        }
         
         console.log("兌換碼重新載入成功");
         

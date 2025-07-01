@@ -15,6 +15,9 @@ export const getApiUrl = (endpoint) => {
   
   // 開發環境使用代理，避免 CORS 問題
   if (isDev) {
+    if (endpoint.includes('thedb2pulse-api.zzz-archive-back-end.workers.dev')) {
+      return endpoint.replace('https://thedb2pulse-api.zzz-archive-back-end.workers.dev', '/api/db2pulse');
+    }
     if (endpoint.includes('bd2-official-proxy.zzz-archive-back-end.workers.dev')) {
       return endpoint.replace('https://bd2-official-proxy.zzz-archive-back-end.workers.dev', '/api/bd2-proxy');
     }
