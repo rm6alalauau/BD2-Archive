@@ -65,7 +65,28 @@
               ></v-btn>
             </div>
             
-                        <!-- 兌換碼列表 -->
+            <!-- API 狀態提示 -->
+            <div v-if="showApiStatus" class="api-status-card">
+              <div class="api-status-header">
+                <v-icon :color="apiStatusColor" size="16">{{ apiStatusIcon }}</v-icon>
+                <span class="api-status-text">{{ apiStatusText }}</span>
+                <v-btn
+                  v-if="hasApiError"
+                  @click="retryLoadData"
+                  :loading="retrying"
+                  size="x-small"
+                  variant="text"
+                  color="primary"
+                >
+                  重試
+                </v-btn>
+              </div>
+              <div v-if="hasApiError && appStore.error" class="api-error-detail">
+                技術細節：{{ appStore.error }}
+              </div>
+            </div>
+            
+            <!-- 兌換碼列表 -->
             <div v-if="loading" class="loading-container">
               <v-progress-circular indeterminate color="primary"></v-progress-circular>
               <div class="mt-2">載入兌換碼中...</div>
@@ -110,8 +131,20 @@
                       </div>
                     </div>
                     
-                    <!-- 兌換按鈕 -->
+                    <!-- 兌換按鈕或重試按鈕 -->
                     <v-btn
+                      v-if="isApiErrorCode(coupon.code)"
+                      :loading="retrying"
+                      @click="retryLoadData"
+                      color="warning"
+                      size="small"
+                      variant="flat"
+                      class="coupon-action-btn"
+                    >
+                      重新載入
+                    </v-btn>
+                    <v-btn
+                      v-else
                       :loading="coupon.claiming"
                       :disabled="coupon.claimed"
                       @click="executeClaim(coupon, index)"
@@ -206,6 +239,7 @@ export default {
       nickname: "",
       isSubmitted: false,
       loading: false,
+      retrying: false,
       couponCodes: [],
       apiEndpoint: 'https://bd2redeem.zzz-archive-back-end.workers.dev/',
       appId: 'bd2-live',
@@ -224,6 +258,41 @@ export default {
       jpgAvatars: [39, 40, 41, 42, 43, 44, 45, 46, 47, 48],
     };
   },
+  
+  computed: {
+    // API 狀態監控
+    appStore() {
+      return useAppStore();
+    },
+    
+    hasApiError() {
+      return this.couponCodes.some(coupon => this.isApiErrorCode(coupon.code)) || this.appStore.error;
+    },
+    
+    showApiStatus() {
+      return this.isSubmitted && (this.hasApiError || this.appStore.loading);
+    },
+    
+    apiStatusColor() {
+      if (this.appStore.loading || this.retrying) return 'warning';
+      if (this.hasApiError) return 'error';
+      return 'success';
+    },
+    
+    apiStatusIcon() {
+      if (this.appStore.loading || this.retrying) return 'mdi-loading';
+      if (this.hasApiError) return 'mdi-alert-circle';
+      return 'mdi-check-circle';
+    },
+    
+    apiStatusText() {
+      if (this.retrying) return '重新載入中...';
+      if (this.appStore.loading) return 'API 載入中...';
+      if (this.hasApiError) return 'API 連線異常';
+      return 'API 連線正常';
+    }
+  },
+  
   created() {
     try {
       // 從 localStorage 中加載暱稱
@@ -332,7 +401,33 @@ export default {
         console.log("Store redeem data:", redeemData);
         
         if (redeemData && redeemData.length > 0) {
-          // 轉換數據格式
+          // 檢查是否有 API 錯誤
+          const hasApiError = redeemData.some(item => item.code === 'API_ERROR');
+          
+          if (hasApiError) {
+            console.log("Detected API error in store data");
+            this.couponCodes = [
+              { 
+                code: 'API_ERROR', 
+                description: '暫時無法載入兌換碼資料', 
+                status: 'API連線中斷', 
+                claimed: false, 
+                claiming: false, 
+                statusMessage: null, 
+                statusMessageType: null, 
+                errorMessage: '請重新整理頁面或稍後再試' 
+              }
+            ];
+            
+            // 顯示更詳細的錯誤信息
+            if (appStore.error) {
+              this.couponCodes[0].errorMessage = `連線錯誤: ${appStore.error}`;
+            }
+            
+            return; // 提早返回，避免繼續處理
+          }
+          
+          // 轉換正常數據格式
           this.couponCodes = redeemData.map(item => ({
             code: item.code || '未知代碼',
             description: item.reward || '未知獎勵',
@@ -349,55 +444,150 @@ export default {
           console.log("Coupon codes loaded successfully");
         } else {
           console.log("No redeem data available");
-          this.couponCodes = [];
+          
+          // 檢查是否有API錯誤
+          if (appStore.error) {
+            this.couponCodes = [
+              { 
+                code: 'LOAD_ERROR', 
+                description: '兌換碼載入失敗', 
+                status: '載入錯誤', 
+                claimed: false, 
+                claiming: false, 
+                statusMessage: null, 
+                statusMessageType: null, 
+                errorMessage: `${appStore.error} - 請重新整理頁面` 
+              }
+            ];
+          } else {
+            // 單純沒有數據
+            this.couponCodes = [
+              { 
+                code: 'NO_DATA', 
+                description: '目前沒有可用的兌換碼', 
+                status: '暫無資料', 
+                claimed: false, 
+                claiming: false, 
+                statusMessage: null, 
+                statusMessageType: null, 
+                errorMessage: null 
+              }
+            ];
+          }
         }
       } catch (error) {
         console.error("Error loading coupon codes from store:", error);
         this.couponCodes = [
           { 
-            code: 'ERROR', 
-            description: '載入兌換碼時發生錯誤', 
-            status: '錯誤', 
+            code: 'SYSTEM_ERROR', 
+            description: '系統載入兌換碼時發生錯誤', 
+            status: '系統錯誤', 
             claimed: false, 
             claiming: false, 
             statusMessage: null, 
             statusMessageType: null, 
-            errorMessage: null 
+            errorMessage: '請重新整理頁面或聯絡管理員' 
           }
         ];
       }
     },
 
-    // API 客戶端方法
+    // API 客戶端方法 - 添加重試機制
     async claimCoupon(userId = '', code = '') {
-      try {
-        const response = await fetch(this.apiEndpoint, {
-          method: 'POST',
-          mode: 'cors',
-          cache: 'no-cache',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            appId: this.appId,
-            userId,
-            code,
-          }),
-        });
+      const maxRetries = 3;
+      const baseDelay = 1000; // 1秒
+      let lastError;
+      
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          console.log(`Coupon claim attempt ${attempt}/${maxRetries} for code: ${code}`);
+          
+          // 設置超時控制
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 20000); // 20秒超時
+          
+          // 使用代理 URL，根據環境自動選擇
+          const apiUrl = this.$getApiUrl ? this.$getApiUrl(this.apiEndpoint) : this.apiEndpoint;
+          console.log(`Attempting coupon claim to: ${apiUrl}`);
+          
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            signal: controller.signal,
+            headers: {
+              'Content-Type': 'application/json',
+              'User-Agent': 'BD2-Archive-Frontend/1.0',
+            },
+            body: JSON.stringify({
+              appId: this.appId,
+              userId,
+              code,
+            }),
+          });
+          
+          clearTimeout(timeoutId);
+          
+          if (response.ok) {
+            console.log(`Coupon claim successful on attempt ${attempt}`);
+            return await response.json();
+          }
 
-        if (response.ok) {
-          return await response.json();
+          // 當 API 返回錯誤時，嘗試解析錯誤信息
+          let errorData;
+          try {
+            errorData = await response.json();
+          } catch {
+            errorData = { message: `HTTP ${response.status}: ${response.statusText}` };
+          }
+          
+          console.log('API returned error:', errorData);
+          
+          // 5xx 錯誤值得重試
+          if (response.status >= 500 && attempt < maxRetries) {
+            throw new Error(`Server error ${response.status}, will retry...`);
+          }
+          
+          // 4xx 錯誤通常不值得重試（除了429 Too Many Requests）
+          if (response.status === 429 && attempt < maxRetries) {
+            throw new Error(`Rate limited, will retry...`);
+          } else if (response.status >= 400) {
+            throw errorData; // 直接拋出 4xx 錯誤，不重試
+          }
+          
+          throw errorData;
+
+        } catch (error) {
+          lastError = error;
+          console.warn(`Coupon claim attempt ${attempt} failed:`, error.message);
+          
+          // 如果是最後一次嘗試，拋出錯誤
+          if (attempt === maxRetries) {
+            throw error;
+          }
+          
+          // 判斷是否值得重試
+          const isRetryableError = 
+            error.name === 'AbortError' || // 超時
+            error.message.includes('Failed to fetch') || // 網路問題
+            error.message.includes('NetworkError') || // 網路問題
+            error.message.includes('Server error') || // 5xx 錯誤
+            error.message.includes('Rate limited') || // 429 錯誤
+            error.message.includes('Load failed'); // 載入失敗
+          
+          if (!isRetryableError) {
+            console.log('Non-retryable error for coupon claim, giving up:', error.message);
+            throw error;
+          }
+          
+          // 指數退避：每次重試延遲時間加倍
+          const delay = baseDelay * Math.pow(2, attempt - 1);
+          console.log(`Waiting ${delay}ms before coupon claim retry...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
         }
-
-        // 當 API 返回錯誤時，嘗試解析錯誤信息
-        const errorData = await response.json();
-        console.log('API returned error:', errorData);
-        throw errorData; // 拋出包含錯誤信息的對象
-
-      } catch (error) {
-        console.log('API Error in claimCoupon:', error);
-        throw error;
       }
+      
+      throw lastError;
     },
 
     // 保存兌換狀態到 localStorage
@@ -565,10 +755,26 @@ export default {
           this.couponCodes[index].errorMessage = '兌換碼已過期';
           this.couponCodes[index].statusMessage = null;
           
-        }else {
-          // 其他錯誤
-          console.log("Other error");
-          this.couponCodes[index].errorMessage = '兌換失敗，請稍後再試';
+        } else {
+          // 其他錯誤 - 改善錯誤處理
+          console.log("Other error:", error);
+          
+          // 根據錯誤類型提供更具體的訊息
+          if (error.name === 'AbortError') {
+            this.couponCodes[index].errorMessage = '請求超時，請重試';
+          } else if (error.message && error.message.includes('Failed to fetch')) {
+            this.couponCodes[index].errorMessage = '網路連線問題，請檢查網路後重試';
+          } else if (error.message && error.message.includes('NetworkError')) {
+            this.couponCodes[index].errorMessage = '網路錯誤，請稍後重試';
+          } else if (error.message && error.message.includes('Server error')) {
+            this.couponCodes[index].errorMessage = '伺服器暫時無法回應，請稍後重試';
+          } else if (error.message && error.message.includes('Rate limited')) {
+            this.couponCodes[index].errorMessage = '請求過於頻繁，請稍後再試';
+          } else {
+            // 通用錯誤訊息
+            this.couponCodes[index].errorMessage = '兌換失敗，請重新整理頁面後再試';
+          }
+          
           this.couponCodes[index].statusMessage = null;
         }
       }
@@ -621,6 +827,39 @@ export default {
 
     updateCurrentAvatarUrl() {
       this.currentAvatarUrl = this.getAvatarUrl(this.selectedAvatarId);
+    },
+
+    isApiErrorCode(code) {
+      // 判斷是否為API錯誤碼
+      return ['API_ERROR', 'LOAD_ERROR', 'SYSTEM_ERROR'].includes(code);
+    },
+
+    async retryLoadData() {
+      if (this.retrying) return; // 避免重複點擊
+      
+      console.log("Manual retry requested by user");
+      this.retrying = true;
+      
+      try {
+        const appStore = useAppStore();
+        
+        // 先嘗試重新載入 store 數據
+        await appStore.retryFetchAllData();
+        
+        // 然後重新載入兌換碼
+        this.loadCouponCodesFromStore();
+        
+        console.log("Retry completed successfully");
+        
+      } catch (error) {
+        console.error("Retry failed:", error);
+        
+        // 即使重試失敗，也更新顯示以反映最新的錯誤狀態
+        this.loadCouponCodesFromStore();
+        
+      } finally {
+        this.retrying = false;
+      }
     },
   },
 };
@@ -964,5 +1203,34 @@ export default {
 
 .user-profile-card:hover .logout-btn {
   opacity: 1;
+}
+
+/* API 狀態卡片樣式 */
+.api-status-card {
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.api-status-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.api-status-text {
+  flex: 1;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.api-error-detail {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 4px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 </style>

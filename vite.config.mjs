@@ -59,6 +59,34 @@ export default defineConfig({
     port: 3000,
     hmr: {
       overlay: false
+    },
+    proxy: {
+      '/api/bd2-proxy': {
+        target: 'https://bd2-official-proxy.zzz-archive-back-end.workers.dev',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/bd2-proxy/, ''),
+        configure: (proxy, options) => {
+          proxy.on('error', (err, req, res) => {
+            console.log('proxy error', err);
+          });
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log('Sending Request to the Target:', req.method, req.url);
+          });
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
+          });
+        },
+      },
+      '/api/redeem': {
+        target: 'https://bd2redeem.zzz-archive-back-end.workers.dev',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/redeem/, ''),
+      },
+      '/api/pixiv': {
+        target: 'https://api.obfs.dev',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/pixiv/, ''),
+      }
     }
   },
   build: {
