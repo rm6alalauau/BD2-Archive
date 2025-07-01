@@ -90,6 +90,16 @@
             <div v-if="loading" class="loading-container">
               <v-progress-circular indeterminate color="primary"></v-progress-circular>
               <div class="mt-2">載入兌換碼中...</div>
+              <div class="text-caption text-grey mt-1">正在等待API載入完成</div>
+              <v-btn 
+                @click="retryLoadCouponCodes"
+                color="primary"
+                variant="outlined"
+                size="small"
+                class="mt-3"
+              >
+                重新載入
+              </v-btn>
             </div>
             
             <div v-else-if="couponCodes.length > 0">
@@ -184,6 +194,42 @@
                     </div>
                   </div>
                 </div>
+              </div>
+              
+              <!-- 兌換碼重新載入區域（給已經提交暱稱的用戶） -->
+              <div v-if="isSubmitted" class="mt-4 text-center">
+                <v-btn
+                  @click="retryLoadCouponCodes"
+                  :loading="retrying"
+                  color="primary"
+                  variant="outlined"
+                  prepend-icon="mdi-refresh"
+                  size="small"
+                >
+                  重新載入兌換碼
+                </v-btn>
+                <div class="text-caption text-grey mt-1">
+                  如果兌換碼未正確載入，點擊此處重新載入
+                </div>
+                
+                <!-- 幫助提示 -->
+                <v-alert
+                  v-if="hasApiError || couponCodes.length === 0"
+                  color="info"
+                  variant="tonal"
+                  density="compact"
+                  class="mt-3 text-left"
+                  icon="mdi-lightbulb-outline"
+                >
+                  <div class="text-body-2">
+                    <strong>載入問題解決方案：</strong>
+                  </div>
+                  <div class="text-caption mt-1">
+                    • 如果提交暱稱時API尚未載入完成，可能導致兌換碼無法正確顯示<br>
+                    • 點擊上方「重新載入兌換碼」<br>
+                    • 或者點擊「退出」重新輸入暱稱
+                  </div>
+                </v-alert>
               </div>
             </div>
           </div>
@@ -353,66 +399,57 @@ export default {
     this.watchStoreData();
   },
   methods: {
-    // 監聽 store 數據變化
+    // 等待API載入完成並載入數據
+    async waitForApiAndLoadData() {
+      const appStore = useAppStore();
+      const maxWaitTime = 15000; // 最多等待15秒
+      const checkInterval = 500; // 每500ms檢查一次
+      let waitedTime = 0;
+      
+      console.log("開始等待API載入完成...");
+      
+      return new Promise((resolve) => {
+        const checkData = () => {
+          waitedTime += checkInterval;
+          
+          console.log(`等待API載入: ${waitedTime}ms / ${maxWaitTime}ms (loading: ${appStore.loading}, hasData: ${appStore.hasData})`);
+          
+          // 檢查是否載入完成
+          if (!appStore.loading) {
+            console.log("API載入完成，載入兌換碼...");
+            this.loading = false;
+            this.loadCouponCodesFromStore();
+            resolve();
+            return;
+          }
+          
+          // 檢查是否超時
+          if (waitedTime >= maxWaitTime) {
+            console.warn("API載入超時，強制載入兌換碼...");
+            this.loading = false;
+            this.loadCouponCodesFromStore();
+            resolve();
+            return;
+          }
+          
+          // 繼續等待
+          setTimeout(checkData, checkInterval);
+        };
+        
+        // 開始檢查
+        setTimeout(checkData, checkInterval);
+      });
+    },
+    
+    // 監聽 store 數據變化（保留給 mounted 使用）
     watchStoreData() {
       const appStore = useAppStore();
       console.log("watchStoreData called, hasData:", appStore.hasData, "loading:", appStore.loading, "isSubmitted:", this.isSubmitted);
       
-      // 如果已經有數據，直接載入
-      if (appStore.hasData && this.isSubmitted) {
+      // 如果已經提交暱稱且有數據，直接載入
+      if (this.isSubmitted && appStore.hasData) {
         console.log("Store has data, loading coupon codes...");
         this.loadCouponCodesFromStore();
-        return;
-      }
-      
-      // 如果沒有數據且不在載入中，表示需要等待載入
-      if (!appStore.hasData && !appStore.loading && this.isSubmitted) {
-        console.log("No data and not loading, waiting for data...");
-        // 改為更合理的輪詢間隔，避免高頻輪詢阻塞線程
-        const checkInterval = setInterval(() => {
-          console.log("Checking store status - hasData:", appStore.hasData, "loading:", appStore.loading);
-          if (appStore.hasData || !appStore.loading) {
-            clearInterval(checkInterval);
-            if (this.isSubmitted) {
-              console.log("Data available, loading coupon codes...");
-              this.loadCouponCodesFromStore();
-            }
-          }
-        }, 1000); // 改為1秒檢查一次，減少CPU負載
-        
-        // 設置超時，避免無限等待
-        setTimeout(() => {
-          clearInterval(checkInterval);
-          if (this.isSubmitted && this.couponCodes.length === 0) {
-            console.log("Timeout reached, forcing load...");
-            this.loadCouponCodesFromStore();
-          }
-        }, 5000); // 減少到5秒超時
-        return;
-      }
-      
-      // 如果正在載入，等待完成
-      if (appStore.loading) {
-        console.log("Store is loading, waiting for completion...");
-        const checkInterval = setInterval(() => {
-          console.log("Checking loading status:", appStore.loading);
-          if (!appStore.loading) {
-            clearInterval(checkInterval);
-            if (this.isSubmitted) {
-              console.log("Loading completed, loading coupon codes...");
-              this.loadCouponCodesFromStore();
-            }
-          }
-        }, 1000); // 改為1秒檢查一次
-        
-        // 設置超時，避免無限等待
-        setTimeout(() => {
-          clearInterval(checkInterval);
-          if (this.isSubmitted && this.couponCodes.length === 0) {
-            console.log("Loading timeout, forcing load...");
-            this.loadCouponCodesFromStore();
-          }
-        }, 5000); // 減少到5秒超時
       }
     },
     
@@ -467,6 +504,14 @@ export default {
           // 載入已兌換狀態
           this.loadClaimedStatus();
           console.log("Coupon codes loaded successfully");
+          
+          // 如果是重新載入成功，顯示簡短提示
+          if (this.retrying) {
+            this.$nextTick(() => {
+              // 可以在這裡添加成功提示，但不要太打擾用戶
+              console.log("兌換碼重新載入成功！");
+            });
+          }
         } else {
           console.log("No redeem data available");
           
@@ -716,11 +761,50 @@ export default {
 
     async submitNickname() {
       if (this.$refs.form.validate()) {
+        const appStore = useAppStore();
+        
         // 儲存暱稱到 localStorage
         localStorage.setItem("nickname", this.nickname);
-        this.isSubmitted = true;
-        // 提交暱稱後，開始監聽 store 狀態
-        this.watchStoreData();
+        
+        // 檢查API狀態
+        if (appStore.loading) {
+          // API還在載入中，顯示等待狀態
+          this.isSubmitted = true;
+          this.loading = true;
+          console.log("API還在載入中，等待完成...");
+          
+          // 滾動到載入區域並顯示提示
+          this.$nextTick(() => {
+            const loadingContainer = document.querySelector('.loading-container');
+            if (loadingContainer) {
+              loadingContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          });
+          
+          // 開始監聽並等待API載入完成
+          this.waitForApiAndLoadData();
+        } else if (appStore.hasData) {
+          // API已經載入完成，直接載入兌換碼
+          this.isSubmitted = true;
+          console.log("API已載入，直接載入兌換碼...");
+          this.loadCouponCodesFromStore();
+        } else {
+          // API沒有數據且不在載入中，可能是錯誤狀態
+          this.isSubmitted = true;
+          console.log("API未載入或載入失敗，嘗試觸發載入...");
+          
+          // 嘗試觸發API載入
+          try {
+            this.loading = true;
+            await appStore.fetchAllData();
+            this.loadCouponCodesFromStore();
+          } catch (error) {
+            console.error("觸發API載入失敗:", error);
+            this.loadCouponCodesFromStore(); // 載入錯誤狀態
+          } finally {
+            this.loading = false;
+          }
+        }
       }
     },
     
@@ -899,6 +983,40 @@ export default {
         
       } finally {
         this.retrying = false;
+      }
+    },
+    
+    // 重新載入兌換碼（給用戶使用的通用方法）
+    async retryLoadCouponCodes() {
+      if (this.retrying) return;
+      
+      console.log("用戶手動重新載入兌換碼");
+      this.retrying = true;
+      this.loading = true;
+      
+      try {
+        const appStore = useAppStore();
+        
+        // 清除現有的兌換碼數據
+        this.couponCodes = [];
+        
+        // 重新觸發API載入
+        await appStore.fetchAllData();
+        
+        // 載入兌換碼
+        this.loadCouponCodesFromStore();
+        
+        console.log("兌換碼重新載入成功");
+        
+      } catch (error) {
+        console.error("重新載入兌換碼失敗:", error);
+        
+        // 即使失敗也載入當前狀態
+        this.loadCouponCodesFromStore();
+        
+      } finally {
+        this.retrying = false;
+        this.loading = false;
       }
     },
 
