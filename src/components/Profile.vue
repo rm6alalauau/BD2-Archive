@@ -274,7 +274,7 @@ export default {
       // 如果沒有數據且不在載入中，表示需要等待載入
       if (!appStore.hasData && !appStore.loading && this.isSubmitted) {
         console.log("No data and not loading, waiting for data...");
-        // 等待數據載入
+        // 改為更合理的輪詢間隔，避免高頻輪詢阻塞線程
         const checkInterval = setInterval(() => {
           console.log("Checking store status - hasData:", appStore.hasData, "loading:", appStore.loading);
           if (appStore.hasData || !appStore.loading) {
@@ -284,7 +284,7 @@ export default {
               this.loadCouponCodesFromStore();
             }
           }
-        }, 100);
+        }, 1000); // 改為1秒檢查一次，減少CPU負載
         
         // 設置超時，避免無限等待
         setTimeout(() => {
@@ -293,7 +293,7 @@ export default {
             console.log("Timeout reached, forcing load...");
             this.loadCouponCodesFromStore();
           }
-        }, 10000); // 10秒超時
+        }, 5000); // 減少到5秒超時
         return;
       }
       
@@ -309,7 +309,7 @@ export default {
               this.loadCouponCodesFromStore();
             }
           }
-        }, 100);
+        }, 1000); // 改為1秒檢查一次
         
         // 設置超時，避免無限等待
         setTimeout(() => {
@@ -318,7 +318,7 @@ export default {
             console.log("Loading timeout, forcing load...");
             this.loadCouponCodesFromStore();
           }
-        }, 10000); // 10秒超時
+        }, 5000); // 減少到5秒超時
       }
     },
     

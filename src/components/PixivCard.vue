@@ -57,6 +57,9 @@
                 height="160"
                 width="160"
                 class="d-block mx-auto"
+                :lazy-src="getPlaceholderImage()"
+                loading="lazy"
+                @error="handleImageError"
               ></v-img>
             </a>
             <div class="text-ellipsis">{{ item.title }}</div>
@@ -147,25 +150,42 @@ export default {
     async fetchMoreDataIfNeeded() {
       if (this.isLoading) return;
 
-      while (this.list.length < MIN_ITEMS_THRESHOLD && this.canLoadMore) {
+      // 避免阻塞性的while循環，改為單次檢查和遞歸調用
+      if (this.list.length < MIN_ITEMS_THRESHOLD && this.canLoadMore) {
         if (this.currentPage > MAX_PAGES_TO_FETCH) {
           this.canLoadMore = false;
-          break;
+          return;
         }
 
         this.isLoading = true;
-        const newIllusts = await this.fetchPixivPage(this.currentPage);
-        this.isLoading = false;
-
-        if (newIllusts && newIllusts.length > 0) {
-          const existingIds = new Set(this.allIllusts.map(i => i.id));
-          const uniqueNewIllusts = newIllusts.filter(i => !existingIds.has(i.id));
+        try {
+          const newIllusts = await this.fetchPixivPage(this.currentPage);
           
-          this.allIllusts.push(...uniqueNewIllusts);
-          this.applyFilter();
-          this.currentPage++;
-        } else {
+          if (newIllusts && newIllusts.length > 0) {
+            const existingIds = new Set(this.allIllusts.map(i => i.id));
+            const uniqueNewIllusts = newIllusts.filter(i => !existingIds.has(i.id));
+            
+            this.allIllusts.push(...uniqueNewIllusts);
+            this.applyFilter();
+            this.currentPage++;
+            
+            // 使用 nextTick 確保DOM更新後再繼續
+            this.$nextTick(() => {
+              // 如果還需要更多數據，延遲執行避免阻塞
+              if (this.list.length < MIN_ITEMS_THRESHOLD && this.canLoadMore) {
+                setTimeout(() => {
+                  this.fetchMoreDataIfNeeded();
+                }, 100); // 100ms延遲，讓出線程控制權
+              }
+            });
+          } else {
+            this.canLoadMore = false;
+          }
+        } catch (error) {
+          console.error('Error fetching data:', error);
           this.canLoadMore = false;
+        } finally {
+          this.isLoading = false;
         }
       }
     },
@@ -235,6 +255,16 @@ export default {
     },
     handleScroll() {
       // 移除陰影邏輯，保留方法以避免錯誤
+    },
+    getPlaceholderImage() {
+      // 返回一個簡單的佔位符圖片
+      return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2MCIgdmlld0JveD0iMCAwIDE2MCAxNjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNjAiIGhlaWdodD0iMTYwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik04MCA2MEM4OC44MzY2IDYwIDk2IDY3LjE2MzQgOTYgNzZWODRDOTYgOTIuODM2NiA4OC44MzY2IDEwMCA4MCAxMDBDNzEuMTYzNCAxMDAgNjQgOTIuODM2NiA2NCA4NFY3NkM2NCA2Ny4xNjM0IDcxLjE2MzQgNjAgODAgNjBaIiBmaWxsPSIjRTBFMEUwIi8+Cjwvc3ZnPgo=';
+    },
+    handleImageError(event) {
+      // 圖片載入失敗時的處理
+      console.warn('Image failed to load:', event.target.src);
+      // 可以設置一個錯誤佔位符或隱藏圖片
+      event.target.style.display = 'none';
     },
   },
 };
