@@ -20,15 +20,57 @@
             variant="outlined"
             @submit.prevent="submitNickname"
           >
-            <v-text-field
-              v-model="nickname"
-              :rules="[(v) => !!v || '請輸入暱稱']"
-              label="遊戲暱稱"
-              required
-              outlined
-              placeholder="請輸入您的遊戲暱稱"
-              @keydown.enter="submitNickname"
-            ></v-text-field>
+            <div class="nickname-input-container">
+              <v-text-field
+                v-model="nickname"
+                :rules="[(v) => !!v || '請輸入暱稱']"
+                label="遊戲暱稱"
+                required
+                outlined
+                placeholder="請輸入您的遊戲暱稱"
+                @keydown.enter="submitNickname"
+                @focus="onNicknameInputFocus"
+                @blur="onNicknameInputBlur"
+                :append-inner-icon="savedNicknames.length > 0 ? 'mdi-account-multiple' : null"
+                @click:append-inner="openNicknameDialog"
+              ></v-text-field>
+              
+              <!-- 暱稱建議列表 -->
+              <v-card
+                v-if="showNicknameSuggestions && savedNicknames.length > 0"
+                class="nickname-suggestions"
+                elevation="8"
+              >
+                <v-list density="compact">
+                  <v-list-item
+                    v-for="savedNickname in savedNicknames"
+                    :key="savedNickname"
+                    class="nickname-suggestion-item"
+                    @click="selectSavedNickname(savedNickname)"
+                  >
+                    <template #prepend>
+                      <v-icon size="16" color="primary">mdi-account</v-icon>
+                    </template>
+                    
+                    <v-list-item-title class="nickname-suggestion-text">
+                      {{ savedNickname }}
+                    </v-list-item-title>
+                    
+                    <template #append>
+                      <v-btn
+                        @click.stop="removeSavedNickname(savedNickname)"
+                        icon="mdi-close"
+                        size="x-small"
+                        variant="text"
+                        color="grey"
+                        class="nickname-delete-btn"
+                      ></v-btn>
+                    </template>
+                  </v-list-item>
+                </v-list>
+              </v-card>
+            </div>
+            
             <v-btn @click="submitNickname" variant="outlined" color="primary">
               查詢兌換碼
             </v-btn>
@@ -50,19 +92,34 @@
                 />
               </v-avatar>
               
-              <div class="user-info">
+              <div class="user-info" @click="openNicknameDialog">
                 <div class="user-nickname">{{ nickname }}</div>
-                <div class="user-subtitle">點擊頭像可更換</div>
+                <div class="user-subtitle">
+                  點擊頭像可更換 • 點擊暱稱可切換
+                  <v-icon size="12" class="ml-1">mdi-swap-horizontal</v-icon>
+                </div>
               </div>
               
-              <v-btn
-                @click="clearData"
-                icon="mdi-logout"
-                size="small"
-                variant="text"
-                class="logout-btn"
-                title="重新輸入暱稱"
-              ></v-btn>
+              <div class="user-actions">
+                <v-btn
+                  v-if="savedNicknames.length > 1"
+                  @click="openNicknameDialog"
+                  icon="mdi-account-switch"
+                  size="small"
+                  variant="text"
+                  class="switch-btn"
+                  title="切換暱稱"
+                ></v-btn>
+                
+                <v-btn
+                  @click="clearData"
+                  icon="mdi-logout"
+                  size="small"
+                  variant="text"
+                  class="logout-btn"
+                  title="重新輸入暱稱"
+                ></v-btn>
+              </div>
             </div>
             
             <!-- API 狀態提示 -->
@@ -286,6 +343,80 @@
     </v-card>
   </v-dialog>
 
+  <!-- 暱稱選擇對話框 -->
+  <v-dialog v-model="nicknameDialog" max-width="500px">
+    <v-card>
+      <v-card-title class="headline">
+        <v-icon color="primary" class="mr-2">mdi-account-multiple</v-icon>
+        選擇暱稱 ({{ savedNicknames.length }} 個已保存)
+      </v-card-title>
+      
+      <v-card-text v-if="savedNicknames.length > 0">
+        <v-list>
+          <v-list-item
+            v-for="savedNickname in savedNicknames"
+            :key="savedNickname"
+            :class="nickname === savedNickname ? 'selected-nickname' : ''"
+            class="nickname-dialog-item"
+            @click="selectNicknameFromDialog(savedNickname)"
+          >
+            <template #prepend>
+              <v-avatar size="32" :color="nickname === savedNickname ? 'primary' : 'grey-lighten-1'">
+                <v-icon :color="nickname === savedNickname ? 'white' : 'grey'">mdi-account</v-icon>
+              </v-avatar>
+            </template>
+            
+            <v-list-item-title class="font-weight-medium">
+              {{ savedNickname }}
+            </v-list-item-title>
+            
+            <v-list-item-subtitle v-if="nickname === savedNickname">
+              目前使用中
+            </v-list-item-subtitle>
+            
+            <template #append>
+              <div class="nickname-actions">
+                <v-btn
+                  @click.stop="selectNicknameFromDialog(savedNickname)"
+                  :variant="nickname === savedNickname ? 'flat' : 'outlined'"
+                  :color="nickname === savedNickname ? 'success' : 'primary'"
+                  size="small"
+                  class="mr-2"
+                >
+                  {{ nickname === savedNickname ? '使用中' : '切換' }}
+                </v-btn>
+                
+                <v-btn
+                  @click.stop="removeSavedNickname(savedNickname)"
+                  icon="mdi-delete"
+                  size="small"
+                  variant="text"
+                  color="error"
+                  title="刪除暱稱"
+                ></v-btn>
+              </div>
+            </template>
+          </v-list-item>
+        </v-list>
+      </v-card-text>
+      
+      <v-card-text v-else class="text-center py-8">
+        <v-icon size="48" color="grey-lighten-1" class="mb-4">mdi-account-off</v-icon>
+        <div class="text-h6 text-grey-lighten-1">暫無已保存的暱稱</div>
+        <div class="text-body-2 text-grey mt-2">
+          輸入暱稱後會自動保存，方便下次快速選擇
+        </div>
+      </v-card-text>
+      
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="grey" variant="text" @click="nicknameDialog = false">
+          關閉
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
   
 </template>
 
@@ -314,10 +445,15 @@ export default {
         35, 36, 37, 38, 39, 40, 41, 42, 43, 44,
         45, 46, 47, 48
       ],
-              // 頭像格式映射（JPG格式的頭像ID）
-        jpgAvatars: [39, 40, 41, 42, 43, 44, 45, 46, 47, 48],
-        // 網路狀態監控
-        networkStatus: null,
+      // 頭像格式映射（JPG格式的頭像ID）
+      jpgAvatars: [39, 40, 41, 42, 43, 44, 45, 46, 47, 48],
+      // 網路狀態監控
+      networkStatus: null,
+      // 暱稱管理
+      savedNicknames: [],
+      showNicknameSuggestions: false,
+      nicknameDialog: false,
+      nicknameInputFocused: false,
     };
   },
   
@@ -394,7 +530,10 @@ export default {
   
   created() {
     try {
-      // 從 localStorage 中加載暱稱
+      // 載入已保存的暱稱列表
+      this.loadSavedNicknames();
+      
+      // 從 localStorage 中加載當前暱稱
       this.nickname = localStorage.getItem("nickname") || "";
       
       // 從 localStorage 中加載頭像ID，如果沒有則隨機生成
@@ -410,7 +549,7 @@ export default {
       this.updateCurrentAvatarUrl();
       
       if (this.nickname) {
-      this.isSubmitted = true;
+        this.isSubmitted = true;
         // 不在這裡立即調用 fetchCouponCodes，而是等待 API 載入完成
       }
     } catch (error) {
@@ -430,6 +569,118 @@ export default {
     this.setupStoreWatcher();
   },
   methods: {
+    // 暱稱管理方法
+    loadSavedNicknames() {
+      try {
+        const saved = localStorage.getItem("savedNicknames");
+        this.savedNicknames = saved ? JSON.parse(saved) : [];
+        console.log("載入已保存的暱稱:", this.savedNicknames);
+      } catch (error) {
+        console.error("載入暱稱列表失敗:", error);
+        this.savedNicknames = [];
+      }
+    },
+
+    saveNicknameToList(nickname) {
+      if (!nickname || nickname.trim() === "") return;
+      
+      const trimmedNickname = nickname.trim();
+      
+      // 檢查是否已存在
+      if (!this.savedNicknames.includes(trimmedNickname)) {
+        this.savedNicknames.unshift(trimmedNickname); // 添加到列表頂部
+        
+        // 限制最多保存10個暱稱
+        if (this.savedNicknames.length > 10) {
+          this.savedNicknames = this.savedNicknames.slice(0, 10);
+        }
+        
+        // 保存到localStorage
+        localStorage.setItem("savedNicknames", JSON.stringify(this.savedNicknames));
+        console.log("保存暱稱到列表:", trimmedNickname);
+      } else {
+        // 如果已存在，將其移到列表頂部
+        const index = this.savedNicknames.indexOf(trimmedNickname);
+        this.savedNicknames.splice(index, 1);
+        this.savedNicknames.unshift(trimmedNickname);
+        localStorage.setItem("savedNicknames", JSON.stringify(this.savedNicknames));
+      }
+    },
+
+    removeSavedNickname(nickname) {
+      const index = this.savedNicknames.indexOf(nickname);
+      if (index > -1) {
+        this.savedNicknames.splice(index, 1);
+        localStorage.setItem("savedNicknames", JSON.stringify(this.savedNicknames));
+        
+        // 如果刪除的是當前使用的暱稱，也清除相關數據
+        if (this.nickname === nickname) {
+          this.clearData();
+        }
+        
+        console.log("移除暱稱:", nickname);
+      }
+    },
+
+    selectSavedNickname(nickname) {
+      this.nickname = nickname;
+      this.showNicknameSuggestions = false;
+      this.nicknameInputFocused = false;
+      
+      // 自動提交暱稱
+      this.submitNickname();
+    },
+
+    onNicknameInputFocus() {
+      this.nicknameInputFocused = true;
+      if (this.savedNicknames.length > 0) {
+        this.showNicknameSuggestions = true;
+      }
+    },
+
+    onNicknameInputBlur() {
+      // 延遲隱藏建議，讓用戶有時間點擊建議項目
+      setTimeout(() => {
+        this.nicknameInputFocused = false;
+        this.showNicknameSuggestions = false;
+      }, 200);
+    },
+
+    openNicknameDialog() {
+      this.nicknameDialog = true;
+    },
+
+    selectNicknameFromDialog(nickname) {
+      this.nickname = nickname;
+      this.nicknameDialog = false;
+      
+      // 如果還未提交，自動提交
+      if (!this.isSubmitted) {
+        this.submitNickname();
+      } else {
+        // 如果已提交，切換到新暱稱
+        this.switchToNickname(nickname);
+      }
+    },
+
+    switchToNickname(nickname) {
+      if (nickname === this.nickname) return;
+      
+      // 保存當前暱稱
+      this.saveNicknameToList(this.nickname);
+      
+      // 切換到新暱稱
+      this.nickname = nickname;
+      localStorage.setItem("nickname", this.nickname);
+      this.saveNicknameToList(this.nickname);
+      
+      // 清除當前兌換碼數據並重新載入
+      this.couponCodes = [];
+      this.loadCouponCodesFromStore();
+      
+      console.log("切換到暱稱:", nickname);
+    },
+
     // 設置響應式監聽器
     setupStoreWatcher() {
       // 監聽store狀態變化
@@ -887,8 +1138,9 @@ export default {
       if (this.$refs.form.validate()) {
         const appStore = useAppStore();
         
-        // 儲存暱稱到 localStorage
+        // 儲存暱稱到 localStorage 和暱稱列表
         localStorage.setItem("nickname", this.nickname);
+        this.saveNicknameToList(this.nickname);
         
         // 檢查API狀態
         if (appStore.loading) {
@@ -1570,6 +1822,33 @@ export default {
   opacity: 1;
 }
 
+.user-info {
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  border-radius: 8px;
+  padding: 4px 8px;
+  margin: -4px -8px;
+}
+
+.user-info:hover {
+  background-color: rgba(231, 40, 87, 0.1);
+}
+
+.user-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.switch-btn {
+  opacity: 0.8;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.user-profile-card:hover .switch-btn {
+  opacity: 1;
+}
+
 /* API 狀態卡片樣式 */
 .api-status-card {
   margin-bottom: 12px;
@@ -1597,5 +1876,79 @@ export default {
   color: rgba(255, 255, 255, 0.6);
   padding: 4px 0;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* 暱稱輸入容器樣式 */
+.nickname-input-container {
+  position: relative;
+}
+
+.nickname-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+  background: rgba(18, 18, 18, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(231, 40, 87, 0.3);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+}
+
+.nickname-suggestion-item {
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.nickname-suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.nickname-suggestion-item:hover {
+  background-color: rgba(231, 40, 87, 0.1);
+}
+
+.nickname-suggestion-text {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.nickname-delete-btn {
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.nickname-suggestion-item:hover .nickname-delete-btn {
+  opacity: 0.7;
+}
+
+.nickname-delete-btn:hover {
+  opacity: 1 !important;
+}
+
+/* 暱稱對話框樣式 */
+.nickname-dialog-item {
+  border-radius: 8px;
+  margin: 4px 0;
+  transition: all 0.2s ease-in-out;
+}
+
+.nickname-dialog-item:hover {
+  background-color: rgba(231, 40, 87, 0.05);
+}
+
+.selected-nickname {
+  background-color: rgba(231, 40, 87, 0.1);
+  border: 1px solid rgba(231, 40, 87, 0.3);
+}
+
+.nickname-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 </style>
