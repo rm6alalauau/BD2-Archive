@@ -651,11 +651,11 @@ export default {
     },
 
     selectNicknameFromDialog(nickname) {
-      this.nickname = nickname;
       this.nicknameDialog = false;
       
-      // 如果還未提交，自動提交
+      // 如果還未提交，設置暱稱並自動提交
       if (!this.isSubmitted) {
+        this.nickname = nickname;
         this.submitNickname();
       } else {
         // 如果已提交，切換到新暱稱
@@ -678,7 +678,12 @@ export default {
       this.couponCodes = [];
       this.loadCouponCodesFromStore();
       
-      console.log("切換到暱稱:", nickname);
+      // 重要：載入新暱稱的兌換狀態
+      this.$nextTick(() => {
+        this.loadClaimedStatus();
+      });
+      
+      console.log("切換到暱稱:", nickname, "- 重新載入兌換狀態");
     },
 
     // 設置響應式監聽器
@@ -878,7 +883,7 @@ export default {
           
           // 載入已兌換狀態
           this.loadClaimedStatus();
-          console.log("Coupon codes loaded successfully");
+          console.log("Coupon codes loaded successfully for nickname:", this.nickname);
           
           // 如果是重新載入成功，顯示簡短提示
           if (this.retrying) {
@@ -1083,21 +1088,24 @@ export default {
         // 獲取當前 API 中的所有兌換碼
         const currentCodes = this.couponCodes.map(coupon => coupon.code);
         
-        // 載入兌換狀態
+        // 載入兌換狀態並統計
+        let claimedCount = 0;
         this.couponCodes.forEach(coupon => {
           if (coupon && coupon.code) {
             coupon.claimed = claimedCodes.includes(coupon.code);
+            if (coupon.claimed) claimedCount++;
           }
         });
         
         // 清理已經不存在的兌換碼記錄（可選的優化）
         const validClaimedCodes = claimedCodes.filter(code => currentCodes.includes(code));
         if (validClaimedCodes.length !== claimedCodes.length) {
-          console.log(`Cleaning up obsolete claimed codes. Before: ${claimedCodes.length}, After: ${validClaimedCodes.length}`);
+          console.log(`Cleaning up obsolete claimed codes for ${this.nickname}. Before: ${claimedCodes.length}, After: ${validClaimedCodes.length}`);
           localStorage.setItem(`claimedCodes_${this.nickname}`, JSON.stringify(validClaimedCodes));
         }
         
-        console.log(`Loaded claimed status for ${this.nickname}:`, claimedCodes, "total:", claimedCodes.length, "codes");
+        console.log(`✅ 載入 ${this.nickname} 的兌換狀態完成: ${claimedCount}/${this.couponCodes.length} 已兌換`);
+        console.log(`📋 已兌換代碼:`, validClaimedCodes);
       } catch (error) {
         console.error("Error loading claimed status:", error);
         // 如果載入失敗，清除可能損壞的數據
