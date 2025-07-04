@@ -113,11 +113,19 @@ export default {
 
       currentPage: 1,
       canLoadMore: true,
+      lastFetchTime: null,
+      cachedPages: {},
     };
   },
   computed: {
     showR18Content() {
       return this.settingsStore.showR18Content
+    }
+  },
+  watch: {
+    // 監聽 R18 設定變化，清除緩存
+    showR18Content() {
+      this.clearCache();
     }
   },
   async mounted() {
@@ -191,6 +199,19 @@ export default {
     },
     
     async fetchPixivPage(page) {
+      const now = Date.now();
+      const cacheKey = `${page}_${this.showR18Content}`;
+      
+      // 檢查緩存是否有效（5分鐘內）
+      const cacheValid = this.lastFetchTime && 
+                        this.cachedPages[cacheKey] && 
+                        (now - this.lastFetchTime < 5 * 60 * 1000);
+      
+      if (cacheValid) {
+        // 使用緩存數據
+        return this.cachedPages[cacheKey];
+      }
+      
       try {
         const params = {
           word: "ブラウンダスト",
@@ -213,7 +234,7 @@ export default {
         // 根據設定決定是否顯示 R18 內容
         const maxSanityLevel = this.showR18Content ? 6 : 4;
         
-        return data.illusts
+        const processedData = data.illusts
           .filter(item => item && item.id && item.sanity_level <= maxSanityLevel)
           .map(item => ({
             // 這些是 template 需要的欄位
@@ -229,6 +250,12 @@ export default {
             // 這是篩選邏輯需要的欄位
             total_bookmarks: item.total_bookmarks,
           }));
+
+        // 更新緩存
+        this.cachedPages[cacheKey] = processedData;
+        this.lastFetchTime = now;
+        
+        return processedData;
 
       } catch (error) {
         console.error(`獲取第 ${page} 頁時出錯:`, error);
@@ -268,6 +295,13 @@ export default {
       // 圖片載入失敗時的處理
       // 可以設置一個錯誤佔位符或隱藏圖片
       event.target.style.display = 'none';
+    },
+    
+    clearCache() {
+      // 清除緩存並重新開始獲取過程
+      this.cachedPages = {};
+      this.lastFetchTime = null;
+      this.startFetchingProcess();
     },
   },
 };
