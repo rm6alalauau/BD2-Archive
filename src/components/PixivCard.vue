@@ -202,7 +202,7 @@ export default {
         const originalUrl = `https://api.obfs.dev/api/pixiv/search?${queryString}`;
         const url = this.$getApiUrl ? this.$getApiUrl(originalUrl) : originalUrl;
         
-        console.log("Fetching Pixiv data from:", url);
+        // 獲取 Pixiv 資料
         
         const response = await fetch(url);
         if (!response.ok) throw new Error(`API error: ${response.status}`);
@@ -266,7 +266,6 @@ export default {
     },
     handleImageError(event) {
       // 圖片載入失敗時的處理
-      console.warn('Image failed to load:', event.target.src);
       // 可以設置一個錯誤佔位符或隱藏圖片
       event.target.style.display = 'none';
     },

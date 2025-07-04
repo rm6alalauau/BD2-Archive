@@ -4,22 +4,22 @@
       <v-col cols="12" md="8" lg="6">
         <!-- 頁面標題 -->
         <div class="page-header mb-6">
-          <h1 class="page-title">設定</h1>
-          <p class="page-subtitle">自訂您的使用體驗</p>
+          <h1 class="page-title">{{ t('settings.title') }}</h1>
+                      <p class="page-subtitle">{{ t('settings.subtitle') }}</p>
         </div>
 
         <!-- 外觀設定 -->
         <v-card rounded="xl" class="settings-card mb-4">
           <v-card-title class="settings-section-title">
             <v-icon class="mr-3" color="primary">mdi-palette</v-icon>
-            外觀設定
+            {{ t('settings.display.title') }}
           </v-card-title>
           <v-card-text>
             <!-- 字體縮放 -->
             <div class="setting-item">
               <div class="setting-info">
-                <div class="setting-label">字體大小</div>
-                <div class="setting-description">調整介面字體的顯示大小</div>
+                <div class="setting-label">{{ t('settings.display.fontSize') }}</div>
+                <div class="setting-description">{{ t('settings.display.fontSizeDescription') }}</div>
               </div>
               <div class="font-scale-controls">
                 <v-btn
@@ -43,6 +43,8 @@
                 </v-btn>
               </div>
             </div>
+
+
           </v-card-text>
         </v-card>
 
@@ -50,14 +52,14 @@
         <v-card rounded="xl" class="settings-card mb-4">
           <v-card-title class="settings-section-title">
             <v-icon class="mr-3" color="primary">mdi-filter</v-icon>
-            內容設定
+            {{ t('settings.contentSettings.title') }}
           </v-card-title>
           <v-card-text>
             <!-- R18 內容顯示 -->
             <div class="setting-item">
               <div class="setting-info">
-                <div class="setting-label">Pixiv R18 內容</div>
-                <div class="setting-description">是否顯示成人內容（需滿 18 歲）</div>
+                <div class="setting-label">{{ t('settings.contentSettings.r18Content') }}</div>
+                <div class="setting-description">{{ t('settings.contentSettings.r18Description') }}</div>
               </div>
               <v-switch
                 v-model="showR18Content"
@@ -66,13 +68,75 @@
               ></v-switch>
             </div>
 
+            <!-- 贊助支持（開啟 R18 時顯示） -->
+            <div v-if="showR18Content" class="mt-4">
+              <v-divider class="mb-4"></v-divider>
+              
+              <!-- 感謝訊息（僅繁體中文顯示） -->
+              <v-alert
+                v-if="settingsStore.selectedLanguage === 'zh-Hant-TW'"
+                color="primary"
+                variant="tonal"
+                rounded="lg"
+                icon="mdi-hand-heart"
+                class="mb-4"
+              >
+                <div class="text-body-2">
+                  <strong>支持 The BD2 Pulse 持續運行</strong>
+                </div>
+                <div class="text-body-2 mt-2">
+                  大家好，我是本站的開發者。感謝大家的支持！網站上線第二天，Cloudflare 的用量就超出了免費額度，這份熱情真的超乎我的想像。
+                </div>
+                <div class="text-body-2 mt-2">
+                  為了讓大家能持續穩定地使用，我已經將服務升級到了付費方案。如果你覺得這個小工具對你有幫助，並有多餘的能力，歡迎通過下方的連結「請我喝杯咖啡」，任何一點支持都將成為我維護和優化網站的巨大動力！
+                </div>
+                <div class="text-body-2 mt-2">
+                  <strong>再次感謝每一位使用者。</strong>
+                </div>
+              </v-alert>
+
+              <!-- 贊助按鈕 -->
+              <div class="donate-buttons">
+                <v-row>
+                  <v-col cols="12" sm="6">
+                    <v-btn
+                      color="primary"
+                      variant="flat"
+                      size="large"
+                      rounded="lg"
+                      block
+                      @click="openKofi"
+                      class="donate-btn"
+                    >
+                      <v-icon class="mr-2">mdi-coffee</v-icon>
+                      {{ getKofiButtonText() }}
+                    </v-btn>
+                  </v-col>
+                  <v-col cols="12" sm="6">
+                    <v-btn
+                      color="secondary"
+                      variant="flat"
+                      size="large"
+                      rounded="lg"
+                      block
+                      @click="openGank"
+                      class="donate-btn"
+                    >
+                      <v-icon class="mr-2">mdi-gift</v-icon>
+                      {{ getGankButtonText() }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </div>
+            </div>
+
             <v-divider class="my-4"></v-divider>
 
             <!-- 論壇顯示設定 -->
             <div class="setting-item">
               <div class="setting-info">
-                <div class="setting-label">顯示論壇</div>
-                <div class="setting-description">選擇要顯示的論壇來源</div>
+                <div class="setting-label">{{ t('settings.forumSettings.title') }}</div>
+                <div class="setting-description">{{ t('settings.forumSettings.description') }}</div>
               </div>
             </div>
             
@@ -97,7 +161,7 @@
               class="mt-3"
               density="compact"
             >
-              至少需要選擇一個論壇來源
+              {{ t('settings.forumSettings.minRequired') }}
             </v-alert>
           </v-card-text>
         </v-card>
@@ -106,14 +170,14 @@
         <v-card rounded="xl" class="settings-card mb-4">
           <v-card-title class="settings-section-title">
             <v-icon class="mr-3" color="primary">mdi-database</v-icon>
-            資料管理
+            {{ t('settings.dataManagement.title') }}
           </v-card-title>
           <v-card-text>
             <!-- 清除使用者資料 -->
             <div class="setting-item">
               <div class="setting-info">
-                <div class="setting-label">清除使用者資料</div>
-                <div class="setting-description">清除已儲存的暱稱和兌換記錄</div>
+                <div class="setting-label">{{ t('settings.dataManagement.clearUserData') }}</div>
+                <div class="setting-description">{{ t('settings.dataManagement.clearDescription') }}</div>
               </div>
               <v-btn
                 @click="showClearDataDialog = true"
@@ -122,7 +186,7 @@
                 size="small"
               >
                 <v-icon class="mr-2">mdi-delete-sweep</v-icon>
-                清除資料
+                {{ t('settings.dataManagement.clearButton') }}
               </v-btn>
             </div>
           </v-card-text>
@@ -138,10 +202,10 @@
               size="large"
             >
               <v-icon class="mr-2">mdi-restore</v-icon>
-              還原預設值
+              {{ t('settings.dataManagement.resetButton') }}
             </v-btn>
             <div class="mt-2 text-caption text-medium-emphasis">
-              將所有設定恢復為預設狀態
+              {{ t('settings.dataManagement.resetHint') }}
             </div>
           </v-card-text>
         </v-card>
@@ -157,7 +221,7 @@
             class="home-btn"
           >
             <v-icon class="mr-2">mdi-home</v-icon>
-            返回首頁
+            {{ t('settings.actions.backToHome') }}
           </v-btn>
         </div>
       </v-col>
@@ -200,6 +264,7 @@
             <li>字體大小：100%</li>
             <li>R18 內容：關閉</li>
             <li>論壇顯示：全部開啟</li>
+            <li>語言：繁體中文（在導航欄切換）</li>
           </ul>
           <p class="mt-3 text-error">確定要重置所有設定嗎？</p>
         </v-card-text>
@@ -235,7 +300,7 @@
       :style="{ bottom: fabBottom + 'px' }"
     >
       <v-icon>mdi-home</v-icon>
-      <v-tooltip activator="parent" location="left">返回首頁</v-tooltip>
+      <v-tooltip activator="parent" location="left">{{ t('settings.actions.backToHome') }}</v-tooltip>
     </v-fab>
   </v-container>
 </template>
@@ -265,6 +330,11 @@ export default {
     };
   },
   computed: {
+    // 多語言文字
+    t() {
+      return (key, params) => this.$t(key, this.settingsStore.selectedLanguage, params);
+    },
+    
     // 使用 store 的狀態（移除主題相關）
     fontScale: {
       get() { return this.settingsStore.fontScale },
@@ -278,13 +348,14 @@ export default {
       get() { return this.settingsStore.selectedForums },
       set(value) { this.settingsStore.updateForumSelection(value) }
     },
+
     forumOptions() {
       return [
-        { label: '巴哈姆特', value: 'Bahamut' },
-        { label: 'NGA', value: 'NGAList' },
-        { label: 'PTT', value: 'PTTList' },
-        { label: 'X (Twitter)', value: 'XPosts' },
-        { label: 'Reddit', value: 'RedditPosts' },
+        { label: this.t('forums.bahamut'), value: 'Bahamut' },
+        { label: this.t('forums.nga'), value: 'NGAList' },
+        { label: this.t('forums.ptt'), value: 'PTTList' },
+        { label: this.t('forums.x'), value: 'XPosts' },
+        { label: this.t('forums.reddit'), value: 'RedditPosts' },
       ]
     }
   },
@@ -347,7 +418,7 @@ export default {
         keysToRemove.forEach(key => localStorage.removeItem(key));
         
         this.showClearDataDialog = false;
-        this.showSuccess('使用者資料已清除');
+        this.showSuccess(this.t('settings.success.cleared'));
       } catch (error) {
         console.error('清除資料時發生錯誤:', error);
       }
@@ -357,13 +428,47 @@ export default {
     resetToDefaults() {
       this.settingsStore.resetToDefaults();
       this.showResetDialog = false;
-      this.showSuccess('設定已重置為預設值');
+      this.showSuccess(this.t('settings.success.reset'));
     },
     
     // 顯示成功訊息
     showSuccess(message) {
       this.successMessage = message;
       this.showSuccessMessage = true;
+    },
+
+    // 贊助相關方法
+    openKofi() {
+      // 直接打開 Ko-fi 頁面
+      window.open('https://ko-fi.com/thebd2pulse', '_blank');
+    },
+
+    openGank() {
+      // 打開 Gank 贊助頁面
+      window.open('https://ganknow.com/thebd2pulse/tip', '_blank');
+    },
+
+    // 多語言按鈕文字
+    getKofiButtonText() {
+      const lang = this.settingsStore.selectedLanguage;
+      const texts = {
+        'zh-Hant-TW': 'Ko-fi 請喝咖啡',
+        'en': 'Buy me a coffee',
+        'ja-JP': 'コーヒーをおごる',
+        'ko-KR': '커피 한 잔 사주세요'
+      };
+      return texts[lang] || texts['zh-Hant-TW'];
+    },
+
+    getGankButtonText() {
+      const lang = this.settingsStore.selectedLanguage;
+      const texts = {
+        'zh-Hant-TW': 'Gank 小額贊助',
+        'en': 'Support via Gank',
+        'ja-JP': 'Gankで支援',
+        'ko-KR': 'Gank으로 후원'
+      };
+      return texts[lang] || texts['zh-Hant-TW'];
     },
   },
   
@@ -515,6 +620,28 @@ export default {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* 贊助按鈕樣式 */
+.donate-buttons {
+  margin-top: 16px;
+}
+
+.donate-btn {
+  height: 48px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.donate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.donate-btn :deep(.v-btn__content) {
+  font-size: 0.95rem;
+}
+
 /* 響應式設計 */
 @media (max-width: 768px) {
   .setting-item {
@@ -534,6 +661,14 @@ export default {
   
   .page-title {
     font-size: 1.75rem;
+  }
+  
+  .donate-buttons .v-col {
+    padding: 4px 8px;
+  }
+  
+  .donate-btn {
+    margin-bottom: 8px;
   }
   
   /* 手機版隱藏固定導航按鈕，使用浮動按鈕 */

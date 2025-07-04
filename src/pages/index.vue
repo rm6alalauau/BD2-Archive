@@ -41,7 +41,6 @@ export default {
         
         // 添加載入狀態檢查，避免重複請求
         if (appStore.loading) {
-          console.log("Data is already loading, skipping...");
           return;
         }
         
@@ -49,14 +48,11 @@ export default {
         if (appStore.hasData && appStore.lastUpdated) {
           const timeSinceUpdate = Date.now() - new Date(appStore.lastUpdated).getTime();
           if (timeSinceUpdate < 5 * 60 * 1000) { // 5分鐘內有更新過
-            console.log("Data is recent, skipping fetch");
             return;
           }
         }
         
-        console.log("Starting to fetch data...");
         await appStore.fetchAllData();
-        console.log("Data fetch completed successfully");
         
       } catch (error) {
         console.error("Failed to fetch data:", error);

@@ -49,6 +49,8 @@
                   {{ getTagText(newsItem.tag) }}
                 </div>
                 
+
+                
                 <!-- 標題 -->
                 <div class="news-title">
                   {{ newsItem.title }}
@@ -64,12 +66,14 @@
   <!-- 無資料狀態 -->
   <div v-else class="d-flex justify-center align-center" style="height: 300px;">
     <v-alert type="info" variant="tonal">
-      目前沒有新聞資料
+      {{ t('news.noData') }}
     </v-alert>
   </div>
 </template>
 
 <script>
+import { useSettingsStore } from '@/stores/settings'
+
 export default {
   data() {
     return {
@@ -77,7 +81,14 @@ export default {
       carouselKey: 0,
       loading: false,
       error: null,
+      settingsStore: useSettingsStore(),
     };
+  },
+  computed: {
+    // 多語言文字
+    t() {
+      return (key, params) => this.$t(key, this.settingsStore.selectedLanguage, params);
+    }
   },
   async mounted() {
     // 延遲載入新聞數據，避免阻塞頁面初始渲染
@@ -86,6 +97,12 @@ export default {
         this.fetchNewsData();
       }, 200); // 延遲200ms，讓主要內容先載入
     });
+  },
+  watch: {
+    // 監聽語言變化，重新獲取資料
+    'settingsStore.selectedLanguage'() {
+      this.fetchNewsData();
+    }
   },
   methods: {
     // 從 HTML 內容中提取第一個圖片 URL
@@ -133,18 +150,58 @@ export default {
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       
       if (diffDays === 1) {
-        return '昨天';
+        return this.getLocalizedDateText('yesterday');
       } else if (diffDays === 0) {
-        return '今天';
+        return this.getLocalizedDateText('today');
       } else if (diffDays < 7) {
-        return `${diffDays} 天前`;
+        return `${diffDays} ${this.getLocalizedDateText('days_ago')}`;
       } else {
-        return date.toLocaleDateString('zh-TW', {
+        return date.toLocaleDateString(this.getDateLocale(), {
           year: 'numeric',
           month: 'short',
           day: 'numeric'
         });
       }
+    },
+    
+    // 獲取本地化日期文字
+    getLocalizedDateText(key) {
+      const texts = {
+        'zh-Hant-TW': {
+          'yesterday': '昨天',
+          'today': '今天',
+          'days_ago': '天前'
+        },
+        'en': {
+          'yesterday': 'Yesterday',
+          'today': 'Today',
+          'days_ago': 'days ago'
+        },
+        'ja-JP': {
+          'yesterday': '昨日',
+          'today': '今日',
+          'days_ago': '日前'
+        },
+        'ko-KR': {
+          'yesterday': '어제',
+          'today': '오늘',
+          'days_ago': '일 전'
+        }
+      };
+      
+      const lang = this.settingsStore.selectedLanguage;
+      return texts[lang]?.[key] || texts['zh-Hant-TW'][key];
+    },
+    
+    // 根據選擇的語言返回對應的日期格式化地區設定
+    getDateLocale() {
+      const localeMap = {
+        'zh-Hant-TW': 'zh-TW',
+        'en': 'en-US',
+        'ja-JP': 'ja-JP',
+        'ko-KR': 'ko-KR'
+      };
+      return localeMap[this.settingsStore.selectedLanguage] || 'zh-TW';
     },
     
     // 獲取標籤顏色
@@ -162,20 +219,11 @@ export default {
     
     // 獲取標籤文字
     getTagText(tag) {
-      const tagTexts = {
-        'notice': '公告事項',
-        'maintenance': '維護',
-        'event': '活動',
-        'dev_note': '開發者筆記',
-        'package_deal': '禮包商品',
-        'issue': '遊戲已知問題'
-      };
-      return tagTexts[tag] || tag;
+      return this.t(`news.tags.${tag}`) || tag;
     },
     
     // 圖片載入錯誤處理
     handleImageError(event) {
-      console.warn('News image failed to load:', event.target.src);
       // 使用預設圖片
       event.target.src = this.getDefaultImageByTag('notice');
     },
@@ -187,12 +235,13 @@ export default {
       try {
         // 加上隨機參數避免快取
         const timestamp = Date.now();
+        const selectedLanguage = this.settingsStore.selectedLanguage;
         
-        // 使用代理過的網址，並且根據環境自動選擇
+        // 使用代理過的網址，不加語言參數（因為API不支持）
         const originalUrl = `https://bd2-official-proxy.zzz-archive-back-end.workers.dev/news?v=${timestamp}`;
         const apiUrl = this.$getApiUrl ? this.$getApiUrl(originalUrl) : originalUrl;
         
-        console.log("Fetching news from:", apiUrl);
+        // 移除開發用日誌
         
         const response = await fetch(apiUrl);
 
@@ -201,11 +250,37 @@ export default {
         }
 
         const data = await response.json();
-        console.log("API Response:", data);
 
-        // 處理資料：過濾、排序、取最新10筆
+        // 處理資料：根據語言篩選新聞
         const items = data.data || data || [];
-        const sorted = items
+        const filteredItems = [];
+
+        items.forEach(item => {
+          const attrs = item.attributes;
+          
+          // 如果當前項目就是所選語言，直接使用
+          if (attrs.locale === selectedLanguage) {
+            filteredItems.push({
+              id: item.id,
+              attributes: attrs
+            });
+          } 
+          // 如果當前項目不是所選語言，從 localizations 中找
+          else if (attrs.localizations?.data) {
+            const localized = attrs.localizations.data.find(loc => 
+              loc.attributes.locale === selectedLanguage
+            );
+            if (localized) {
+              filteredItems.push({
+                id: localized.id,
+                attributes: localized.attributes
+              });
+            }
+          }
+        });
+
+        // 過濾、排序、取最新10筆
+        const sorted = filteredItems
           .filter(item => item.attributes?.createdAt) // 過濾掉沒有時間的
           .sort((a, b) =>
             new Date(b.attributes.createdAt) - new Date(a.attributes.createdAt)
@@ -214,31 +289,43 @@ export default {
 
         // 轉換資料格式以適配輪播組件
         this.newsList = sorted.map((item) => {
-          const imageUrl = this.extractFirstImageUrl(item.attributes.NewContent, item.attributes?.tag || '');
-          const description = this.extractTextContent(item.attributes.NewContent);
+          const imageUrl = this.extractFirstImageUrl(item.attributes.content || item.attributes.NewContent, item.attributes?.tag || '');
+          const description = this.extractTextContent(item.attributes.content || item.attributes.NewContent);
           
           return {
             id: item.id,
-            title: item.attributes?.subject || '無標題',
-            link: `https://www.browndust2.com/zh-tw/news/view?id=${item.id}`,
+            title: item.attributes?.subject || this.t('common.notFound'),
+            link: `https://www.browndust2.com/${this.getWebsiteLocale()}/news/view?id=${item.id}`,
             imageUrl: imageUrl,
             createdAt: item.attributes?.createdAt,
             description: description,
             tag: item.attributes?.tag || '',
-            publishedAt: item.attributes?.publishedAt
+            publishedAt: item.attributes?.publishedAt,
+            locale: selectedLanguage,
           };
         });
 
-        console.log("Processed news list:", this.newsList);
+        // 資料處理完成
 
         // 强制重新渲染 v-carousel
         this.carouselKey += 1;
       } catch (error) {
         console.error("Error fetching news data:", error);
-        this.error = `載入新聞失敗: ${error.message}`;
+        this.error = `${this.t('news.loadFailed')}: ${error.message}`;
       } finally {
         this.loading = false;
       }
+    },
+
+    // 根據選擇的語言返回對應的官網地區路徑
+    getWebsiteLocale() {
+      const localeMap = {
+        'zh-Hant-TW': 'zh-tw',
+        'en': 'en',
+        'ja-JP': 'ja',
+        'ko-KR': 'ko'
+      };
+      return localeMap[this.settingsStore.selectedLanguage] || 'zh-tw';
     },
   },
 };
@@ -316,6 +403,8 @@ export default {
   letter-spacing: 0.5px;
   flex-shrink: 0; /* 防止標籤被壓縮 */
 }
+
+
 
 /* 新聞標題樣式 */
 .news-title {

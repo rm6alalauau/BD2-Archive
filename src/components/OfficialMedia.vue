@@ -4,7 +4,8 @@
     <div class="media-header">
       <div class="header-content">
         <v-icon color="#e72857" size="24">mdi-youtube</v-icon>
-        <span class="header-title">官方PV</span>
+        <span class="header-title">{{ t('media.title') }}</span>
+
       </div>
       <v-progress-circular
         v-if="isLoading"
@@ -21,7 +22,7 @@
       <!-- 錯誤狀態 -->
       <div v-if="error" class="error-state">
         <v-icon color="error" size="48" class="mb-2">mdi-alert-circle</v-icon>
-        <p class="error-title">無法載入媒體資料</p>
+        <p class="error-title">{{ t('media.loadFailed') }}</p>
         <p class="error-message">{{ error }}</p>
       </div>
       
@@ -57,23 +58,38 @@
       <!-- 空狀態 -->
       <div v-else-if="!isLoading" class="empty-state">
         <v-icon color="grey-lighten-1" size="48" class="mb-2">mdi-video-off</v-icon>
-        <p class="empty-message">近期沒有新的官方媒體</p>
+        <p class="empty-message">{{ t('media.noData') }}</p>
       </div>
     </div>
   </v-card>
 </template>
 
 <script>
+import { useSettingsStore } from '@/stores/settings'
+
 export default {
   data() {
     return {
       isLoading: false,
       error: null,
       recentMedia: [],
+      settingsStore: useSettingsStore(),
     };
+  },
+  computed: {
+    // 多語言文字
+    t() {
+      return (key, params) => this.$t(key, this.settingsStore.selectedLanguage, params);
+    }
   },
   async created() {
     await this.fetchMediaData();
+  },
+  watch: {
+    // 監聽語言變化，重新獲取資料
+    'settingsStore.selectedLanguage'() {
+      this.fetchMediaData();
+    }
   },
   methods: {
     // 開啟影片
@@ -87,7 +103,7 @@ export default {
     },
     
     /**
-     * 【URL 最終修正版】
+     * 獲取媒體資料（支持多語言）
      */
     async fetchMediaData() {
       this.isLoading = true;
@@ -97,12 +113,12 @@ export default {
         const originalUrl = 'https://bd2-official-proxy.zzz-archive-back-end.workers.dev/media';
         const proxyApiUrl = this.$getApiUrl ? this.$getApiUrl(originalUrl) : originalUrl;
         
-        console.log("Fetching media from:", proxyApiUrl);
+        // 獲取媒體資料
         
         const response = await fetch(proxyApiUrl);
         
         if (!response.ok) {
-          throw new Error(`代理伺服器回應錯誤: ${response.status}`);
+          throw new Error(`${this.t('common.error')}: ${response.status}`);
         }
         
         const data = await response.json();
@@ -112,62 +128,65 @@ export default {
         }
         
         if (!data || !Array.isArray(data.data)) {
-          throw new Error("API 回應格式不正確 (找不到 data 陣列)");
+          throw new Error(this.t('common.error'));
         }
         
-        const allTwMedia = data.data.flatMap(item => {
+        // 根據選擇的語言篩選媒體資料
+        const selectedLanguage = this.settingsStore.selectedLanguage;
+        const allMediaForLanguage = data.data.flatMap(item => {
           const mainAttrs = item.attributes;
-          const twLocalization = mainAttrs.localizations?.data.find(
-            loc => loc.attributes.locale === 'zh-Hant-TW'
+          
+          // 根據語言找到對應的本地化資料
+          const localization = mainAttrs.localizations?.data.find(
+            loc => loc.attributes.locale === selectedLanguage
           );
 
-          if (twLocalization) {
+          if (localization) {
             return {
-              mediaId: twLocalization.id,
-              title: twLocalization.attributes.caption,
-              videoId: twLocalization.attributes.video_id,
+              mediaId: localization.id,
+              title: localization.attributes.caption,
+              videoId: localization.attributes.video_id,
               thumbnail: mainAttrs.poster?.data?.attributes?.url || null,
               publishedAt: mainAttrs.publishedAt,
+              locale: selectedLanguage,
             };
           }
           return [];
         });
 
-        const uniqueTwMedia = [];
+        // 去重處理
+        const uniqueMedia = [];
         const seenIds = new Set();
-        for (const item of allTwMedia) {
+        for (const item of allMediaForLanguage) {
           if (!seenIds.has(item.mediaId)) {
-            uniqueTwMedia.push(item);
+            uniqueMedia.push(item);
             seenIds.add(item.mediaId);
           }
         }
         
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-        
-        this.recentMedia = uniqueTwMedia
-          //.filter(item => {
-          //  return item.thumbnail && new Date(item.publishedAt) >= thirtyDaysAgo;
-          //})
+        // 處理資料格式
+        this.recentMedia = uniqueMedia
           .map(item => {
-            // ===== 【關鍵修正】智能處理縮圖 URL =====
+            // 智能處理縮圖 URL
             let thumbnailUrl = item.thumbnail;
-            // 檢查返回的路徑是否已經是完整的 URL
             if (thumbnailUrl && !thumbnailUrl.startsWith('http')) {
-              // 如果不是，它就是一個相對路徑 (如 /uploads/...)，我們才幫它拼接主機名
               thumbnailUrl = `https://www.browndust2.com${thumbnailUrl}`;
             }
 
             return {
               ...item,
               url: `https://www.youtube.com/watch?v=${item.videoId}`,
-              // 直接使用我們處理好的 thumbnailUrl
               fullThumbnailUrl: thumbnailUrl, 
-              formattedDate: new Date(item.publishedAt).toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' })
+              formattedDate: new Date(item.publishedAt).toLocaleDateString(this.getDateLocale(), { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })
             };
-          });
+          })
+          .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
 
-        this.recentMedia.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+        // 媒體資料處理完成
 
       } catch (e) {
         this.error = e.message;
@@ -175,6 +194,17 @@ export default {
       } finally {
         this.isLoading = false;
       }
+    },
+
+    // 根據選擇的語言返回對應的日期格式化地區設定
+    getDateLocale() {
+      const localeMap = {
+        'zh-Hant-TW': 'zh-TW',
+        'en': 'en-US',
+        'ja-JP': 'ja-JP',
+        'ko-KR': 'ko-KR'
+      };
+      return localeMap[this.settingsStore.selectedLanguage] || 'zh-TW';
     }
   }
 };
@@ -213,6 +243,8 @@ export default {
   font-weight: 600;
   color: rgba(255, 255, 255, 0.9);
 }
+
+
 
 .header-loading {
   opacity: 0.8;
