@@ -16,7 +16,6 @@ const retryFetch = async (url, options = {}, maxRetries = 3, delayMs = 1000) => 
   
   for (let attempt = 1; attempt <= effectiveMaxRetries; attempt++) {
     try {
-      console.log(`API Request attempt ${attempt}/${effectiveMaxRetries} to:`, url);
       
       // 檢查是否為 Google Apps Script URL，使用不同的配置
       const isGoogleAppsScript = url.includes('script.google.com');
@@ -62,7 +61,6 @@ const retryFetch = async (url, options = {}, maxRetries = 3, delayMs = 1000) => 
       
       // 檢查回應狀態
       if (response.ok) {
-        console.log(`API Request successful on attempt ${attempt}`);
         return response;
       }
       
@@ -77,7 +75,6 @@ const retryFetch = async (url, options = {}, maxRetries = 3, delayMs = 1000) => 
       
     } catch (error) {
       lastError = error;
-      console.warn(`API Request attempt ${attempt} failed:`, error.message);
       
       // 如果是最後一次嘗試，拋出錯誤
       if (attempt === effectiveMaxRetries) {
@@ -93,13 +90,11 @@ const retryFetch = async (url, options = {}, maxRetries = 3, delayMs = 1000) => 
         error.message.includes('Load failed'); // 載入失敗
       
       if (!isRetryableError) {
-        console.log('Non-retryable error, giving up:', error.message);
         throw error;
       }
       
       // 指數退避：每次重試延遲時間加倍，iOS 使用更短的延遲
       const delay = effectiveDelay * Math.pow(2, attempt - 1);
-      console.log(`Waiting ${delay}ms before retry... (iOS device: ${isIOSDevice})`);
       await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
@@ -131,12 +126,9 @@ export const useAppStore = defineStore('app', {
   actions: {
     // 通用數據獲取方法，支持緩存和重試
     async fetchAllData() {
-      console.log('📱 Starting data fetch...');
-      
       // 檢測設備類型
       const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
                          (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-      console.log('📱 Device detection - iOS:', isIOSDevice);
       
       this.loading = true;
       this.error = null;
@@ -146,7 +138,6 @@ export const useAppStore = defineStore('app', {
       const cacheValid = this.lastFetchTime && (now - this.lastFetchTime < 5 * 60 * 1000);
       
       if (cacheValid && this.hasValidData()) {
-        console.log('📱 Using cached data (valid for', Math.round((5 * 60 * 1000 - (now - this.lastFetchTime)) / 1000), 'more seconds)');
         this.loading = false;
         return;
       }
@@ -154,16 +145,13 @@ export const useAppStore = defineStore('app', {
       try {
         // iOS 使用順序載入，避免併發請求問題
         if (isIOSDevice) {
-          console.log('📱 iOS detected - using sequential loading strategy');
           await this.fetchDataSequentially();
         } else {
-          console.log('📱 Non-iOS device - using parallel loading strategy');
           await this.fetchDataInParallel();
         }
         
         // 記錄成功的加載時間
         this.lastFetchTime = now;
-        console.log('📱 All data fetched successfully!');
         
       } catch (error) {
         console.error('📱 Error fetching data:', error);
@@ -185,14 +173,11 @@ export const useAppStore = defineStore('app', {
       
       for (const task of tasks) {
         try {
-          console.log(`📱 iOS Sequential: Loading ${task.name}...`);
           await task.fn();
-          console.log(`📱 iOS Sequential: ${task.name} loaded successfully`);
           
           // 在 iOS 上添加小延遲，避免請求過於密集
           await new Promise(resolve => setTimeout(resolve, 200));
         } catch (error) {
-          console.warn(`📱 iOS Sequential: Failed to load ${task.name}:`, error);
           // 不中斷整個流程，繼續載入其他數據
         }
       }
@@ -201,11 +186,11 @@ export const useAppStore = defineStore('app', {
     // 非 iOS 並行加載策略
     async fetchDataInParallel() {
       const tasks = [
-        this.fetchRedeemCodes().catch(e => console.warn('📱 Parallel: Redeem codes fetch failed:', e)),
-        this.fetchForumData().catch(e => console.warn('📱 Parallel: Forum data fetch failed:', e)),
-        this.fetchNews().catch(e => console.warn('📱 Parallel: News fetch failed:', e)),
-        this.fetchOfficialMedia().catch(e => console.warn('📱 Parallel: Official media fetch failed:', e)),
-        this.fetchPixivCards().catch(e => console.warn('📱 Parallel: Pixiv cards fetch failed:', e)),
+        this.fetchRedeemCodes().catch(e => {}),
+        this.fetchForumData().catch(e => {}),
+        this.fetchNews().catch(e => {}),
+        this.fetchOfficialMedia().catch(e => {}),
+        this.fetchPixivCards().catch(e => {}),
       ];
       
       // 等待所有任務完成，即使某些失敗也不會影響其他
@@ -214,7 +199,6 @@ export const useAppStore = defineStore('app', {
     
     // 手動重試API調用
     async retryFetchAllData() {
-      console.log("Manual retry requested by user");
       // 清除之前的錯誤狀態
       this.error = null;
       
@@ -229,43 +213,34 @@ export const useAppStore = defineStore('app', {
     
     // 獲取新聞數據
     async fetchNews() {
-      console.log('📰 Fetching news data...');
       // 這裡可以添加具體的新聞 API 調用
       // 暫時保持空實現，等待具體的 API 端點
     },
     
     // 獲取官方媒體數據
     async fetchOfficialMedia() {
-      console.log('📺 Fetching official media data...');
       // 這裡可以添加具體的官方媒體 API 調用
       // 暫時保持空實現，等待具體的 API 端點
     },
     
     // 獲取 Pixiv 卡片數據
     async fetchPixivCards() {
-      console.log('🎨 Fetching Pixiv cards data...');
       // 這裡可以添加具體的 Pixiv API 調用
       // 暫時保持空實現，等待具體的 API 端點
     },
     
     // 獲取兌換碼數據
     async fetchRedeemCodes() {
-      console.log('🎫 Fetching redeem codes...');
       try {
         // 檢查是否為開發環境並使用代理 URL
         const originalUrl = 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/redeem';
         const apiUrl = getApiUrl(originalUrl);
         
-        console.log("Fetching redeem codes from:", apiUrl);
-        
         const response = await retryFetch(apiUrl);
         const data = await response.json();
-        console.log("Redeem codes API Response:", data);
         
         // 更新兌換碼數據
         this.apiData.redeem = data || [];
-        
-        console.log("Redeem codes updated successfully");
         
       } catch (error) {
         console.error("Error fetching redeem codes:", error);
@@ -285,8 +260,6 @@ export const useAppStore = defineStore('app', {
 
     // 獲取論壇數據
     async fetchForumData() {
-      console.log('💬 Fetching forum data...');
-      
       // 定義所有論壇API端點
       const forumApis = [
         { name: 'baha', url: 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/baha', key: 'baha' },
@@ -299,18 +272,13 @@ export const useAppStore = defineStore('app', {
       const results = await Promise.allSettled(
         forumApis.map(async (forum) => {
           try {
-            console.log(`📱 Fetching ${forum.name} data...`);
             const apiUrl = getApiUrl(forum.url);
-            console.log(`${forum.name} API URL:`, apiUrl);
             
             const response = await retryFetch(apiUrl);
             const data = await response.json();
             
-            console.log(`${forum.name} API Response:`, data);
-            
             // 更新對應的數據
             this.apiData[forum.key] = data || [];
-            console.log(`${forum.name} data updated successfully`);
             
             return { forum: forum.name, success: true };
           } catch (error) {
@@ -327,15 +295,6 @@ export const useAppStore = defineStore('app', {
       // 檢查結果
       const successful = results.filter(r => r.status === 'fulfilled' && r.value.success).length;
       const failed = results.length - successful;
-      
-      console.log(`💬 Forum data fetch completed - Success: ${successful}, Failed: ${failed}`);
-      
-      if (failed > 0) {
-        const failedForums = results
-          .filter(r => r.status === 'fulfilled' && !r.value.success)
-          .map(r => r.value.forum);
-        console.warn('Failed forums:', failedForums);
-      }
       
       // 更新最後更新時間
       this.lastUpdated = new Date();

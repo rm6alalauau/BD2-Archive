@@ -12,6 +12,42 @@
 
       <!-- 桌面版操作按鈕組 -->
       <div class="nav-actions d-none d-sm-flex align-center">
+        <!-- 語言選擇器 -->
+        <v-menu
+          v-model="languageMenu"
+          :close-on-content-click="true"
+          location="bottom"
+          transition="slide-y-transition"
+        >
+          <template v-slot:activator="{ props }">
+            <v-btn
+              v-bind="props"
+              icon
+              class="mr-2"
+              size="large"
+            >
+              <v-icon>mdi-web</v-icon>
+              <v-tooltip activator="parent" location="bottom">
+                {{ t('nav.switchLanguage') }}
+              </v-tooltip>
+            </v-btn>
+          </template>
+          <v-list class="language-menu" density="compact">
+            <v-list-item
+              v-for="language in settingsStore.supportedLanguages"
+              :key="language.code"
+              @click="selectLanguage(language.code)"
+              :active="language.code === settingsStore.selectedLanguage"
+              class="language-menu-item"
+            >
+              <v-list-item-title>{{ language.name }}</v-list-item-title>
+              <template v-slot:append v-if="language.code === settingsStore.selectedLanguage">
+                <v-icon color="primary" size="18">mdi-check</v-icon>
+              </template>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+
         <!-- 設定按鈕 -->
         <v-btn
           icon
@@ -19,7 +55,7 @@
           @click="$router.push('/setting')"
         >
           <v-icon>mdi-cog</v-icon>
-          <v-tooltip activator="parent" location="bottom">設定</v-tooltip>
+          <v-tooltip activator="parent" location="bottom">{{ t('nav.settings') }}</v-tooltip>
         </v-btn>
 
         <!-- 意見回饋按鈕 -->
@@ -31,7 +67,7 @@
           size="large"
         >
           <v-icon size="20">mdi-comment-question-outline</v-icon>
-          <v-tooltip activator="parent" location="bottom">意見回饋</v-tooltip>
+          <v-tooltip activator="parent" location="bottom">{{ t('nav.feedback') }}</v-tooltip>
         </v-btn>
       </div>
 
@@ -61,7 +97,7 @@
             block
           >
             <v-icon size="20" class="mr-3">mdi-home</v-icon>
-            首頁
+            {{ t('nav.home') }}
           </v-btn>
           
           <v-btn
@@ -72,7 +108,7 @@
             block
           >
             <v-icon size="20" class="mr-3">mdi-cog</v-icon>
-            設定
+            {{ t('nav.settings') }}
           </v-btn>
           
           <v-btn
@@ -82,8 +118,37 @@
             block
           >
             <v-icon size="20" class="mr-3">mdi-comment-question-outline</v-icon>
-            意見回饋
+            {{ t('nav.feedback') }}
           </v-btn>
+
+          <!-- 手機版語言選擇 -->
+          <v-divider class="my-2 opacity-30"></v-divider>
+          <div class="mobile-language-section">
+            <div class="mobile-language-label">
+              <v-icon size="18" class="mr-2">mdi-web</v-icon>
+              {{ t('nav.languageSelection') }}
+            </div>
+            <div class="mobile-language-grid">
+              <v-btn
+                v-for="language in settingsStore.supportedLanguages"
+                :key="language.code"
+                @click="selectLanguage(language.code)"
+                :variant="language.code === settingsStore.selectedLanguage ? 'tonal' : 'text'"
+                :color="language.code === settingsStore.selectedLanguage ? 'primary' : 'default'"
+                class="mobile-language-btn"
+                size="small"
+              >
+                <span class="language-name">{{ language.name }}</span>
+                <v-icon 
+                  v-if="language.code === settingsStore.selectedLanguage" 
+                  size="16" 
+                  class="ml-1"
+                >
+                  mdi-check
+                </v-icon>
+              </v-btn>
+            </div>
+          </div>
         </div>
       </v-container>
     </div>
@@ -91,12 +156,22 @@
 </template>
 
 <script>
+import { useSettingsStore } from '@/stores/settings'
+
 export default {
   name: "Navigation",
   data() {
     return {
       mobileMenu: false,
+      languageMenu: false,
+      settingsStore: useSettingsStore(),
     };
+  },
+  computed: {
+    // 多語言文字
+    t() {
+      return (key, params) => this.$t(key, this.settingsStore.selectedLanguage, params);
+    }
   },
   methods: {
     goHome() {
@@ -120,14 +195,26 @@ export default {
       }
     },
     
+    selectLanguage(languageCode) {
+      this.settingsStore.updateLanguage(languageCode);
+      this.languageMenu = false;
+      this.mobileMenu = false;
+    },
+    
     toggleMobileMenu() {
       this.mobileMenu = !this.mobileMenu;
     }
   },
   mounted() {
-    // 路由變化時關閉手機選單
+    // 確保設定已載入
+    if (!this.settingsStore.isLoaded) {
+      this.settingsStore.loadSettings();
+    }
+    
+    // 路由變化時關閉選單
     this.$router.afterEach(() => {
       this.mobileMenu = false;
+      this.languageMenu = false;
     });
   },
 };
@@ -189,6 +276,34 @@ export default {
   transform: scale(0.95);
 }
 
+/* 語言選擇器 */
+.language-menu {
+  background: rgba(20, 20, 20, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  min-width: 160px;
+}
+
+.language-menu-item {
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.2s ease;
+  border-radius: 8px;
+  margin: 4px 8px;
+}
+
+.language-menu-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.language-menu-item.v-list-item--active {
+  background: rgba(231, 40, 87, 0.12);
+  color: #e72857;
+}
+
 /* 手機版下拉選單 */
 .mobile-nav {
   position: fixed;
@@ -229,6 +344,46 @@ export default {
   border: 1px solid rgba(231, 40, 87, 0.3);
 }
 
+/* 手機版語言選擇 */
+.mobile-language-section {
+  padding: 12px 16px;
+}
+
+.mobile-language-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.mobile-language-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.mobile-language-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  text-transform: none !important;
+  font-weight: 500;
+  min-height: 40px;
+}
+
+.mobile-language-btn .language-name {
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* Tooltip 樣式 */
 :deep(.v-tooltip .v-overlay__content) {
   background: rgba(0, 0, 0, 0.9);
@@ -243,6 +398,14 @@ export default {
 @media (max-width: 480px) {
   .nav-title-main {
     font-size: 1.2rem;
+  }
+  
+  .mobile-language-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .mobile-language-btn .language-name {
+    font-size: 0.9rem;
   }
 }
 

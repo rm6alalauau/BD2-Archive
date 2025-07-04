@@ -4,30 +4,30 @@
       <v-col cols="12" md="8" lg="6">
         <!-- 頁面標題 -->
         <div class="page-header mb-6">
-          <h1 class="page-title">意見回饋</h1>
-          <p class="page-subtitle">協助我們改善您的使用體驗</p>
+          <h1 class="page-title">{{ t('feedback.title') }}</h1>
+          <p class="page-subtitle">{{ t('feedback.description') }}</p>
         </div>
 
         <!-- 主要表單卡片 -->
         <v-card rounded="xl" class="feedback-card">
           <v-card-title class="feedback-card-title">
             <v-icon class="mr-3" color="primary" size="24">mdi-message-heart-outline</v-icon>
-            分享您的想法
+            {{ t('feedback.cardTitle') }}
           </v-card-title>
           
           <v-form ref="form" v-model="isFormValid" @submit.prevent="submitFeedback">
             <v-card-text class="pa-6">
               <p class="feedback-description mb-6">
-                感謝您花時間提供寶貴的意見。您的回饋將幫助我們持續改善網站功能與使用體驗。
+                {{ t('feedback.formDescription') }}
               </p>
 
               <!-- 問題類型選擇 -->
               <div class="form-section mb-6">
-                <div class="form-label mb-3">問題類型</div>
+                <div class="form-label mb-3">{{ t('feedback.form.issueType') }}</div>
                 <v-select
                   v-model="formData.issueType"
                   :items="issueTypes"
-                  placeholder="請選擇問題類型"
+                  :placeholder="t('feedback.form.issueTypePlaceholder')"
                   variant="outlined"
                   :rules="[rules.required]"
                   required
@@ -42,10 +42,10 @@
 
               <!-- 詳細描述 -->
               <div class="form-section mb-6">
-                <div class="form-label mb-3">詳細描述</div>
+                <div class="form-label mb-3">{{ t('feedback.form.description') }}</div>
                 <v-textarea
                   v-model="formData.description"
-                  placeholder="請描述您遇到的問題或您的建議"
+                  :placeholder="t('feedback.form.descriptionPlaceholder')"
                   variant="outlined"
                   rows="5"
                   counter="500"
@@ -62,10 +62,10 @@
               
               <!-- 回報者暱稱 -->
               <div class="form-section mb-4">
-                <div class="form-label mb-3">您的暱稱</div>
+                <div class="form-label mb-3">{{ t('feedback.form.nickname') }}</div>
                 <v-text-field
                   v-model="formData.reporter"
-                  placeholder="(選填)"
+                  :placeholder="t('feedback.form.nicknamePlaceholder')"
                   variant="outlined"
                   counter="30"
                   :rules="[rules.maxLength(30)]"
@@ -82,10 +82,10 @@
               <div class="system-info-card mb-4">
                 <div class="system-info-header">
                   <v-icon size="18" color="primary">mdi-information-outline</v-icon>
-                  <span class="system-info-title">系統資訊</span>
+                  <span class="system-info-title">{{ t('feedback.systemInfo.title') }}</span>
                 </div>
                 <div class="system-info-content">
-                  為了更好地協助您解決問題，我們將自動附加您的設備資訊
+                  {{ t('feedback.systemInfo.description') }}
                 </div>
               </div>
 
@@ -118,7 +118,7 @@
                 class="submit-btn"
               >
                 <v-icon class="mr-2">mdi-send</v-icon>
-                送出回饋
+                {{ t('feedback.form.submit') }}
               </v-btn>
             </v-card-actions>
           </v-form>
@@ -130,9 +130,9 @@
             <div class="info-content">
               <v-icon color="primary" size="20" class="mr-3">mdi-shield-check</v-icon>
               <div class="info-text">
-                <div class="info-title">隱私保護</div>
+                <div class="info-title">{{ t('feedback.privacy.title') }}</div>
                 <div class="info-description">
-                  您提供的所有資訊僅用於問題排查與功能優化，我們承諾保護您的隱私。
+                  {{ t('feedback.privacy.description') }}
                 </div>
               </div>
             </div>
@@ -144,6 +144,8 @@
 </template>
 
 <script>
+import { useSettingsStore } from '@/stores/settings'
+
 export default {
   name: "FeedbackPage",
   data() {
@@ -157,14 +159,6 @@ export default {
         description: '',
         reporter: '',
       },
-      
-      // 問題類型選項
-      issueTypes: [
-        { title: '閃退或 Bug', value: '閃退或 Bug' },
-        { title: '文本、內容錯誤', value: '文本、內容錯誤' },
-        { title: '建議', value: '建議' },
-        { title: '其他', value: '其他' }
-      ],
 
       // 自動獲取的系統資訊
       systemInfo: {
@@ -181,10 +175,32 @@ export default {
       
       // Vuetify 的驗證規則
       rules: {
-        required: value => !!value || '此為必填欄位',
-        maxLength: (limit) => value => (value || '').length <= limit || `長度不能超過 ${limit} 個字`,
+        required: value => !!value || this.t('feedback.validation.required'),
+        maxLength: (limit) => value => (value || '').length <= limit || this.t('feedback.validation.maxLength', { limit }),
       }
     };
+  },
+  
+  computed: {
+    // 設定 Store
+    settingsStore() {
+      return useSettingsStore();
+    },
+    
+    // 多語言文字
+    t() {
+      return (key, params) => this.$t(key, this.settingsStore.selectedLanguage, params);
+    },
+    
+    // 問題類型選項
+    issueTypes() {
+      return [
+        { title: this.t('feedback.issueTypes.bug'), value: this.t('feedback.issueTypes.bug') },
+        { title: this.t('feedback.issueTypes.content'), value: this.t('feedback.issueTypes.content') },
+        { title: this.t('feedback.issueTypes.suggestion'), value: this.t('feedback.issueTypes.suggestion') },
+        { title: this.t('feedback.issueTypes.other'), value: this.t('feedback.issueTypes.other') }
+      ];
+    }
   },
   
   mounted() {
@@ -229,7 +245,7 @@ export default {
       // 觸發 Vuetify 的驗證
       const { valid } = await this.$refs.form.validate();
       if (!valid) {
-        this.submitStatus = { type: 'error', message: '請修正表單中的錯誤後再次提交。' };
+        this.submitStatus = { type: 'error', message: this.t('feedback.errors.validation') };
         return;
       }
       
@@ -261,7 +277,7 @@ export default {
         // 顯示成功訊息
         this.submitStatus = { 
           type: 'success', 
-          message: '感謝您的寶貴回饋！我們已成功收到您的意見，將會仔細評估並持續改善。' 
+          message: this.t('feedback.success') 
         };
         
         // 重置表單
@@ -271,7 +287,7 @@ export default {
         console.error("回饋發送失敗:", error);
         this.submitStatus = { 
           type: 'error', 
-          message: '發送時發生未知錯誤，請稍後再試。如問題持續發生，請直接聯繫我們。' 
+          message: this.t('feedback.error') 
         };
       } finally {
         this.isSubmitting = false;

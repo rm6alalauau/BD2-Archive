@@ -8,6 +8,8 @@
 import vuetify from './vuetify'
 import pinia from '@/stores'
 import router from '@/router'
+import { createApp } from 'vue'
+import { t } from '@/locales'
 
 // API URL 工具函數
 export const getApiUrl = (endpoint) => {
@@ -78,7 +80,7 @@ export const iosFetch = async (url, config = {}) => {
   // 創建 AbortController 用於超時控制
   const controller = new AbortController();
   const timeoutId = setTimeout(() => {
-    console.log(`iOS fetch timeout after ${timeout}ms for:`, url);
+    
     controller.abort();
   }, timeout);
   
@@ -100,7 +102,7 @@ export const iosFetch = async (url, config = {}) => {
     
     throw error;
   }
-};
+  };
 
 // 全局註冊工具函數
 export function registerGlobalUtils(app) {
@@ -108,13 +110,36 @@ export function registerGlobalUtils(app) {
   app.config.globalProperties.$isIOS = isIOS;
   app.config.globalProperties.$iosFetch = iosFetch;
   
+  // 註冊多語言函數
+  app.config.globalProperties.$t = t;
+  
   // 也可以通過 provide/inject 提供
   app.provide('getApiUrl', getApiUrl);
   app.provide('isIOS', isIOS);
   app.provide('iosFetch', iosFetch);
+  app.provide('t', t);
 }
 
-export function registerPlugins (app) {
+// 日誌控制工具
+const isDev = import.meta.env.DEV || import.meta.env.MODE === 'development'
+
+export const logger = {
+  log: (...args) => {
+    if (isDev) console.log(...args)
+  },
+  warn: (...args) => {
+    if (isDev) console.warn(...args)
+  },
+  error: (...args) => {
+    // 錯誤信息始終顯示
+    console.error(...args)
+  },
+  info: (...args) => {
+    if (isDev) console.info(...args)
+  }
+}
+
+export function registerPlugins(app) {
   app
     .use(vuetify)
     .use(router)
@@ -122,4 +147,7 @@ export function registerPlugins (app) {
   
   // 註冊全局工具函數
   registerGlobalUtils(app);
+  
+  // 將 logger 添加到全局屬性
+  app.config.globalProperties.$logger = logger
 }
