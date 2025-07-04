@@ -74,6 +74,8 @@ export default {
       error: null,
       recentMedia: [],
       settingsStore: useSettingsStore(),
+      lastFetchTime: null,
+      cachedData: {},
     };
   },
   computed: {
@@ -106,6 +108,21 @@ export default {
      * 獲取媒體資料（支持多語言）
      */
     async fetchMediaData() {
+      const selectedLanguage = this.settingsStore.selectedLanguage;
+      const now = Date.now();
+      const cacheKey = selectedLanguage;
+      
+      // 檢查緩存是否有效（5分鐘內）
+      const cacheValid = this.lastFetchTime && 
+                        this.cachedData[cacheKey] && 
+                        (now - this.lastFetchTime < 5 * 60 * 1000);
+      
+      if (cacheValid) {
+        // 使用緩存數據
+        this.recentMedia = this.cachedData[cacheKey];
+        return;
+      }
+      
       this.isLoading = true;
       this.error = null;
       try {
@@ -132,7 +149,6 @@ export default {
         }
         
         // 根據選擇的語言篩選媒體資料
-        const selectedLanguage = this.settingsStore.selectedLanguage;
         const allMediaForLanguage = data.data.flatMap(item => {
           const mainAttrs = item.attributes;
           
@@ -165,7 +181,7 @@ export default {
         }
         
         // 處理資料格式
-        this.recentMedia = uniqueMedia
+        const processedMedia = uniqueMedia
           .map(item => {
             // 智能處理縮圖 URL
             let thumbnailUrl = item.thumbnail;
@@ -186,7 +202,10 @@ export default {
           })
           .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
 
-        // 媒體資料處理完成
+        // 更新資料和緩存
+        this.recentMedia = processedMedia;
+        this.cachedData[cacheKey] = processedMedia;
+        this.lastFetchTime = now;
 
       } catch (e) {
         this.error = e.message;

@@ -82,6 +82,8 @@ export default {
       loading: false,
       error: null,
       settingsStore: useSettingsStore(),
+      lastFetchTime: null,
+      cachedData: {},
     };
   },
   computed: {
@@ -229,13 +231,28 @@ export default {
     },
     
     async fetchNewsData() {
+      const selectedLanguage = this.settingsStore.selectedLanguage;
+      const now = Date.now();
+      const cacheKey = selectedLanguage;
+      
+      // 檢查緩存是否有效（5分鐘內）
+      const cacheValid = this.lastFetchTime && 
+                        this.cachedData[cacheKey] && 
+                        (now - this.lastFetchTime < 5 * 60 * 1000);
+      
+      if (cacheValid) {
+        // 使用緩存數據
+        this.newsList = this.cachedData[cacheKey];
+        this.carouselKey += 1;
+        return;
+      }
+      
       this.loading = true;
       this.error = null;
       
       try {
         // 加上隨機參數避免快取
         const timestamp = Date.now();
-        const selectedLanguage = this.settingsStore.selectedLanguage;
         
         // 根據語言選擇對應的API endpoint
         const languageEndpoint = this.getApiEndpoint(selectedLanguage);
@@ -262,7 +279,7 @@ export default {
           .slice(0, 10); // 最新的10筆
 
         // 轉換資料格式以適配輪播組件
-        this.newsList = sorted.map((item) => {
+        const processedNews = sorted.map((item) => {
           const imageUrl = this.extractFirstImageUrl(item.attributes.content || item.attributes.NewContent, item.attributes?.tag || '');
           const description = this.extractTextContent(item.attributes.content || item.attributes.NewContent);
           
@@ -279,7 +296,10 @@ export default {
           };
         });
 
-        // 資料處理完成
+        // 更新資料和緩存
+        this.newsList = processedNews;
+        this.cachedData[cacheKey] = processedNews;
+        this.lastFetchTime = now;
 
         // 强制重新渲染 v-carousel
         this.carouselKey += 1;
