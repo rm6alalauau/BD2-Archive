@@ -321,9 +321,9 @@ export default {
     getWebsiteLocale() {
       const localeMap = {
         'zh-Hant-TW': 'zh-tw',
-        'en': 'en',
-        'ja-JP': 'ja',
-        'ko-KR': 'ko'
+        'en': 'en-us',
+        'ja-JP': 'ja-jp',
+        'ko-KR': 'ko-kr'
       };
       return localeMap[this.settingsStore.selectedLanguage] || 'zh-tw';
     },
