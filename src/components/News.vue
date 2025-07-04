@@ -237,11 +237,10 @@ export default {
         const timestamp = Date.now();
         const selectedLanguage = this.settingsStore.selectedLanguage;
         
-        // 使用代理過的網址，不加語言參數（因為API不支持）
-        const originalUrl = `https://bd2-official-proxy.zzz-archive-back-end.workers.dev/news?v=${timestamp}`;
+        // 根據語言選擇對應的API endpoint
+        const languageEndpoint = this.getApiEndpoint(selectedLanguage);
+        const originalUrl = `https://bd2-official-proxy.zzz-archive-back-end.workers.dev/news/${languageEndpoint}?v=${timestamp}`;
         const apiUrl = this.$getApiUrl ? this.$getApiUrl(originalUrl) : originalUrl;
-        
-        // 移除開發用日誌
         
         const response = await fetch(apiUrl);
 
@@ -251,36 +250,11 @@ export default {
 
         const data = await response.json();
 
-        // 處理資料：根據語言篩選新聞
+        // 處理資料：直接使用返回的資料（已經是對應語言）
         const items = data.data || data || [];
-        const filteredItems = [];
-
-        items.forEach(item => {
-          const attrs = item.attributes;
-          
-          // 如果當前項目就是所選語言，直接使用
-          if (attrs.locale === selectedLanguage) {
-            filteredItems.push({
-              id: item.id,
-              attributes: attrs
-            });
-          } 
-          // 如果當前項目不是所選語言，從 localizations 中找
-          else if (attrs.localizations?.data) {
-            const localized = attrs.localizations.data.find(loc => 
-              loc.attributes.locale === selectedLanguage
-            );
-            if (localized) {
-              filteredItems.push({
-                id: localized.id,
-                attributes: localized.attributes
-              });
-            }
-          }
-        });
 
         // 過濾、排序、取最新10筆
-        const sorted = filteredItems
+        const sorted = items
           .filter(item => item.attributes?.createdAt) // 過濾掉沒有時間的
           .sort((a, b) =>
             new Date(b.attributes.createdAt) - new Date(a.attributes.createdAt)
@@ -326,6 +300,17 @@ export default {
         'ko-KR': 'ko-kr'
       };
       return localeMap[this.settingsStore.selectedLanguage] || 'zh-tw';
+    },
+
+    // 根據選擇的語言返回對應的API endpoint
+    getApiEndpoint(language) {
+      const endpointMap = {
+        'zh-Hant-TW': 'tw',
+        'en': 'en',
+        'ja-JP': 'jp',
+        'ko-KR': 'kr'
+      };
+      return endpointMap[language] || 'tw';
     },
   },
 };
