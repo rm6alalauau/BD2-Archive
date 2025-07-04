@@ -392,5 +392,39 @@ export default {
     pasted: 'Pasted',
     uploaded: 'Uploaded',
     downloaded: 'Downloaded'
+  },
+  
+  // Disclaimer
+  disclaimer: {
+    title: 'Disclaimer & Copyright Information',
+    nav: 'Disclaimer & Copyright Information',
+    short: 'This is an unofficial fan site with no affiliation to Brown Dust 2',
+    content: {
+      title: 'Disclaimer & Copyright Information',
+      section1: {
+        title: 'Website Position & Independence',
+        content: 'This website (The BD2 Pulse) is a fan-created unofficial information site created by players, aiming to provide convenient information aggregation services for the Brown Dust 2 community. This site has no affiliation with game developer NEOWIZ or the Brown Dust 2 operations team, nor has it received any form of endorsement or approval from them.'
+      },
+      section2: {
+        title: 'Intellectual Property Rights',
+        content: 'All trademarks, characters, images, text, audio-visual content, and other intellectual property rights related to Brown Dust 2 referenced on this website belong to their original rights holders (NEOWIZ). Our use of these contents follows the official "Secondary Creation Guidelines" and fair use principles, solely for community players\' reference, discussion, and exchange purposes.'
+      },
+      section3: {
+        title: 'Content Accuracy',
+        content: 'This site strives to provide accurate and timely information, but cannot guarantee the absolute accuracy and timeliness of all content (including but not limited to coupon code status, community articles, etc.). For all game-related official information, please refer to the official Brown Dust 2 website or in-game announcements as the final authority.'
+      },
+      section4: {
+        title: 'Third-Party Content & Links',
+        content: 'This website aggregates content from third-party platforms such as Pixiv, X (Twitter), and Bahamut. The copyright of these contents belongs to their original creators. This site only provides previews and links for convenient browsing and is not responsible for the accuracy or legality of their content. Any consequences arising from visiting these third-party links are borne by the users themselves.'
+      },
+      section5: {
+        title: 'Non-Profit Statement & Sponsorship',
+        content: 'This site is currently non-profit in nature. All potential sponsorship funds received will be used entirely to pay for server, domain name, and other website infrastructure maintenance costs to support the continuous operation of this site.'
+      },
+      section6: {
+        title: 'Copyright Issue Contact',
+        content: 'We respect the rights of all copyright holders. If you believe that any content on this site infringes upon your legitimate rights, please contact me through feedback. Upon receiving notification, we will immediately review and remove the relevant content.'
+      }
+    }
   }
 } 
