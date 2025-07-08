@@ -26,9 +26,6 @@ export const getApiUrl = (endpoint) => {
     if (endpoint.includes('bd2redeem.zzz-archive-back-end.workers.dev')) {
       return endpoint.replace('https://bd2redeem.zzz-archive-back-end.workers.dev', '/api/redeem');
     }
-    if (endpoint.includes('api.obfs.dev')) {
-      return endpoint.replace('https://api.obfs.dev', '/api/pixiv');
-    }
   }
   
   // 生產環境直接使用原始 URL
@@ -102,7 +99,7 @@ export const iosFetch = async (url, config = {}) => {
     
     throw error;
   }
-  };
+};
 
 // 全局註冊工具函數
 export function registerGlobalUtils(app) {

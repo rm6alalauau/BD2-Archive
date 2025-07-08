@@ -111,7 +111,8 @@ export const useAppStore = defineStore('app', {
       nga: [],
       ptt: [],
       x: [],
-      reddit: []
+      reddit: [],
+      pixiv: []
     },
     // 載入狀態
     loading: false,
@@ -225,8 +226,25 @@ export const useAppStore = defineStore('app', {
     
     // 獲取 Pixiv 卡片數據
     async fetchPixivCards() {
-      // 這裡可以添加具體的 Pixiv API 調用
-      // 暫時保持空實現，等待具體的 API 端點
+      try {
+        // 使用自己的 API 端點，就像論壇和兌換碼一樣
+        const originalUrl = 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/pixiv';
+        const apiUrl = getApiUrl(originalUrl);
+        
+        const response = await retryFetch(apiUrl);
+        const data = await response.json();
+        
+        // 更新 Pixiv 數據
+        this.apiData.pixiv = data || [];
+        
+      } catch (error) {
+        console.error("Error fetching pixiv data:", error);
+        
+        // 設置空數組，避免UI錯誤
+        this.apiData.pixiv = [];
+        
+        throw error; // 重新拋出錯誤，讓上層處理
+      }
     },
     
     // 獲取兌換碼數據

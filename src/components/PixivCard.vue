@@ -90,8 +90,7 @@
 <script>
 import { useSettingsStore } from '@/stores/settings'
 
-const MIN_ITEMS_THRESHOLD = 30;
-const MAX_PAGES_TO_FETCH = 10;
+
 
 export default {
   name: "PixivCard",
@@ -111,7 +110,6 @@ export default {
         { title: "♡ 1000+", value: { min: 1000, max: Infinity } },
       ],
 
-      currentPage: 1,
       canLoadMore: true,
       lastFetchTime: null,
       cachedPages: {},
@@ -139,7 +137,6 @@ export default {
     async startFetchingProcess() {
       this.allIllusts = [];
       this.list = [];
-      this.currentPage = 1;
       this.canLoadMore = true;
       await this.fetchMoreDataIfNeeded();
     },
@@ -158,49 +155,27 @@ export default {
     async fetchMoreDataIfNeeded() {
       if (this.isLoading) return;
 
-      // 避免阻塞性的while循環，改為單次檢查和遞歸調用
-      if (this.list.length < MIN_ITEMS_THRESHOLD && this.canLoadMore) {
-        if (this.currentPage > MAX_PAGES_TO_FETCH) {
+      this.isLoading = true;
+      try {
+        const newIllusts = await this.fetchPixivPage();
+        
+        if (newIllusts && newIllusts.length > 0) {
+          this.allIllusts = newIllusts; // 直接替換所有數據
+          this.applyFilter();
+        } else {
           this.canLoadMore = false;
-          return;
         }
-
-        this.isLoading = true;
-        try {
-          const newIllusts = await this.fetchPixivPage(this.currentPage);
-          
-          if (newIllusts && newIllusts.length > 0) {
-            const existingIds = new Set(this.allIllusts.map(i => i.id));
-            const uniqueNewIllusts = newIllusts.filter(i => !existingIds.has(i.id));
-            
-            this.allIllusts.push(...uniqueNewIllusts);
-            this.applyFilter();
-            this.currentPage++;
-            
-            // 使用 nextTick 確保DOM更新後再繼續
-            this.$nextTick(() => {
-              // 如果還需要更多數據，延遲執行避免阻塞
-              if (this.list.length < MIN_ITEMS_THRESHOLD && this.canLoadMore) {
-                setTimeout(() => {
-                  this.fetchMoreDataIfNeeded();
-                }, 100); // 100ms延遲，讓出線程控制權
-              }
-            });
-          } else {
-            this.canLoadMore = false;
-          }
-        } catch (error) {
-          console.error('Error fetching data:', error);
-          this.canLoadMore = false;
-        } finally {
-          this.isLoading = false;
-        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        this.canLoadMore = false;
+      } finally {
+        this.isLoading = false;
       }
     },
     
-    async fetchPixivPage(page) {
+    async fetchPixivPage() {
       const now = Date.now();
-      const cacheKey = `${page}_${this.showR18Content}`;
+      const cacheKey = `pixiv_${this.showR18Content}`;
       
       // 檢查緩存是否有效（5分鐘內）
       const cacheValid = this.lastFetchTime && 
@@ -213,33 +188,26 @@ export default {
       }
       
       try {
-        const params = {
-          word: "ブラウンダスト",
-          mode: "partial_match_for_tags",
-          order: "popular_desc",
-          page: page,
-        };
-        const queryString = new URLSearchParams(params).toString();
-        const originalUrl = `https://api.obfs.dev/api/pixiv/search?${queryString}`;
+        // 使用自己的 API 端點，就像論壇和兌換碼一樣
+        const originalUrl = 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/pixiv';
         const url = this.$getApiUrl ? this.$getApiUrl(originalUrl) : originalUrl;
         
         // 獲取 Pixiv 資料
-        
         const response = await fetch(url);
         if (!response.ok) throw new Error(`API error: ${response.status}`);
         const data = await response.json();
-        if (!data?.illusts?.length) return null;
+        if (!data || !Array.isArray(data) || data.length === 0) return null;
 
-        // 關鍵修正：確保返回的物件結構與 template 期望的一致
         // 根據設定決定是否顯示 R18 內容
         const maxSanityLevel = this.showR18Content ? 6 : 4;
         
-        const processedData = data.illusts
+        // 處理新的 API 格式
+        const processedData = data
           .filter(item => item && item.id && item.sanity_level <= maxSanityLevel)
           .map(item => ({
             // 這些是 template 需要的欄位
             id: item.id,
-            userId: item.user.id, // 恢復 userId 欄位
+            userId: item.user.id,
             imageUrl: `https://bd2pixiv.zzz-archive-back-end.workers.dev/${item.image_urls.square_medium.replace("https://i.pximg.net/", "")}`,
             title: item.title,
             authorName: item.user.name,
@@ -258,7 +226,7 @@ export default {
         return processedData;
 
       } catch (error) {
-        console.error(`獲取第 ${page} 頁時出錯:`, error);
+        console.error(`獲取 Pixiv 數據時出錯:`, error);
         this.canLoadMore = false;
         return null;
       }
