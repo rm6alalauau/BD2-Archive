@@ -14,7 +14,8 @@ export default {
     title: 'Coupon Codes',
     nickname: 'Game Nickname',
     nicknameRequired: 'Please enter nickname',
-    nicknamePlaceholder: 'Enter your game nickname',
+    nicknamePlaceholder: 'Game Nickname',
+    nicknameInputPlaceholder: 'Enter your game nickname',
     queryButton: 'Query Coupon Codes',
     loadingTitle: 'Loading coupon codes...',
     retryLoadingTitle: 'Reloading coupon codes...',
@@ -23,9 +24,9 @@ export default {
     
     // User profile
     userProfile: {
-      clickAvatarToChange: 'Click avatar to change',
+      clickAvatarToChange: 'Click avatar to change • Click nickname to switch',
       clickNicknameToSwitch: 'Click nickname to switch',
-      switchNickname: 'Switch Nickname',
+      switchNickname: 'Switch',
       reenterNickname: 'Re-enter Nickname',
       selectAvatar: 'Select Avatar',
       confirmSelection: 'Confirm Selection'
@@ -49,12 +50,13 @@ export default {
       retryingData: 'Retrying to get latest data'
     },
     
-    // Coupon status
-    couponStatus: {
-      available: 'Currently Available',
+    // Status
+    status: {
       limited: 'Limited Time Available',
+      available: 'Currently Available',
       permanent: 'Permanent',
-      expired: 'Expired'
+      expired: 'Expired',
+      unknown: 'Unknown'
     },
     
     // Action buttons
@@ -93,14 +95,15 @@ export default {
     // Nickname management
     nickname: {
       saved: 'Saved Nicknames',
-      switch: 'Switch Nickname',
+      switch: 'Select Nickname',
       delete: 'Delete Nickname',
-      current: 'Currently in use',
+      current: 'In Use',
       using: 'In use',
       switchTo: 'Switch',
       noSaved: 'No saved nicknames',
       autoSaveHint: 'Nicknames will be saved automatically for quick selection next time',
-      confirmDelete: 'Confirm delete this nickname?'
+      confirmDelete: 'Confirm delete this nickname?',
+      deleteTitle: 'Delete this nickname'
     },
     
     // Help text

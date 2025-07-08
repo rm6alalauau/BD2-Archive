@@ -12,10 +12,10 @@ const messages = {
   'ko-KR': koKR
 }
 
-// 獲取文字的函數
-export function t(key, lang = 'zh-Hant-TW', params = {}) {
+// 獲取翻譯函數
+export function getTranslation(key, language = 'zh-Hant-TW', params = {}) {
   const keys = key.split('.')
-  let value = messages[lang]
+  let value = messages[language]
   
   // 遞歸查找嵌套的 key
   for (const k of keys) {
@@ -23,9 +23,10 @@ export function t(key, lang = 'zh-Hant-TW', params = {}) {
       value = value[k]
     } else {
       // 如果找不到對應語言的文字，fallback 到繁體中文
-      if (lang !== 'zh-Hant-TW') {
-        return t(key, 'zh-Hant-TW', params)
+      if (language !== 'zh-Hant-TW') {
+        return getTranslation(key, 'zh-Hant-TW', params)
       }
+      console.warn(`Translation key "${key}" not found for language "${language}"`)
       return key // 如果連繁體中文都找不到，返回 key 本身
     }
   }
@@ -40,6 +41,13 @@ export function t(key, lang = 'zh-Hant-TW', params = {}) {
   return value
 }
 
-// 導出語言資源
-export { messages }
-export default { t, messages } 
+// 舊版相容性
+export function t(key, lang = 'zh-Hant-TW', params = {}) {
+  return getTranslation(key, lang, params)
+}
+
+export default {
+  messages,
+  getTranslation,
+  t
+} 

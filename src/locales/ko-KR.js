@@ -14,7 +14,8 @@ export default {
     title: '쿠폰 코드',
     nickname: '게임 닉네임',
     nicknameRequired: '닉네임을 입력해 주세요',
-    nicknamePlaceholder: '게임 닉네임을 입력하세요',
+    nicknamePlaceholder: '게임 닉네임',
+    nicknameInputPlaceholder: '게임 닉네임을 입력하세요',
     queryButton: '쿠폰 코드 조회',
     loadingTitle: '쿠폰 코드 로딩 중...',
     retryLoadingTitle: '쿠폰 코드 재로딩 중...',
@@ -23,9 +24,9 @@ export default {
     
     // User profile
     userProfile: {
-      clickAvatarToChange: '아바타를 클릭하여 변경',
+      clickAvatarToChange: '아바타를 클릭하여 변경 • 닉네임을 클릭하여 전환',
       clickNicknameToSwitch: '닉네임을 클릭하여 전환',
-      switchNickname: '닉네임 전환',
+      switchNickname: '전환',
       reenterNickname: '닉네임 다시 입력',
       selectAvatar: '아바타 선택',
       confirmSelection: '선택 확인'
@@ -49,12 +50,13 @@ export default {
       retryingData: '최신 데이터 재획득 중'
     },
     
-    // Coupon status
-    couponStatus: {
-      available: '현재 사용 가능',
+    // Status
+    status: {
       limited: '기간 한정',
+      available: '현재 사용 가능',
       permanent: '영구',
-      expired: '기간 만료'
+      expired: '기간 만료',
+      unknown: '알 수 없음'
     },
     
     // Action buttons
@@ -93,14 +95,15 @@ export default {
     // Nickname management
     nickname: {
       saved: '저장된 닉네임',
-      switch: '닉네임 전환',
+      switch: '닉네임 선택',
       delete: '닉네임 삭제',
-      current: '현재 사용 중',
+      current: '사용 중',
       using: '사용 중',
       switchTo: '전환',
       noSaved: '저장된 닉네임이 없습니다',
       autoSaveHint: '닉네임을 입력하면 자동으로 저장되어 다음번에 빠르게 선택할 수 있습니다',
-      confirmDelete: '이 닉네임을 삭제하시겠습니까?'
+      confirmDelete: '이 닉네임을 삭제하시겠습니까?',
+      deleteTitle: '이 닉네임 삭제'
     },
     
     // Help text

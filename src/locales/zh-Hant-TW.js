@@ -14,7 +14,8 @@ export default {
     title: '兌換碼',
     nickname: '遊戲暱稱',
     nicknameRequired: '請輸入暱稱',
-    nicknamePlaceholder: '請輸入您的遊戲暱稱',
+    nicknamePlaceholder: '遊戲暱稱',
+    nicknameInputPlaceholder: '請輸入您的遊戲暱稱',
     queryButton: '查詢兌換碼',
     loadingTitle: '載入兌換碼中...',
     retryLoadingTitle: '重新載入兌換碼中...',
@@ -23,9 +24,9 @@ export default {
     
     // 用戶資訊
     userProfile: {
-      clickAvatarToChange: '點擊頭像可更換',
+      clickAvatarToChange: '點擊頭像可更換 • 點擊暱稱可切換',
       clickNicknameToSwitch: '點擊暱稱可切換',
-      switchNickname: '切換暱稱',
+      switchNickname: '切換',
       reenterNickname: '重新輸入暱稱',
       selectAvatar: '選擇頭像',
       confirmSelection: '確認選擇'
@@ -49,12 +50,13 @@ export default {
       retryingData: '重新獲取最新資料'
     },
     
-    // 兌換碼狀態
-    couponStatus: {
-      available: '目前可用',
+    // 狀態
+    status: {
       limited: '限時可用',
+      available: '目前可用',
       permanent: '永久',
-      expired: '已過期'
+      expired: '已過期',
+      unknown: '未知狀態'
     },
     
     // 操作按鈕
@@ -93,14 +95,15 @@ export default {
     // 暱稱管理
     nickname: {
       saved: '已儲存的暱稱',
-      switch: '切換暱稱',
+      switch: '選擇暱稱',
       delete: '刪除暱稱',
-      current: '目前使用中',
+      current: '使用中',
       using: '使用中',
       switchTo: '切換',
       noSaved: '暫無已保存的暱稱',
       autoSaveHint: '輸入暱稱後會自動保存，方便下次快速選擇',
-      confirmDelete: '確認刪除此暱稱？'
+      confirmDelete: '確認刪除此暱稱？',
+      deleteTitle: '刪除此暱稱'
     },
     
     // 幫助文字
