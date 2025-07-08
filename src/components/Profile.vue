@@ -1,1493 +1,837 @@
 <template>
-  <v-row justify="end">
-    <v-col>
-      <v-card rounded="xl" class="profile-card">
-        <!-- 標題 -->
-        <v-card-title
-          class="headline"
-          style="font-size: 1rem; font-weight: bold; color: #e72857;"
-        >
-          兌換碼
-        </v-card-title>
+  <v-card rounded="xl" class="d-flex flex-column profile-card">
+    <v-card-title class="headline" style="font-size: 1rem; font-weight: bold; color: #e72857;">
+      {{ t('profile.title') }}
+    </v-card-title>
 
-        <!-- 卡片內容 -->
-        <v-card-text class="profile-card-content">
-          <!-- 暱稱輸入表單 -->
-          <v-form
-            ref="form"
-            v-model="valid"
-            v-if="!isSubmitted"
-            variant="outlined"
-            @submit.prevent="submitNickname"
-          >
-            <div class="nickname-input-container">
-              <v-text-field
-                v-model="nickname"
-                :rules="[(v) => !!v || '請輸入暱稱']"
-                label="遊戲暱稱"
-                required
-                outlined
-                placeholder="請輸入您的遊戲暱稱"
-                @keydown.enter="submitNickname"
-                @focus="onNicknameInputFocus"
-                @blur="onNicknameInputBlur"
-                :append-inner-icon="savedNicknames.length > 0 ? 'mdi-account-multiple' : null"
-                @click:append-inner="openNicknameDialog"
-              ></v-text-field>
-              
-              <!-- 暱稱建議列表 -->
-              <v-card
-                v-if="showNicknameSuggestions && savedNicknames.length > 0"
-                class="nickname-suggestions"
-                elevation="8"
-              >
-                <v-list density="compact">
-                  <v-list-item
-                    v-for="savedNickname in savedNicknames"
-                    :key="savedNickname"
-                    class="nickname-suggestion-item"
-                    @click="selectSavedNickname(savedNickname)"
-                  >
-                    <template #prepend>
-                      <v-icon size="16" color="primary">mdi-account</v-icon>
-                    </template>
-                    
-                    <v-list-item-title class="nickname-suggestion-text">
-                      {{ savedNickname }}
-                    </v-list-item-title>
-                    
-                    <template #append>
-                      <v-btn
-                        @click.stop="removeSavedNickname(savedNickname)"
-                        icon="mdi-close"
-                        size="x-small"
-                        variant="text"
-                        color="grey"
-                        class="nickname-delete-btn"
-                      ></v-btn>
-                    </template>
-                  </v-list-item>
-                </v-list>
-              </v-card>
-            </div>
+    <v-card-text class="flex-grow-1 profile-card-content">
+      <!-- 狀態一：尚未設定暱稱 -->
+      <div v-if="!currentNickname" class="nickname-input-area">
+        <div style="width: 100%; max-width: 400px;">
+          <div class="nickname-input-container">
+            <v-text-field
+              v-model="inputNickname"
+              :label="t('profile.nicknamePlaceholder')"
+              variant="outlined"
+              @keyup.enter="saveAndSetNickname"
+              @focus="onNicknameInputFocus"
+              @blur="onNicknameInputBlur"
+              :rules="[rules.required, rules.maxLength(20)]"
+              :append-inner-icon="savedNicknames.length > 0 ? 'mdi-account-multiple' : null"
+              @click:append-inner="nicknameDialog = true"
+              autofocus
+              class="mb-2"
+              :placeholder="t('profile.nicknameInputPlaceholder')"
+            ></v-text-field>
             
-            <v-btn @click="submitNickname" variant="outlined" color="primary">
-              查詢兌換碼
-            </v-btn>
-          </v-form>
+            <!-- 暱稱建議列表 -->
+            <v-card
+              v-if="showNicknameSuggestions && savedNicknames.length > 0"
+              class="nickname-suggestions"
+              elevation="8"
+            >
+              <v-list density="compact">
+                <v-list-item
+                  v-for="savedNickname in savedNicknames"
+                  :key="savedNickname"
+                  class="nickname-suggestion-item"
+                  @click="selectSavedNickname(savedNickname)"
+                >
+                  <template #prepend>
+                    <v-icon size="16" color="primary">mdi-account</v-icon>
+                  </template>
+                  
+                  <v-list-item-title class="nickname-suggestion-text">
+                    {{ savedNickname }}
+                  </v-list-item-title>
+                  
+                  <template #append>
+                    <v-btn
+                      @click.stop="removeSavedNickname(savedNickname)"
+                      icon="mdi-close"
+                      size="x-small"
+                      variant="text"
+                      color="grey"
+                      class="nickname-delete-btn"
+                    ></v-btn>
+                  </template>
+                </v-list-item>
+              </v-list>
+            </v-card>
+          </div>
+          
+          <v-btn block color="primary" @click="saveAndSetNickname" :disabled="!inputNickname.trim()">
+            {{ t('profile.queryButton') }}
+          </v-btn>
+        </div>
+      </div>
 
-          <!-- 兌換碼展示 -->
-          <div v-else class="coupon-display-area">
-            <!-- 用戶資訊卡片 -->
-            <div class="user-profile-card">
-              <v-avatar 
-                size="56" 
-                @click="openAvatarDialog" 
-                class="user-avatar"
-              >
-                <img 
-                  :src="currentAvatarUrl" 
-                  :alt="`avatar-${selectedAvatarId}`"
-                  style="width: 100%; height: 100%; object-fit: cover;"
-                />
-              </v-avatar>
+      <!-- 狀態二：已設定暱稱 -->
+      <div v-else class="coupon-display-area">
+        <div class="user-profile-card">
+  
+          <v-avatar size="56" @click="avatarDialog = true" class="user-avatar">
+            <v-img :src="currentAvatarUrl" :alt="currentNickname"></v-img>
+          </v-avatar>
+          <div class="user-info" @click="nicknameDialog = true">
+            <div class="user-nickname">{{ currentNickname }}</div>
+            <div class="user-subtitle">{{ t('profile.userProfile.clickAvatarToChange') }}</div>
+          </div>
+          <div class="user-actions">
+            <v-btn @click="exitNicknameMode" icon="mdi-logout" size="small" variant="text" :title="t('profile.userProfile.reenterNickname')"></v-btn>
+          </div>
+        </div>
+        
+        <div v-if="loading && !redeemCodes.length" class="loading-container">
+          <v-progress-circular indeterminate color="primary"></v-progress-circular>
+          <div class="mt-2 text-medium-emphasis">{{ t('profile.loadingTitle') }}</div>
+        </div>
+        
+        <div v-else-if="redeemCodes.length > 0" class="coupon-list-container">
+          <div v-for="(coupon, index) in redeemCodes" :key="coupon.code" class="coupon-item">
+            <div class="coupon-main-row">
+              <v-icon 
+                :color="coupon.claimed ? 'success' : 'grey-lighten-1'"
+                :icon="coupon.claimed ? 'mdi-check-circle' : 'mdi-circle-outline'"
+                size="20"
+                class="coupon-status-icon"
+              ></v-icon>
               
-              <div class="user-info" @click="openNicknameDialog">
-                <div class="user-nickname">{{ nickname }}</div>
-                <div class="user-subtitle">
-                  點擊頭像可更換 • 點擊暱稱可切換
-                  <v-icon size="12" class="ml-1">mdi-swap-horizontal</v-icon>
+              <div class="coupon-code-section">
+                <div class="coupon-code-row">
+                  <span class="coupon-code">{{ coupon.code }}</span>
+                  <v-chip
+                    v-if="coupon.status"
+                    size="x-small"
+                    :color="getStatusColor(coupon.status)"
+                    variant="flat"
+                    class="coupon-status-chip"
+                  >
+                    {{ coupon.status }}
+                  </v-chip>
+                </div>
+                
+                <div v-if="coupon.description" class="coupon-description">
+                  {{ coupon.description }}
                 </div>
               </div>
               
-              <div class="user-actions">
-                <v-btn
-                  v-if="savedNicknames.length > 1"
-                  @click="openNicknameDialog"
-                  icon="mdi-account-switch"
-                  size="small"
-                  variant="text"
-                  class="switch-btn"
-                  title="切換暱稱"
-                ></v-btn>
-                
-                <v-btn
-                  @click="clearData"
-                  icon="mdi-logout"
-                  size="small"
-                  variant="text"
-                  class="logout-btn"
-                  title="重新輸入暱稱"
-                ></v-btn>
-              </div>
-            </div>
-            
-            <!-- API 狀態提示 -->
-            <div v-if="showApiStatus" class="api-status-card">
-              <div class="api-status-header">
-                <v-icon :color="apiStatusColor" size="16">{{ apiStatusIcon }}</v-icon>
-                <span class="api-status-text">{{ apiStatusText }}</span>
-                <v-btn
-                  v-if="hasApiError"
-                  @click="retryLoadData"
-                  :loading="retrying"
-                  size="x-small"
-                  variant="text"
-                  color="primary"
-                >
-                  重試
-                </v-btn>
-              </div>
-              <div v-if="hasApiError && appStore.error" class="api-error-detail">
-                技術細節：{{ appStore.error }}
-              </div>
-            </div>
-            
-            <!-- 兌換碼列表 -->
-            <div v-if="loading" class="loading-container">
-              <v-progress-circular indeterminate color="primary"></v-progress-circular>
-              <div class="mt-2">{{ loadingMessage }}</div>
-              <div class="text-caption text-grey mt-1">{{ loadingSubMessage }}</div>
-              <v-btn 
-                @click="retryLoadCouponCodes"
-                :disabled="retrying"
-                color="primary"
-                variant="outlined"
+              <v-btn
+                :loading="coupon.claiming"
+                :disabled="coupon.claimed"
+                @click="executeClaim(coupon, index)"
+                :color="getButtonColor(coupon)"
                 size="small"
-                class="mt-3"
+                variant="flat"
+                class="coupon-action-btn"
               >
-                {{ retrying ? '處理中...' : '重新載入' }}
+                {{ getButtonText(coupon) }}
               </v-btn>
             </div>
             
-            <div v-else-if="couponCodes.length > 0">
-              <div class="coupon-list-container">
+            <div 
+              v-if="coupon.statusMessage || coupon.errorMessage" 
+              class="coupon-message-row"
+            >
+              <div class="coupon-message-spacer"></div>
+              <div class="coupon-message-content">
                 <div 
-                  v-for="(coupon, index) in couponCodes"
-                  :key="index"
-                  class="coupon-item"
-                  :class="{ 'coupon-item--claimed': coupon.claimed }"
+                  v-if="coupon.statusMessage" 
+                  class="coupon-message coupon-message--success"
                 >
-                  <!-- 主要內容行 -->
-                  <div class="coupon-main-row">
-                    <!-- 狀態圖標 -->
-                    <v-icon 
-                      :color="coupon.claimed ? 'success' : 'grey-lighten-1'"
-                      :icon="coupon.claimed ? 'mdi-check-circle' : 'mdi-circle-outline'"
-                      size="20"
-                      class="coupon-status-icon"
-                    ></v-icon>
-                    
-                    <!-- 兌換碼和狀態標籤 -->
-                    <div class="coupon-code-section">
-                      <div class="coupon-code-row">
-                        <span class="coupon-code">{{ coupon.code }}</span>
-                        <v-chip
-                          v-if="coupon.status"
-                          size="x-small"
-                          :color="getStatusColor(coupon.status)"
-                          variant="flat"
-                          class="coupon-status-chip"
-                        >
-                          {{ coupon.status }}
-                        </v-chip>
-                      </div>
-                      
-                      <!-- 獎勵描述 -->
-                      <div v-if="coupon.description" class="coupon-description">
-                        {{ coupon.description }}
-                      </div>
-                    </div>
-                    
-                    <!-- 兌換按鈕或重試按鈕 -->
-                    <v-btn
-                      v-if="isApiErrorCode(coupon.code)"
-                      :loading="retrying"
-                      @click="retryLoadData"
-                      color="warning"
-                      size="small"
-                      variant="flat"
-                      class="coupon-action-btn"
-                    >
-                      重新載入
-                    </v-btn>
-                    <v-btn
-                      v-else
-                      :loading="coupon.claiming"
-                      :disabled="coupon.claimed"
-                      @click="executeClaim(coupon, index)"
-                      :color="getButtonColor(coupon)"
-                      size="small"
-                      variant="flat"
-                      class="coupon-action-btn"
-                    >
-                      {{ getButtonText(coupon) }}
-                    </v-btn>
-                  </div>
-                  
-                  <!-- 狀態訊息行（僅在有訊息時顯示）-->
-                  <div 
-                    v-if="coupon.statusMessage || coupon.errorMessage" 
-                    class="coupon-message-row"
-                  >
-                    <div class="coupon-message-spacer"></div>
-                    <div class="coupon-message-content">
-                      <!-- 成功訊息 -->
-                      <div 
-                        v-if="coupon.statusMessage" 
-                        class="coupon-message coupon-message--success"
-                      >
-                        <v-icon size="14" color="success">mdi-check-circle</v-icon>
-                        <span>{{ coupon.statusMessage }}</span>
-                      </div>
-                      
-                      <!-- 錯誤訊息 -->
-                      <div 
-                        v-if="coupon.errorMessage" 
-                        class="coupon-message coupon-message--error"
-                      >
-                        <v-icon size="14" color="error">mdi-alert-circle</v-icon>
-                        <span>{{ coupon.errorMessage }}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- 兌換碼重新載入區域（給已經提交暱稱的用戶） -->
-              <div v-if="isSubmitted" class="mt-4 text-center">
-                <v-btn
-                  @click="retryLoadCouponCodes"
-                  :loading="retrying"
-                  color="primary"
-                  variant="outlined"
-                  prepend-icon="mdi-refresh"
-                  size="small"
-                >
-                  重新載入兌換碼
-                </v-btn>
-                <div class="text-caption text-grey mt-1">
-                  如果兌換碼未正確載入，點擊此處重新載入
+                  <v-icon size="14" color="success">mdi-check-circle</v-icon>
+                  <span>{{ coupon.statusMessage }}</span>
                 </div>
                 
-                <!-- 幫助提示 -->
-                <v-alert
-                  v-if="hasApiError || couponCodes.length === 0"
-                  color="info"
-                  variant="tonal"
-                  density="compact"
-                  class="mt-3 text-left"
-                  icon="mdi-lightbulb-outline"
+                <div 
+                  v-if="coupon.errorMessage" 
+                  class="coupon-message coupon-message--error"
                 >
-                  <div class="text-body-2">
-                    <strong>載入問題解決方案：</strong>
-                  </div>
-                  <div class="text-caption mt-1">
-                    • 如果提交暱稱時API尚未載入完成，可能導致兌換碼無法正確顯示<br>
-                    • 點擊上方「重新載入兌換碼」<br>
-                    • 或者點擊「退出」重新輸入暱稱
-                  </div>
-                </v-alert>
+                  <v-icon size="14" color="error">mdi-alert-circle</v-icon>
+                  <span>{{ coupon.errorMessage }}</span>
+                </div>
               </div>
             </div>
           </div>
-
-          <!-- 網路狀態指示器 -->
-          <v-alert
-            v-if="networkStatus && networkStatus !== 'online'"
-            :color="networkStatus === 'checking' ? 'info' : 'warning'"
-            icon="mdi-wifi"
-            dense
-            class="mb-4"
-          >
-            {{ networkStatusText }}
-          </v-alert>
-        </v-card-text>
-      </v-card>
-    </v-col>
-  </v-row>
-
-  <!-- 頭像選擇對話框 -->
-  <v-dialog v-model="avatarDialog" max-width="600px">
-    <v-card>
-      <v-card-title class="headline">選擇頭像 ({{ availableAvatars.length }} 個可選)</v-card-title>
-      <v-card-text>
-        <v-container>
-          <v-row>
-            <v-col 
-              v-for="avatarId in availableAvatars" 
-              :key="avatarId" 
-              cols="2" 
-              class="pa-1"
-            >
-              <v-avatar 
-                size="60" 
-                @click="selectAvatar(avatarId)"
-                :class="selectedAvatarId === avatarId ? 'selected-avatar' : ''"
-                style="cursor: pointer; border: 2px solid transparent;"
-              >
-                <img 
-                  :src="getAvatarUrl(avatarId)" 
-                  :alt="`avatar-${avatarId}`"
-                  style="width: 100%; height: 100%; object-fit: cover;"
-                />
-              </v-avatar>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="primary" @click="avatarDialog = false">確定</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-
-  <!-- 暱稱選擇對話框 -->
-  <v-dialog v-model="nicknameDialog" max-width="500px">
-    <v-card>
-      <v-card-title class="headline">
-        <v-icon color="primary" class="mr-2">mdi-account-multiple</v-icon>
-        選擇暱稱 ({{ savedNicknames.length }} 個已保存)
-      </v-card-title>
-      
-      <v-card-text v-if="savedNicknames.length > 0">
-        <v-list>
-          <v-list-item
-            v-for="savedNickname in savedNicknames"
-            :key="savedNickname"
-            :class="nickname === savedNickname ? 'selected-nickname' : ''"
-            class="nickname-dialog-item"
-            @click="selectNicknameFromDialog(savedNickname)"
-          >
-            <template #prepend>
-              <v-avatar size="32" :color="nickname === savedNickname ? 'primary' : 'grey-lighten-1'">
-                <v-icon :color="nickname === savedNickname ? 'white' : 'grey'">mdi-account</v-icon>
-              </v-avatar>
-            </template>
-            
-            <v-list-item-title class="font-weight-medium">
-              {{ savedNickname }}
-            </v-list-item-title>
-            
-            <v-list-item-subtitle v-if="nickname === savedNickname">
-              目前使用中
-            </v-list-item-subtitle>
-            
-            <template #append>
-              <div class="nickname-actions">
-                <v-btn
-                  @click.stop="selectNicknameFromDialog(savedNickname)"
-                  :variant="nickname === savedNickname ? 'flat' : 'outlined'"
-                  :color="nickname === savedNickname ? 'success' : 'primary'"
-                  size="small"
-                  class="mr-2"
-                >
-                  {{ nickname === savedNickname ? '使用中' : '切換' }}
-                </v-btn>
-                
-                <v-btn
-                  @click.stop="removeSavedNickname(savedNickname)"
-                  icon="mdi-delete"
-                  size="small"
-                  variant="text"
-                  color="error"
-                  title="刪除暱稱"
-                ></v-btn>
-              </div>
-            </template>
-          </v-list-item>
-        </v-list>
-      </v-card-text>
-      
-      <v-card-text v-else class="text-center py-8">
-        <v-icon size="48" color="grey-lighten-1" class="mb-4">mdi-account-off</v-icon>
-        <div class="text-h6 text-grey-lighten-1">暫無已保存的暱稱</div>
-        <div class="text-body-2 text-grey mt-2">
-          輸入暱稱後會自動保存，方便下次快速選擇
         </div>
-      </v-card-text>
-      
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="grey" variant="text" @click="nicknameDialog = false">
-          關閉
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+        
+        <div v-else class="loading-container">
+            <v-icon size="x-large" color="grey-lighten-1">mdi-package-variant-closed</v-icon>
+            <div class="mt-2 text-grey">{{ t('profile.status.unknown') }}</div>
+        </div>
+      </div>
+    </v-card-text>
 
-  
+    <!-- Dialogs -->
+    <AvatarDialog v-model="avatarDialog" :current-avatar="currentAvatar" @update:avatar="updateAvatar" />
+    <NicknameDialog v-model="nicknameDialog" :nicknames="savedNicknames" :current="currentNickname" @select="selectNickname" @delete="deleteNickname" @new="enterNewNickname" />
+  </v-card>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, onMounted, watch } from 'vue'
+import { useSettingsStore } from '@/stores/settings'
 import { useAppStore } from '@/stores/app'
+import AvatarDialog from './AvatarDialog.vue'
+import NicknameDialog from './NicknameDialog.vue'
 
-export default {
-  data() {
-    return {
-      valid: false,
-      nickname: "",
-      isSubmitted: false,
-      loading: false,
-      retrying: false,
-      couponCodes: [],
-      apiEndpoint: 'https://bd2redeem.zzz-archive-back-end.workers.dev/',
-      appId: 'bd2-live',
-      currentAvatarUrl: '',
-      selectedAvatarId: null,
-      avatarDialog: false,
-      // 可用的頭像ID列表（排除不存在的 23, 24, 29, 30）
-      availableAvatars: [
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-        11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-        21, 22, 25, 26, 27, 28, 31, 32, 33, 34,
-        35, 36, 37, 38, 39, 40, 41, 42, 43, 44,
-        45, 46, 47, 48
-      ],
-      // 頭像格式映射（JPG格式的頭像ID）
-      jpgAvatars: [39, 40, 41, 42, 43, 44, 45, 46, 47, 48],
-      // 網路狀態監控
-      networkStatus: null,
-      // 暱稱管理
-      savedNicknames: [],
-      showNicknameSuggestions: false,
-      nicknameDialog: false,
-      nicknameInputFocused: false,
-    };
-  },
+// --- Stores ---
+const settingsStore = useSettingsStore()
+const appStore = useAppStore()
+
+// --- Props ---
+const props = defineProps({
+  // 可以根據需要添加 props
+})
+
+// --- Reactive Data ---
+const inputNickname = ref('')
+const currentNickname = ref('')
+const savedNicknames = ref([])
+const currentAvatar = ref(1)
+const avatarDialog = ref(false)
+const nicknameDialog = ref(false)
+const loading = ref(false)
+const redeemCodes = ref([])
+const showNicknameSuggestions = ref(false)
+const nicknameInputFocused = ref(false)
+
+// --- Computed ---
+const t = computed(() => settingsStore.t)
+
+const currentAvatarUrl = computed(() => {
+  const formattedId = String(currentAvatar.value).padStart(2, '0')
+  const jpgAvatars = [39, 40, 41, 42, 43, 44, 45, 46, 47, 48]
+  const extension = jpgAvatars.includes(currentAvatar.value) ? 'jpg' : 'png'
+  return `https://www.browndust2.com/img/designKit/snsIcon/social-icon-${formattedId}.${extension}`
+})
+
+const rules = computed(() => ({
+        required: (value) => !!value || t.value('profile.nicknameRequired'),
+  maxLength: (max) => (value) => 
+    !value || value.length <= max || t.value('feedback.validation.maxLength', null, { limit: max })
+}))
+
+// --- Methods ---
+const loadSavedNicknames = () => {
+  try {
+    const saved = localStorage.getItem('savedNicknames')
+    savedNicknames.value = saved ? JSON.parse(saved) : []
+  } catch (error) {
+    console.error('載入暱稱列表失敗:', error)
+    savedNicknames.value = []
+  }
+}
+
+const saveNicknameToList = (nickname) => {
+  if (!nickname || nickname.trim() === '') return
   
-  computed: {
-    // API 狀態監控
-    appStore() {
-      return useAppStore();
-    },
-    
-    hasApiError() {
-      return this.couponCodes.some(coupon => this.isApiErrorCode(coupon.code)) || this.appStore.error;
-    },
-    
-    showApiStatus() {
-      return this.isSubmitted && (this.hasApiError || this.appStore.loading);
-    },
-    
-    apiStatusColor() {
-      if (this.appStore.loading || this.retrying) return 'warning';
-      if (this.hasApiError) return 'error';
-      return 'success';
-    },
-    
-    apiStatusIcon() {
-      if (this.appStore.loading || this.retrying) return 'mdi-loading';
-      if (this.hasApiError) return 'mdi-alert-circle';
-      return 'mdi-check-circle';
-    },
-    
-    apiStatusText() {
-      if (this.retrying) return '重新載入中...';
-      if (this.appStore.loading) return 'API 載入中...';
-      if (this.hasApiError) return 'API 連線異常';
-      return 'API 連線正常';
-    },
-    
-    networkStatusText() {
-      switch (this.networkStatus) {
-        case 'checking': return '正在檢測兌換服務連接...';
-        case 'slow': return '兌換服務回應較慢，請稍候';
-        case 'unreachable': return '無法連接兌換服務，請檢查網路';
-        case 'cors-error': return 'iOS Safari 兼容性問題';
-        default: return '';
-      }
-    },
-    
-    loadingMessage() {
-      if (this.retrying) {
-        return '重新載入兌換碼中...';
-      }
-      return '載入兌換碼中...';
-    },
-    
-    loadingSubMessage() {
-      const appStore = this.appStore;
-      
-      if (this.retrying) {
-        if (appStore.hasData && !appStore.error) {
-          return '正在更新兌換碼列表';
-        } else if (appStore.loading) {
-          return '等待API載入完成';
-        } else {
-          return '重新獲取最新資料';
-        }
-      }
-      
-      if (appStore.loading) {
-        return '正在等待API載入完成';
-      }
-      
-      return '正在處理兌換碼資料';
-    }
-  },
+  const trimmedNickname = nickname.trim()
   
-  created() {
-    try {
-      // 載入已保存的暱稱列表
-      this.loadSavedNicknames();
-      
-      // 從 localStorage 中加載當前暱稱
-      this.nickname = localStorage.getItem("nickname") || "";
-      
-      // 從 localStorage 中加載頭像ID，如果沒有則隨機生成
-      const savedAvatarId = localStorage.getItem("selectedAvatarId");
-      if (savedAvatarId) {
-        this.selectedAvatarId = parseInt(savedAvatarId);
-      } else {
-        //const randomIndex = Math.floor(Math.random() * this.availableAvatars.length);
-        this.selectedAvatarId = this.availableAvatars[31];
-        localStorage.setItem("selectedAvatarId", this.selectedAvatarId.toString());
-      }
-      
-      this.updateCurrentAvatarUrl();
-      
-      if (this.nickname) {
-        this.isSubmitted = true;
-        // 不在這裡立即調用 fetchCouponCodes，而是等待 API 載入完成
-      }
-    } catch (error) {
-      console.error("Error in created hook:", error);
-      // 如果有錯誤，重置狀態
-      this.nickname = "";
-      this.isSubmitted = false;
-      localStorage.removeItem("nickname");
+  if (!savedNicknames.value.includes(trimmedNickname)) {
+    savedNicknames.value.unshift(trimmedNickname)
+    
+    if (savedNicknames.value.length > 10) {
+      savedNicknames.value = savedNicknames.value.slice(0, 10)
     }
-  },
-  mounted() {
-    console.log("Component mounted, isSubmitted:", this.isSubmitted, "nickname:", this.nickname);
-    // 在 mounted 階段監聽 store 狀態
-    this.watchStoreData();
     
-    // 設置響應式監聽器，監聽store狀態變化
-    this.setupStoreWatcher();
-  },
-  methods: {
-    // 暱稱管理方法
-    loadSavedNicknames() {
-      try {
-        const saved = localStorage.getItem("savedNicknames");
-        this.savedNicknames = saved ? JSON.parse(saved) : [];
-        console.log("載入已保存的暱稱:", this.savedNicknames);
-      } catch (error) {
-        console.error("載入暱稱列表失敗:", error);
-        this.savedNicknames = [];
-      }
-    },
+    localStorage.setItem('savedNicknames', JSON.stringify(savedNicknames.value))
+  } else {
+    const index = savedNicknames.value.indexOf(trimmedNickname)
+    savedNicknames.value.splice(index, 1)
+    savedNicknames.value.unshift(trimmedNickname)
+    localStorage.setItem('savedNicknames', JSON.stringify(savedNicknames.value))
+  }
+}
 
-    saveNicknameToList(nickname) {
-      if (!nickname || nickname.trim() === "") return;
+const saveAndSetNickname = () => {
+  if (!inputNickname.value.trim()) return
+  
+  currentNickname.value = inputNickname.value.trim()
+  localStorage.setItem('nickname', currentNickname.value)
+  saveNicknameToList(currentNickname.value)
+  
+  // 載入兌換碼
+  loadRedeemCodes()
+}
+
+const loadRedeemCodes = async () => {
+  loading.value = true
+  
+  try {
+    console.log('開始載入兌換碼...')
+    
+    // 檢查 appStore 狀態
+    if (appStore.loading) {
+      console.log('API 正在載入中，等待完成...')
+      await waitForApiAndLoadData()
+    } else if (appStore.hasData) {
+      console.log('API 已有資料，直接載入兌換碼')
+      loadCouponCodesFromStore()
+    } else {
+      console.log('API 未載入，觸發載入')
+      await appStore.fetchAllData()
+      loadCouponCodesFromStore()
+    }
+  } catch (error) {
+    console.error('載入兌換碼失敗:', error)
+    // 載入錯誤狀態
+    redeemCodes.value = [
+      { 
+        code: 'LOAD_ERROR', 
+        description: '兌換碼載入失敗', 
+        status: '載入錯誤', 
+        claimed: false, 
+        claiming: false, 
+        statusMessage: null, 
+        errorMessage: '請重新整理頁面或稍後再試' 
+      }
+    ]
+  } finally {
+    loading.value = false
+  }
+}
+
+const loadClaimedStatus = () => {
+  try {
+    const claimedCodesStr = localStorage.getItem(`claimedCodes_${currentNickname.value}`)
+    const claimedCodes = claimedCodesStr ? JSON.parse(claimedCodesStr) : []
+    
+    redeemCodes.value.forEach(coupon => {
+      coupon.claimed = claimedCodes.includes(coupon.code)
+    })
+  } catch (error) {
+    console.error('載入兌換狀態失敗:', error)
+  }
+}
+
+const saveClaimedStatus = () => {
+  const claimedCodes = redeemCodes.value
+    .filter(coupon => coupon.claimed)
+    .map(coupon => coupon.code)
+  localStorage.setItem(`claimedCodes_${currentNickname.value}`, JSON.stringify(claimedCodes))
+}
+
+const executeClaim = async (coupon, index) => {
+  if (coupon.claimed || coupon.claiming) return
+  
+  // 設置兌換中狀態
+  redeemCodes.value[index].claiming = true
+  redeemCodes.value[index].errorMessage = null
+  redeemCodes.value[index].statusMessage = null
+  
+  try {
+    // 使用真正的 API 客戶端執行兌換
+    const result = await claimCoupon(currentNickname.value, coupon.code)
+    
+    console.log('兌換結果:', result)
+    
+    // 檢查是否成功
+    if (result.success === true) {
+      // 兌換成功
+      redeemCodes.value[index].claimed = true
+      redeemCodes.value[index].claiming = false
+      redeemCodes.value[index].errorMessage = null
+              redeemCodes.value[index].statusMessage = t.value('profile.errors.claimSuccess')
       
-      const trimmedNickname = nickname.trim();
+      // 保存兌換狀態到 localStorage
+      saveClaimedStatus()
       
-      // 檢查是否已存在
-      if (!this.savedNicknames.includes(trimmedNickname)) {
-        this.savedNicknames.unshift(trimmedNickname); // 添加到列表頂部
-        
-        // 限制最多保存10個暱稱
-        if (this.savedNicknames.length > 10) {
-          this.savedNicknames = this.savedNicknames.slice(0, 10);
-        }
-        
-        // 保存到localStorage
-        localStorage.setItem("savedNicknames", JSON.stringify(this.savedNicknames));
-        console.log("保存暱稱到列表:", trimmedNickname);
+      console.log(`兌換碼 ${coupon.code} 兌換成功！`)
+    } else {
+      // 如果 success 不是 true，當作錯誤處理
+      throw result
+    }
+    
+  } catch (error) {
+    console.error('兌換錯誤:', error)
+    
+    // 重置兌換狀態
+    redeemCodes.value[index].claiming = false
+    
+    // 根據錯誤類型處理
+    if (error.errorCode === 'AlreadyUsed') {
+      // 已經使用過的兌換碼，標記為已兌換
+      redeemCodes.value[index].claimed = true
+      redeemCodes.value[index].errorMessage = null
+              redeemCodes.value[index].statusMessage = t.value('profile.errors.alreadyUsed')
+      saveClaimedStatus()
+      
+    } else if (error.errorCode === 'InvalidCode') {
+      // 無效的兌換碼
+              redeemCodes.value[index].errorMessage = t.value('profile.errors.invalidCoupon')
+      redeemCodes.value[index].statusMessage = null
+      
+    } else if (error.errorCode === 'IncorrectUser') {
+      // 暱稱驗證失敗
+              redeemCodes.value[index].errorMessage = t.value('profile.errors.nicknameValidationFailed')
+      redeemCodes.value[index].statusMessage = null
+      
+    } else if (error.errorCode === 'ExpiredCode') {
+      // 兌換碼已到期
+              redeemCodes.value[index].errorMessage = t.value('profile.errors.couponExpired')
+      redeemCodes.value[index].statusMessage = null
+      
+    } else {
+      // 其他錯誤
+      if (error.name === 'AbortError') {
+        redeemCodes.value[index].errorMessage = t.value('profile.errors.requestTimeout')
+      } else if (error.message && error.message.includes('Failed to fetch')) {
+                  redeemCodes.value[index].errorMessage = t.value('profile.errors.networkConnection')
+      } else if (error.message && error.message.includes('NetworkError')) {
+                  redeemCodes.value[index].errorMessage = t.value('profile.errors.networkError')
       } else {
-        // 如果已存在，將其移到列表頂部
-        const index = this.savedNicknames.indexOf(trimmedNickname);
-        this.savedNicknames.splice(index, 1);
-        this.savedNicknames.unshift(trimmedNickname);
-        localStorage.setItem("savedNicknames", JSON.stringify(this.savedNicknames));
+                  redeemCodes.value[index].errorMessage = t.value('profile.errors.claimFailed')
       }
-    },
-
-    removeSavedNickname(nickname) {
-      const index = this.savedNicknames.indexOf(nickname);
-      if (index > -1) {
-        this.savedNicknames.splice(index, 1);
-        localStorage.setItem("savedNicknames", JSON.stringify(this.savedNicknames));
-        
-        // 如果刪除的是當前使用的暱稱，也清除相關數據
-        if (this.nickname === nickname) {
-          this.clearData();
-        }
-        
-        console.log("移除暱稱:", nickname);
-      }
-    },
-
-    selectSavedNickname(nickname) {
-      this.nickname = nickname;
-      this.showNicknameSuggestions = false;
-      this.nicknameInputFocused = false;
       
-      // 自動提交暱稱
-      this.submitNickname();
-    },
+      redeemCodes.value[index].statusMessage = null
+    }
+  }
+}
 
-    onNicknameInputFocus() {
-      this.nicknameInputFocused = true;
-      if (this.savedNicknames.length > 0) {
-        this.showNicknameSuggestions = true;
-      }
-    },
+const getButtonColor = (coupon) => {
+  if (coupon.claimed) return 'success'
+  if (coupon.errorMessage) return 'error'
+  return 'primary'
+}
 
-    onNicknameInputBlur() {
-      // 延遲隱藏建議，讓用戶有時間點擊建議項目
-      setTimeout(() => {
-        this.nicknameInputFocused = false;
-        this.showNicknameSuggestions = false;
-      }, 200);
-    },
+const getButtonText = (coupon) => {
+  if (coupon.claimed) return t.value('profile.actions.claimed')
+  if (coupon.errorMessage) return t.value('common.retry')
+  return t.value('profile.actions.claim')
+}
 
-    openNicknameDialog() {
-      this.nicknameDialog = true;
-    },
+const getStatusColor = (status) => {
+  const statusColors = {
+    '限時可用': 'warning',
+    '目前可用': 'success',
+    '永久': 'info',
+    '已過期': 'error'
+  }
+  return statusColors[status] || 'default'
+}
 
-    selectNicknameFromDialog(nickname) {
-      this.nicknameDialog = false;
-      
-      // 如果還未提交，設置暱稱並自動提交
-      if (!this.isSubmitted) {
-        this.nickname = nickname;
-        this.submitNickname();
-      } else {
-        // 如果已提交，切換到新暱稱
-        this.switchToNickname(nickname);
-      }
-    },
+const exitNicknameMode = () => {
+  currentNickname.value = ''
+  inputNickname.value = ''
+  redeemCodes.value = []
+  localStorage.removeItem('nickname')
+}
 
-    switchToNickname(nickname) {
-      if (nickname === this.nickname) return;
-      
-      // 保存當前暱稱
-      this.saveNicknameToList(this.nickname);
-      
-      // 切換到新暱稱
-      this.nickname = nickname;
-      localStorage.setItem("nickname", this.nickname);
-      this.saveNicknameToList(this.nickname);
-      
-      // 清除當前兌換碼數據並重新載入
-      this.couponCodes = [];
-      this.loadCouponCodesFromStore();
-      
-      // 重要：載入新暱稱的兌換狀態
-      this.$nextTick(() => {
-        this.loadClaimedStatus();
-      });
-      
-      console.log("切換到暱稱:", nickname, "- 重新載入兌換狀態");
-    },
+const updateAvatar = (avatarId) => {
+  currentAvatar.value = avatarId
+  localStorage.setItem('selectedAvatarId', avatarId.toString())
+}
 
-    // 設置響應式監聽器
-    setupStoreWatcher() {
-      // 監聽store狀態變化
-      this.$watch(
-        () => ({
-          hasData: this.appStore.hasData,
-          loading: this.appStore.loading,
-          error: this.appStore.error,
-          lastFetchTime: this.appStore.lastFetchTime
-        }),
-        (newVal, oldVal) => {
-          console.log("Store狀態變化:", {
-            old: oldVal,
-            new: newVal,
-            isSubmitted: this.isSubmitted,
-            hasCouponCodes: this.couponCodes.length > 0
-          });
-          
-          // 只有當用戶已提交暱稱時才處理
-          if (!this.isSubmitted) {
-            return;
-          }
-          
-          // 如果已有正常的兌換碼，跳過（避免重複載入）
-          if (this.couponCodes.length > 0 && !this.isApiErrorCode(this.couponCodes[0].code)) {
-            return;
-          }
-          
-          // 如果API從載入中變為完成，載入兌換碼
-          if (oldVal.loading && !newVal.loading) {
-            console.log("API載入完成，自動載入兌換碼");
-            this.loadCouponCodesFromStore();
-            return;
-          }
-          
-          // 如果API從沒有數據變為有數據，載入兌換碼
-          if (!oldVal.hasData && newVal.hasData) {
-            console.log("API數據可用，自動載入兌換碼");
-            this.loadCouponCodesFromStore();
-            return;
-          }
-          
-          // 如果lastFetchTime更新（表示有新數據），載入兌換碼
-          if (oldVal.lastFetchTime !== newVal.lastFetchTime && newVal.lastFetchTime) {
-            console.log("API數據更新，自動載入兌換碼");
-            this.loadCouponCodesFromStore();
-            return;
-          }
-        },
-        { deep: true, immediate: false }
-      );
-    },
+const selectNickname = (nickname) => {
+  if (nickname === currentNickname.value) return
+  
+  currentNickname.value = nickname
+  localStorage.setItem('nickname', nickname)
+  saveNicknameToList(nickname)
+  
+  // 重新載入兌換碼
+  loadRedeemCodes()
+}
+
+const deleteNickname = (nickname) => {
+  removeSavedNickname(nickname)
+}
+
+const removeSavedNickname = (nickname) => {
+  const index = savedNicknames.value.indexOf(nickname)
+  if (index > -1) {
+    savedNicknames.value.splice(index, 1)
+    localStorage.setItem('savedNicknames', JSON.stringify(savedNicknames.value))
     
-    // 等待API載入完成並載入數據
-    async waitForApiAndLoadData() {
-      const appStore = useAppStore();
-      const maxWaitTime = 15000; // 最多等待15秒
-      const checkInterval = 500; // 每500ms檢查一次
-      let waitedTime = 0;
-      
-      console.log("開始等待API載入完成...");
-      
-      return new Promise((resolve) => {
-        const checkData = () => {
-          waitedTime += checkInterval;
-          
-          console.log(`等待API載入: ${waitedTime}ms / ${maxWaitTime}ms (loading: ${appStore.loading}, hasData: ${appStore.hasData})`);
-          
-          // 檢查是否載入完成
-          if (!appStore.loading) {
-            console.log("API載入完成，載入兌換碼...");
-            this.loading = false;
-            this.loadCouponCodesFromStore();
-            resolve();
-            return;
-          }
-          
-          // 檢查是否超時
-          if (waitedTime >= maxWaitTime) {
-            console.warn("API載入超時，強制載入兌換碼...");
-            this.loading = false;
-            this.loadCouponCodesFromStore();
-            resolve();
-            return;
-          }
-          
-          // 繼續等待
-          setTimeout(checkData, checkInterval);
-        };
-        
-        // 開始檢查
-        setTimeout(checkData, checkInterval);
-      });
-    },
+    if (currentNickname.value === nickname) {
+      exitNicknameMode()
+    }
     
-    // 監聽 store 數據變化（保留給 mounted 使用）
-    watchStoreData() {
-      const appStore = useAppStore();
-      console.log("watchStoreData called, hasData:", appStore.hasData, "loading:", appStore.loading, "isSubmitted:", this.isSubmitted);
+    console.log('移除暱稱:', nickname)
+  }
+}
+
+const enterNewNickname = () => {
+  exitNicknameMode()
+  nicknameDialog.value = false
+}
+
+const onNicknameInputFocus = () => {
+  nicknameInputFocused.value = true
+  if (savedNicknames.value.length > 0) {
+    showNicknameSuggestions.value = true
+  }
+}
+
+const onNicknameInputBlur = () => {
+  // 延遲隱藏建議，讓用戶有時間點擊建議項目
+  setTimeout(() => {
+    nicknameInputFocused.value = false
+    showNicknameSuggestions.value = false
+  }, 200)
+}
+
+const selectSavedNickname = (nickname) => {
+  inputNickname.value = nickname
+  showNicknameSuggestions.value = false
+  nicknameInputFocused.value = false
+  
+  // 自動提交暱稱
+  saveAndSetNickname()
+}
+
+// === API 相關方法 ===
+
+// 等待 API 載入完成
+const waitForApiAndLoadData = async () => {
+  const maxWaitTime = 15000 // 最多等待15秒
+  const checkInterval = 500 // 每500ms檢查一次
+  let waitedTime = 0
+  
+  console.log('開始等待API載入完成...')
+  
+  return new Promise((resolve) => {
+    const checkData = () => {
+      waitedTime += checkInterval
       
-      if (!this.isSubmitted) {
-        console.log("未提交暱稱，跳過監聽");
-        return;
+      console.log(`等待API載入: ${waitedTime}ms / ${maxWaitTime}ms (loading: ${appStore.loading}, hasData: ${appStore.hasData})`)
+      
+      // 檢查是否載入完成
+      if (!appStore.loading) {
+        console.log('API載入完成，載入兌換碼...')
+        loading.value = false
+        loadCouponCodesFromStore()
+        resolve()
+        return
       }
       
-      // 如果已經提交暱稱且有數據，直接載入
-      if (appStore.hasData) {
-        console.log("Store has data, loading coupon codes...");
-        this.loadCouponCodesFromStore();
-        return;
+      // 檢查是否超時
+      if (waitedTime >= maxWaitTime) {
+        console.warn('API載入超時，強制載入兌換碼...')
+        loading.value = false
+        loadCouponCodesFromStore()
+        resolve()
+        return
       }
       
-      // 特殊情況：如果API不在載入且有lastFetchTime，也嘗試載入
-      if (!appStore.loading && appStore.lastFetchTime) {
-        console.log("API可能已完成但hasData為false，嘗試載入兌換碼...");
-        this.loadCouponCodesFromStore();
-        return;
-      }
-      
-      // 如果API正在載入，等待完成
-      if (appStore.loading) {
-        console.log("API正在載入，等待完成...");
-        this.loading = true;
-        this.waitForApiAndLoadData();
-        return;
-      }
-      
-      // 如果API沒有數據且不在載入中，觸發載入
-      console.log("API未載入，觸發載入...");
-      this.loading = true;
-      appStore.fetchAllData().then(() => {
-        this.loadCouponCodesFromStore();
-        this.loading = false;
-      }).catch(() => {
-        this.loadCouponCodesFromStore(); // 載入錯誤狀態
-        this.loading = false;
-      });
-    },
+      // 繼續等待
+      setTimeout(checkData, checkInterval)
+    }
     
-    // 從 store 載入兌換碼數據
-    loadCouponCodesFromStore() {
-      try {
-        console.log("Loading coupon codes from store...");
-        const appStore = useAppStore();
-        const redeemData = appStore.redeemCodes;
-        
-        console.log("Store狀態詳細信息:", {
-          redeemData: redeemData,
-          hasData: appStore.hasData,
-          loading: appStore.loading,
-          error: appStore.error,
-          lastUpdated: appStore.lastUpdated,
-          lastFetchTime: appStore.lastFetchTime,
-          apiDataRedeem: appStore.apiData?.redeem
-        });
-        
-        if (redeemData && redeemData.length > 0) {
-          // 檢查是否有 API 錯誤
-          const hasApiError = redeemData.some(item => item.code === 'API_ERROR');
-          
-          if (hasApiError) {
-            console.log("Detected API error in store data");
-            this.couponCodes = [
-              { 
-                code: 'API_ERROR', 
-                description: '暫時無法載入兌換碼資料', 
-                status: 'API連線中斷', 
-                claimed: false, 
-                claiming: false, 
-                statusMessage: null, 
-                statusMessageType: null, 
-                errorMessage: '請重新整理頁面或稍後再試' 
-              }
-            ];
-            
-            // 顯示更詳細的錯誤信息
-            if (appStore.error) {
-              this.couponCodes[0].errorMessage = `連線錯誤: ${appStore.error}`;
-            }
-            
-            return; // 提早返回，避免繼續處理
-          }
-          
-          // 轉換正常數據格式
-          this.couponCodes = redeemData.map(item => ({
-            code: item.code || '未知代碼',
-            description: item.reward || '未知獎勵',
-            status: item.status || '未知狀態',
-            claimed: false,
-            claiming: false,
-            statusMessage: null,
-            statusMessageType: null,
-            errorMessage: null
-          }));
-          
-          // 載入已兌換狀態
-          this.loadClaimedStatus();
-          console.log("Coupon codes loaded successfully for nickname:", this.nickname);
-          
-          // 如果是重新載入成功，顯示簡短提示
-          if (this.retrying) {
-            this.$nextTick(() => {
-              // 可以在這裡添加成功提示，但不要太打擾用戶
-              console.log("兌換碼重新載入成功！");
-            });
-          }
-        } else {
-          console.log("No redeem data available");
-          
-          // 檢查是否有API錯誤
-          if (appStore.error) {
-            this.couponCodes = [
-              { 
-                code: 'LOAD_ERROR', 
-                description: '兌換碼載入失敗', 
-                status: '載入錯誤', 
-                claimed: false, 
-                claiming: false, 
-                statusMessage: null, 
-                statusMessageType: null, 
-                errorMessage: `${appStore.error} - 請重新整理頁面` 
-              }
-            ];
-          } else {
-            // 單純沒有數據
-            this.couponCodes = [
-              { 
-                code: 'NO_DATA', 
-                description: '目前沒有可用的兌換碼', 
-                status: '暫無資料', 
-                claimed: false, 
-                claiming: false, 
-                statusMessage: null, 
-                statusMessageType: null, 
-                errorMessage: null 
-              }
-            ];
-          }
-        }
-      } catch (error) {
-        console.error("Error loading coupon codes from store:", error);
-        this.couponCodes = [
+    // 開始檢查
+    setTimeout(checkData, checkInterval)
+  })
+}
+
+// 從 store 載入兌換碼數據
+const loadCouponCodesFromStore = () => {
+  try {
+    console.log('從 store 載入兌換碼數據...')
+    const redeemData = appStore.redeemCodes
+    
+    console.log('Store 狀態詳細信息:', {
+      redeemData: redeemData,
+      hasData: appStore.hasData,
+      loading: appStore.loading,
+      error: appStore.error,
+      lastUpdated: appStore.lastUpdated,
+      lastFetchTime: appStore.lastFetchTime
+    })
+    
+    if (redeemData && redeemData.length > 0) {
+      // 檢查是否有 API 錯誤
+      const hasApiError = redeemData.some(item => item.code === 'API_ERROR')
+      
+      if (hasApiError) {
+        console.log('檢測到 API 錯誤')
+        redeemCodes.value = [
           { 
-            code: 'SYSTEM_ERROR', 
-            description: '系統載入兌換碼時發生錯誤', 
-            status: '系統錯誤', 
+            code: 'API_ERROR', 
+            description: '暫時無法載入兌換碼資料', 
+            status: 'API連線中斷', 
             claimed: false, 
             claiming: false, 
             statusMessage: null, 
-            statusMessageType: null, 
-            errorMessage: '請重新整理頁面或聯絡管理員' 
+            errorMessage: '請重新整理頁面或稍後再試' 
           }
-        ];
-      }
-    },
-
-    // API 客戶端方法 - iOS Safari 兼容版本
-    async claimCoupon(userId = '', code = '') {
-      const maxRetries = 3;
-      const baseDelay = 1000;
-      let lastError;
-      
-      // 檢測 iOS 設備
-      const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-                         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-      
-      for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        try {
-          console.log(`兌換嘗試 ${attempt}/${maxRetries} - 代碼: ${code} (iOS: ${isIOSDevice})`);
-          
-          // 使用最簡單的請求配置避免觸發 OPTIONS 預檢
-          const requestBody = JSON.stringify({
-            appId: this.appId,
-            userId,
-            code,
-          });
-          
-          // 設置較短的超時時間
-          const timeoutMs = isIOSDevice ? 8000 : 15000;
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => {
-            console.log(`兌換請求超時 ${timeoutMs}ms`);
-            controller.abort();
-          }, timeoutMs);
-          
-          // iOS Safari 優化：使用最小化的 CORS 配置
-          const response = await fetch(this.apiEndpoint, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: requestBody,
-            signal: controller.signal,
-            // iOS Safari 特定配置
-            mode: 'cors',
-            cache: 'no-cache',
-            credentials: 'omit', // 重要：iOS Safari 對 credentials 敏感
-          });
-          
-          clearTimeout(timeoutId);
-          
-          if (response.ok) {
-            console.log(`兌換成功，嘗試次數: ${attempt}`);
-            return await response.json();
-          }
-
-          // 處理 API 錯誤回應
-          let errorData;
-          try {
-            errorData = await response.json();
-          } catch {
-            errorData = { 
-              message: `HTTP ${response.status}: ${response.statusText}`,
-              errorCode: `HTTP_${response.status}`
-            };
-          }
-          
-          console.warn('API 錯誤回應:', errorData);
-          
-          // 5xx 錯誤值得重試
-          if (response.status >= 500 && attempt < maxRetries) {
-            throw new Error(`伺服器錯誤 ${response.status}，將重試...`);
-          }
-          
-          // 429 錯誤值得重試
-          if (response.status === 429 && attempt < maxRetries) {
-            throw new Error(`請求過於頻繁，將重試...`);
-          }
-          
-          // 其他 4xx 錯誤不重試
-          if (response.status >= 400) {
-            throw errorData;
-          }
-          
-          throw errorData;
-
-        } catch (error) {
-          lastError = error;
-          console.warn(`兌換嘗試 ${attempt} 失敗:`, error.message);
-          
-          // 最後一次嘗試失敗
-          if (attempt === maxRetries) {
-            throw error;
-          }
-          
-          // 判斷是否值得重試
-          const isRetryableError = 
-            error.name === 'AbortError' || // 超時
-            error.message.includes('Failed to fetch') || // 網路問題
-            error.message.includes('NetworkError') || // 網路問題
-            error.message.includes('伺服器錯誤') || // 5xx 錯誤
-            error.message.includes('請求過於頻繁') || // 429 錯誤
-            error.message.includes('Load failed'); // 載入失敗
-          
-          if (!isRetryableError) {
-            console.log('不可重試的錯誤，放棄:', error.message);
-            throw error;
-          }
-          
-          // 計算重試延遲
-          const delay = baseDelay * Math.pow(2, attempt - 1);
-          console.log(`等待 ${delay}ms 後重試...`);
-          await new Promise(resolve => setTimeout(resolve, delay));
+        ]
+        
+        // 顯示更詳細的錯誤信息
+        if (appStore.error) {
+          redeemCodes.value[0].errorMessage = `連線錯誤: ${appStore.error}`
         }
+        
+        return
       }
       
-      throw lastError;
-    },
+      // 轉換正常數據格式
+      redeemCodes.value = redeemData.map(item => ({
+        code: item.code || '未知代碼',
+        description: item.reward || '未知獎勵',
+        status: item.status || '未知狀態',
+        claimed: false,
+        claiming: false,
+        statusMessage: null,
+        errorMessage: null
+      }))
+      
+      // 載入已兌換狀態
+      loadClaimedStatus()
+      console.log('兌換碼載入成功，暱稱:', currentNickname.value)
+      
+    } else {
+      console.log('沒有可用的兌換碼數據')
+      
+      // 檢查是否有API錯誤
+      if (appStore.error) {
+        redeemCodes.value = [
+          { 
+            code: 'LOAD_ERROR', 
+            description: '兌換碼載入失敗', 
+            status: '載入錯誤', 
+            claimed: false, 
+            claiming: false, 
+            statusMessage: null, 
+            errorMessage: `${appStore.error} - 請重新整理頁面` 
+          }
+        ]
+      } else {
+        // 單純沒有數據
+        redeemCodes.value = [
+          { 
+            code: 'NO_DATA', 
+            description: '目前沒有可用的兌換碼', 
+            status: '暫無資料', 
+            claimed: false, 
+            claiming: false, 
+            statusMessage: null, 
+            errorMessage: null 
+          }
+        ]
+      }
+    }
+  } catch (error) {
+    console.error('從 store 載入兌換碼時發生錯誤:', error)
+    redeemCodes.value = [
+      { 
+        code: 'SYSTEM_ERROR', 
+        description: '系統載入兌換碼時發生錯誤', 
+        status: '系統錯誤', 
+        claimed: false, 
+        claiming: false, 
+        statusMessage: null, 
+        errorMessage: '請重新整理頁面或聯絡管理員' 
+      }
+    ]
+  }
+}
 
-    // 保存兌換狀態到 localStorage
-    saveClaimedStatus() {
-      const claimedCodes = this.couponCodes
-        .filter(coupon => coupon.claimed)
-        .map(coupon => coupon.code);
-      localStorage.setItem(`claimedCodes_${this.nickname}`, JSON.stringify(claimedCodes));
-      console.log(`Saved claimed status for ${this.nickname}:`, claimedCodes);
-    },
+// API 客戶端方法 - iOS Safari 兼容版本
+const claimCoupon = async (userId = '', code = '') => {
+  const maxRetries = 3
+  const baseDelay = 1000
+  let lastError
+  const apiEndpoint = 'https://bd2redeem.zzz-archive-back-end.workers.dev/'
+  const appId = 'bd2-live'
+  
+  // 檢測 iOS 設備
+  const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`兌換嘗試 ${attempt}/${maxRetries} - 代碼: ${code} (iOS: ${isIOSDevice})`)
+      
+      // 使用最簡單的請求配置避免觸發 OPTIONS 預檢
+      const requestBody = JSON.stringify({
+        appId,
+        userId,
+        code,
+      })
+      
+      // 設置較短的超時時間
+      const timeoutMs = isIOSDevice ? 8000 : 15000
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => {
+        console.log(`兌換請求超時 ${timeoutMs}ms`)
+        controller.abort()
+      }, timeoutMs)
+      
+      // iOS Safari 優化：使用最小化的 CORS 配置
+      const response = await fetch(apiEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: requestBody,
+        signal: controller.signal,
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'omit', // 重要：iOS Safari 對 credentials 敏感
+      })
+      
+      clearTimeout(timeoutId)
+      
+      if (response.ok) {
+        console.log(`兌換成功，嘗試次數: ${attempt}`)
+        return await response.json()
+      }
 
-    // 從 localStorage 載入兌換狀態
-    loadClaimedStatus() {
+      // 處理 API 錯誤回應
+      let errorData
       try {
-        if (!this.nickname) {
-          console.log("No nickname, skipping load claimed status");
-          return;
-        }
-        
-        const claimedCodesStr = localStorage.getItem(`claimedCodes_${this.nickname}`);
-        const claimedCodes = claimedCodesStr ? JSON.parse(claimedCodesStr) : [];
-        
-        if (!Array.isArray(claimedCodes)) {
-          console.warn("Invalid claimed codes data, resetting");
-          return;
-        }
-        
-        if (!this.couponCodes || !Array.isArray(this.couponCodes)) {
-          console.warn("Invalid coupon codes array");
-          return;
-        }
-        
-        // 獲取當前 API 中的所有兌換碼
-        const currentCodes = this.couponCodes.map(coupon => coupon.code);
-        
-        // 載入兌換狀態並統計
-        let claimedCount = 0;
-        this.couponCodes.forEach(coupon => {
-          if (coupon && coupon.code) {
-            coupon.claimed = claimedCodes.includes(coupon.code);
-            if (coupon.claimed) claimedCount++;
-          }
-        });
-        
-        // 清理已經不存在的兌換碼記錄（可選的優化）
-        const validClaimedCodes = claimedCodes.filter(code => currentCodes.includes(code));
-        if (validClaimedCodes.length !== claimedCodes.length) {
-          console.log(`Cleaning up obsolete claimed codes for ${this.nickname}. Before: ${claimedCodes.length}, After: ${validClaimedCodes.length}`);
-          localStorage.setItem(`claimedCodes_${this.nickname}`, JSON.stringify(validClaimedCodes));
-        }
-        
-        console.log(`✅ 載入 ${this.nickname} 的兌換狀態完成: ${claimedCount}/${this.couponCodes.length} 已兌換`);
-        console.log(`📋 已兌換代碼:`, validClaimedCodes);
-      } catch (error) {
-        console.error("Error loading claimed status:", error);
-        // 如果載入失敗，清除可能損壞的數據
-        try {
-          localStorage.removeItem(`claimedCodes_${this.nickname}`);
-        } catch (cleanupError) {
-          console.error("Error cleaning up claimed codes:", cleanupError);
+        errorData = await response.json()
+      } catch {
+        errorData = { 
+          message: `HTTP ${response.status}: ${response.statusText}`,
+          errorCode: `HTTP_${response.status}`
         }
       }
-    },
-
-    // 獲取按鈕顏色
-    getButtonColor(coupon) {
-      if (coupon.claimed) return 'success';
-      if (coupon.errorMessage) return 'error';
-      return 'primary';
-    },
-
-    // 獲取按鈕文字
-    getButtonText(coupon) {
-      if (coupon.claimed) return '已兌換';
-      if (coupon.errorMessage) return '重試';
-      return '兌換';
-    },
-
-    // 獲取狀態顏色
-    getStatusColor(status) {
-      const statusColors = {
-        '限時可用': 'warning',
-        '目前可用': 'success',
-        '永久': 'info',
-        '已過期': 'error'
-      };
-      return statusColors[status] || 'default';
-    },
-
-    async submitNickname() {
-      if (this.$refs.form.validate()) {
-        const appStore = useAppStore();
-        
-        // 儲存暱稱到 localStorage 和暱稱列表
-        localStorage.setItem("nickname", this.nickname);
-        this.saveNicknameToList(this.nickname);
-        
-        // 檢查API狀態
-        if (appStore.loading) {
-          // API還在載入中，顯示等待狀態
-          this.isSubmitted = true;
-          this.loading = true;
-          console.log("API還在載入中，等待完成...");
-          
-          // 滾動到載入區域並顯示提示
-          this.$nextTick(() => {
-            const loadingContainer = document.querySelector('.loading-container');
-            if (loadingContainer) {
-              loadingContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-          });
-          
-          // 開始監聽並等待API載入完成
-          this.waitForApiAndLoadData();
-        } else if (appStore.hasData) {
-          // API已經載入完成，直接載入兌換碼
-          this.isSubmitted = true;
-          console.log("API已載入，直接載入兌換碼...");
-          this.loadCouponCodesFromStore();
-        } else {
-          // API沒有數據且不在載入中，可能是錯誤狀態
-          this.isSubmitted = true;
-          console.log("API未載入或載入失敗，嘗試觸發載入...");
-          
-          // 嘗試觸發API載入
-          try {
-            this.loading = true;
-            await appStore.fetchAllData();
-            this.loadCouponCodesFromStore();
-          } catch (error) {
-            console.error("觸發API載入失敗:", error);
-            this.loadCouponCodesFromStore(); // 載入錯誤狀態
-          } finally {
-            this.loading = false;
-          }
-        }
+      
+      console.warn('API 錯誤回應:', errorData)
+      
+      // 5xx 錯誤值得重試
+      if (response.status >= 500 && attempt < maxRetries) {
+        throw new Error(`伺服器錯誤 ${response.status}，將重試...`)
       }
-    },
+      
+      // 429 錯誤值得重試
+      if (response.status === 429 && attempt < maxRetries) {
+        throw new Error(`請求過於頻繁，將重試...`)
+      }
+      
+      // 其他 4xx 錯誤不重試
+      if (response.status >= 400) {
+        throw errorData
+      }
+      
+      throw errorData
+
+    } catch (error) {
+      lastError = error
+      console.warn(`兌換嘗試 ${attempt} 失敗:`, error.message)
+      
+      // 最後一次嘗試失敗
+      if (attempt === maxRetries) {
+        throw error
+      }
+      
+      // 判斷是否值得重試
+      const isRetryableError = 
+        error.name === 'AbortError' || // 超時
+        error.message.includes('Failed to fetch') || // 網路問題
+        error.message.includes('NetworkError') || // 網路問題
+        error.message.includes('伺服器錯誤') || // 5xx 錯誤
+        error.message.includes('請求過於頻繁') || // 429 錯誤
+        error.message.includes('Load failed') // 載入失敗
+      
+      if (!isRetryableError) {
+        console.log('不可重試的錯誤，放棄:', error.message)
+        throw error
+      }
+      
+      // 計算重試延遲
+      const delay = baseDelay * Math.pow(2, attempt - 1)
+      console.log(`等待 ${delay}ms 後重試...`)
+      await new Promise(resolve => setTimeout(resolve, delay))
+    }
+  }
+  
+  throw lastError
+}
+
+// --- Lifecycle ---
+onMounted(() => {
+  console.log('ProfileTest 組件掛載')
+  
+  loadSavedNicknames()
+  
+  // 載入保存的暱稱
+  const savedNickname = localStorage.getItem('nickname')
+  if (savedNickname) {
+    console.log('找到保存的暱稱:', savedNickname)
+    currentNickname.value = savedNickname
+    loadRedeemCodes()
+  }
+  
+  // 載入保存的頭像
+  const savedAvatarId = localStorage.getItem('selectedAvatarId')
+  if (savedAvatarId) {
+    currentAvatar.value = parseInt(savedAvatarId)
+  } else {
+    currentAvatar.value = 32 // 預設頭像
+    localStorage.setItem('selectedAvatarId', '32')
+  }
+  
+  // 確保 appStore 已經初始化
+  if (!appStore.hasData && !appStore.loading) {
+    console.log('觸發 appStore 初始化載入')
+    appStore.fetchAllData().catch(error => {
+      console.error('初始化載入失敗:', error)
+    })
+  }
+})
+
+// --- Watch ---
+// 監聽 appStore 數據變化
+watch(
+  () => ({
+    hasData: appStore.hasData,
+    loading: appStore.loading,
+    error: appStore.error,
+    lastFetchTime: appStore.lastFetchTime,
+    redeemCodes: appStore.redeemCodes
+  }),
+  (newVal, oldVal) => {
+    console.log('AppStore 狀態變化:', {
+      old: oldVal,
+      new: newVal,
+      hasNickname: !!currentNickname.value,
+      hasRedeemCodes: redeemCodes.value.length > 0
+    })
     
-    async executeClaim(coupon, index) {
-      if (coupon.claimed || coupon.claiming) return;
-      
-      // 設置兌換中狀態 - 使用 Vue 3 的響應式更新
-      this.couponCodes[index].claiming = true;
-      this.couponCodes[index].errorMessage = null; // 清除之前的錯誤訊息
-      this.couponCodes[index].statusMessage = null; // 清除之前的狀態訊息
-      
-      try {
-        // 使用 API 客戶端執行兌換
-        const result = await this.claimCoupon(this.nickname, coupon.code);
-        
-        console.log("Claim result:", result);
-        
-        // 檢查是否成功
-        if (result.success === true) {
-          // 兌換成功
-          this.couponCodes[index].claimed = true;
-          this.couponCodes[index].claiming = false;
-          this.couponCodes[index].errorMessage = null;
-          this.couponCodes[index].statusMessage = '兌換成功';
-          this.couponCodes[index].statusMessageType = 'success';
-          
-          // 保存兌換狀態到 localStorage
-          this.saveClaimedStatus();
-          
-          console.log(`兌換碼 ${coupon.code} 兌換成功！`);
-        } else {
-          // 如果 success 不是 true，當作錯誤處理
-          throw result;
-        }
-        
-      } catch (error) {
-        console.error("Error claiming coupon:", error);
-        
-        // 重置兌換狀態
-        this.couponCodes[index].claiming = false;
-        
-        // 檢查錯誤對象的結構
-        console.log("Error object:", error);
-        console.log("Error.errorCode:", error.errorCode);
-        console.log("Error.message:", error.message);
-        
-        // 根據錯誤類型處理
-        if (error.errorCode === 'AlreadyUsed') {
-          // 已經使用過的兌換碼，標記為已兌換並顯示狀態訊息
-          console.log("Already used - marking as claimed");
-          this.couponCodes[index].claimed = true;
-          this.couponCodes[index].errorMessage = null;
-          this.couponCodes[index].statusMessage = '已使用過該序號';
-          this.couponCodes[index].statusMessageType = 'success';
-          this.saveClaimedStatus();
-          
-        } else if (error.errorCode === 'InvalidCode') {
-          // 無效的兌換碼
-          console.log("Invalid code error");
-          this.couponCodes[index].errorMessage = '無效的兌換碼';
-          this.couponCodes[index].statusMessage = null;
-          
-        } else if (error.errorCode === 'IncorrectUser') {
-          // 暱稱驗證失敗
-          console.log("Incorrect user error");
-          this.couponCodes[index].errorMessage = '暱稱驗證失敗，請確認暱稱是否正確';
-          this.couponCodes[index].statusMessage = null;
-          
-        } else if (error.errorCode === 'ExpiredCode') {
-          // 兌換碼已到期
-          console.log("code expired error");
-          this.couponCodes[index].errorMessage = '兌換碼已過期';
-          this.couponCodes[index].statusMessage = null;
-          
-        } else {
-          // 其他錯誤 - 改善錯誤處理
-          console.log("Other error:", error);
-          
-          // 根據錯誤類型提供更具體的訊息
-          if (error.name === 'AbortError') {
-            this.couponCodes[index].errorMessage = '請求超時，請重試';
-          } else if (error.message && error.message.includes('Failed to fetch')) {
-            this.couponCodes[index].errorMessage = '網路連線問題，請檢查網路後重試';
-          } else if (error.message && error.message.includes('NetworkError')) {
-            this.couponCodes[index].errorMessage = '網路錯誤，請稍後重試';
-          } else if (error.message && error.message.includes('Server error')) {
-            this.couponCodes[index].errorMessage = '伺服器暫時無法回應，請稍後重試';
-          } else if (error.message && error.message.includes('Rate limited')) {
-            this.couponCodes[index].errorMessage = '請求過於頻繁，請稍後再試';
-          } else {
-            // 通用錯誤訊息
-            this.couponCodes[index].errorMessage = '兌換失敗，請重新整理頁面後再試';
-          }
-          
-          this.couponCodes[index].statusMessage = null;
-        }
-      }
-    },
+    // 只有當用戶已輸入暱稱時才處理
+    if (!currentNickname.value) {
+      return
+    }
     
-    clearData() {
-      try {
-        // 清除暱稱
-        localStorage.removeItem("nickname");
-        
-        // 注意：不要清除兌換狀態，保留每個暱稱的兌換記錄
-        // localStorage.removeItem(`claimedCodes_${this.nickname}`);
-        
-        // 重置組件狀態
-        this.nickname = "";
-        this.isSubmitted = false;
-        this.couponCodes = [];
-        this.loading = false;
-        
-        console.log("Data cleared successfully - keeping claimed status for future use");
-      } catch (error) {
-        console.error("Error clearing data:", error);
-        // 強制重置狀態
-        this.nickname = "";
-      this.isSubmitted = false;
-        this.couponCodes = [];
-        this.loading = false;
-      }
-    },
-
-    openAvatarDialog() {
-      this.avatarDialog = true;
-    },
-
-    selectAvatar(avatarId) {
-      this.selectedAvatarId = avatarId;
-      this.updateCurrentAvatarUrl();
-      // 保存到 localStorage
-      localStorage.setItem("selectedAvatarId", avatarId.toString());
-      this.avatarDialog = false;
-    },
-
-    getAvatarUrl(avatarId) {
-      // 格式化 avatarId 為兩位數字
-      const formattedId = avatarId.toString().padStart(2, '0');
-      // 根據頭像ID決定使用PNG還是JPG格式
-      const extension = this.jpgAvatars.includes(avatarId) ? 'jpg' : 'png';
-      return `https://www.browndust2.com/img/designKit/snsIcon/social-icon-${formattedId}.${extension}`;
-    },
-
-    updateCurrentAvatarUrl() {
-      this.currentAvatarUrl = this.getAvatarUrl(this.selectedAvatarId);
-    },
-
-    isApiErrorCode(code) {
-      // 判斷是否為API錯誤碼
-      return ['API_ERROR', 'LOAD_ERROR', 'SYSTEM_ERROR'].includes(code);
-    },
-
-    async retryLoadData() {
-      if (this.retrying) return; // 避免重複點擊
-      
-      console.log("Manual retry requested by user");
-      this.retrying = true;
-      
-      try {
-        const appStore = useAppStore();
-        
-        // 先嘗試重新載入 store 數據
-        await appStore.retryFetchAllData();
-        
-        // 然後重新載入兌換碼
-        this.loadCouponCodesFromStore();
-        
-        console.log("Retry completed successfully");
-        
-      } catch (error) {
-        console.error("Retry failed:", error);
-        
-        // 即使重試失敗，也更新顯示以反映最新的錯誤狀態
-        this.loadCouponCodesFromStore();
-        
-      } finally {
-        this.retrying = false;
-      }
-    },
+    // 如果已有正常的兌換碼，跳過（避免重複載入）
+    if (redeemCodes.value.length > 0 && !['API_ERROR', 'LOAD_ERROR', 'SYSTEM_ERROR', 'NO_DATA'].includes(redeemCodes.value[0].code)) {
+      return
+    }
     
-    // 重新載入兌換碼（給用戶使用的通用方法）
-    async retryLoadCouponCodes() {
-      if (this.retrying) return;
-      
-      console.log("用戶手動重新載入兌換碼");
-      this.retrying = true;
-      this.loading = true;
-      
-      try {
-        const appStore = useAppStore();
-        
-        // 清除現有的兌換碼數據
-        this.couponCodes = [];
-        
-        // 智能判斷是否需要重新載入API
-        console.log("API狀態檢查:", {
-          hasData: appStore.hasData,
-          error: appStore.error,
-          loading: appStore.loading,
-          lastFetchTime: appStore.lastFetchTime
-        });
-        
-        if (appStore.hasData && !appStore.error && !appStore.loading) {
-          // API已經有數據且沒有錯誤，直接載入兌換碼
-          console.log("✅ API已有數據，直接載入兌換碼");
-          this.loadCouponCodesFromStore();
-        } else if (appStore.loading) {
-          // API正在載入中，等待完成
-          console.log("⏳ API正在載入中，等待完成");
-          await this.waitForApiAndLoadData();
-        } else {
-          // API沒有數據或有錯誤，重新觸發載入
-          console.log("🔄 重新觸發API載入 (hasData:", appStore.hasData, "error:", appStore.error, ")");
-          await appStore.fetchAllData();
-          this.loadCouponCodesFromStore();
-        }
-        
-        console.log("兌換碼重新載入成功");
-        
-      } catch (error) {
-        console.error("重新載入兌換碼失敗:", error);
-        
-        // 即使失敗也載入當前狀態
-        this.loadCouponCodesFromStore();
-        
-      } finally {
-        this.retrying = false;
-        this.loading = false;
-      }
-    },
-
+    // 如果API從載入中變為完成，載入兌換碼
+    if (oldVal && oldVal.loading && !newVal.loading) {
+      console.log('API載入完成，自動載入兌換碼')
+      loadCouponCodesFromStore()
+      return
+    }
     
-
-    // 處理兌換請求  
-    async handleClaim() {
-      if (this.claimLoading) return;
-      
-      const userId = this.userId || '';
-      const code = this.couponCode;
-      
-      if (!code) {
-        this.showError('請輸入兌換碼');
-        return;
-      }
-      
-      this.claimLoading = true;
-      this.claimStatus = '';
-      this.claimMessage = '';
-      this.networkStatus = 'checking';
-      
-      try {
-        const result = await this.claimCoupon(userId, code);
-        console.log('兌換結果:', result);
-        
-        this.networkStatus = 'online';
-        
-        // 處理回應
-        if (result.success) {
-          this.claimStatus = 'success';
-          this.claimMessage = result.message || '兌換成功！';
-        } else {
-          this.claimStatus = 'error';
-          this.claimMessage = result.message || '兌換失敗';
-        }
-        
-      } catch (error) {
-        console.warn('兌換錯誤:', error);
-        this.claimStatus = 'error';
-        
-        // 網路狀態診斷
-        if (error.message.includes('Failed to fetch')) {
-          this.networkStatus = 'unreachable';
-          this.claimMessage = '無法連接兌換服務，請檢查網路狀態';
-        } else if (error.message.includes('timeout') || error.name === 'AbortError') {
-          this.networkStatus = 'slow';
-          this.claimMessage = '兌換服務回應超時，請稍後重試';
-        } else if (error.message.includes('CORS') || error.message.includes('cors')) {
-          this.networkStatus = 'cors-error';
-          this.claimMessage = 'iOS Safari 兼容性問題，請嘗試重新整理頁面';
-        } else if (error.errorCode) {
-          this.networkStatus = 'online';
-          this.claimMessage = `${error.message}`;
-        } else {
-          this.networkStatus = 'unreachable';
-          this.claimMessage = error.message || '兌換失敗，請稍後重試';
-        }
-      } finally {
-        this.claimLoading = false;
-        // 3秒後清除網路狀態提示
-        setTimeout(() => {
-          if (this.networkStatus !== 'unreachable') {
-            this.networkStatus = null;
-          }
-        }, 3000);
-      }
-    },
+    // 如果API從沒有數據變為有數據，載入兌換碼
+    if (oldVal && !oldVal.hasData && newVal.hasData) {
+      console.log('API數據可用，自動載入兌換碼')
+      loadCouponCodesFromStore()
+      return
+    }
+    
+    // 如果lastFetchTime更新（表示有新數據），載入兌換碼
+    if (oldVal && oldVal.lastFetchTime !== newVal.lastFetchTime && newVal.lastFetchTime) {
+      console.log('API數據更新，自動載入兌換碼')
+      loadCouponCodesFromStore()
+      return
+    }
+    
+    // 如果兌換碼數據直接更新
+    if (newVal.redeemCodes && newVal.redeemCodes.length > 0 && 
+        (!oldVal || JSON.stringify(oldVal.redeemCodes) !== JSON.stringify(newVal.redeemCodes))) {
+      console.log('兌換碼數據直接更新')
+      loadCouponCodesFromStore()
+      return
+    }
   },
-};
+  { deep: true, immediate: true }
+)
 </script>
 
 <style scoped>
@@ -1499,21 +843,19 @@ export default {
 /* 桌面版才使用動態高度 */
 @media (min-width: 769px) {
   .profile-card {
-    height: 100%; /* 讓卡片填滿父容器的高度 */
+    height: 100%;
     display: flex;
     flex-direction: column;
   }
   
-  /* 卡片內容區域 */
   .profile-card-content {
-    flex: 1; /* 填滿剩餘空間 */
+    flex: 1;
     display: flex;
     flex-direction: column;
   }
   
-  /* 兌換碼展示區域 */
   .coupon-display-area {
-    flex: 1; /* 填滿剩餘空間 */
+    flex: 1;
     display: flex;
     flex-direction: column;
   }
@@ -1521,7 +863,7 @@ export default {
 
 /* 載入狀態容器 */
 .loading-container {
-  height: 400px; /* 預設固定高度 */
+  height: 400px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1529,9 +871,9 @@ export default {
   text-align: center;
 }
 
-/* 兌換碼列表容器 - 預設固定高度 */
+/* 兌換碼列表容器 */
 .coupon-list-container {
-  height: 400px; /* 預設固定高度 */
+  height: 400px;
   overflow-y: auto;
   padding: 6px;
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -1545,15 +887,15 @@ export default {
 /* 桌面版使用動態高度 */
 @media (min-width: 769px) {
   .loading-container {
-    flex: 1; /* 填滿剩餘空間 */
-    min-height: 300px; /* 最小高度 */
-    height: auto; /* 覆蓋固定高度 */
+    flex: 1;
+    min-height: 300px;
+    height: auto;
   }
   
   .coupon-list-container {
-    flex: 1; /* 填滿剩餘空間 */
-    min-height: 300px; /* 最小高度 */
-    height: auto; /* 覆蓋固定高度 */
+    flex: 1;
+    min-height: 300px;
+    height: auto;
   }
 }
 
@@ -1574,12 +916,6 @@ export default {
 
 .coupon-list-container::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.5);
-}
-
-/* 選中頭像的樣式 */
-.selected-avatar {
-  border: 2px solid #e72857 !important;
-  box-shadow: 0 0 8px rgba(231, 40, 87, 0.5);
 }
 
 /* 兌換碼列表項目樣式 */
@@ -1614,7 +950,7 @@ export default {
 
 .coupon-code-section {
   flex: 1;
-  min-width: 0; /* 防止文字溢出 */
+  min-width: 0;
 }
 
 .coupon-code-row {
@@ -1655,13 +991,13 @@ export default {
 }
 
 .coupon-message-spacer {
-  width: 32px; /* 與圖標寬度對齊 */
+  width: 32px;
   flex-shrink: 0;
 }
 
 .coupon-message-content {
   flex: 1;
-  min-width: 0; /* 防止溢出 */
+  min-width: 0;
 }
 
 .coupon-message {
@@ -1684,93 +1020,6 @@ export default {
   color: #f44336;
   background-color: rgba(244, 67, 54, 0.15);
   border: 1px solid rgba(244, 67, 54, 0.3);
-}
-
-/* 響應式調整 */
-@media (max-width: 768px) {
-  .profile-card {
-    min-height: 450px;
-  }
-  
-  .user-profile-card {
-    padding: 12px;
-    gap: 12px;
-  }
-  
-  .user-nickname {
-    font-size: 1rem;
-  }
-  
-  .coupon-list-container {
-    height: 350px; /* 平板固定高度 */
-  }
-  
-  .loading-container {
-    height: 350px; /* 平板固定高度 */
-  }
-  
-  .coupon-main-row {
-    padding: 10px 12px;
-    gap: 8px;
-  }
-  
-  .coupon-code {
-    font-size: 0.9rem;
-  }
-  
-  .coupon-description {
-    font-size: 0.8rem;
-  }
-  
-  .coupon-action-btn {
-    min-width: 60px;
-  }
-}
-
-@media (max-width: 480px) {
-  .profile-card {
-    min-height: 400px;
-  }
-  
-  .user-profile-card {
-    padding: 12px;
-    gap: 10px;
-  }
-  
-  .user-subtitle {
-    display: none; /* 在小螢幕隱藏副標題 */
-  }
-  
-  .coupon-list-container {
-    height: 300px; /* 手機固定高度 */
-  }
-  
-  .loading-container {
-    height: 300px; /* 手機固定高度 */
-  }
-  
-  .coupon-main-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-    padding: 12px;
-  }
-  
-  .coupon-code-row {
-    justify-content: space-between;
-  }
-  
-  .coupon-status-chip {
-    margin-left: auto;
-  }
-  
-  .coupon-message-row {
-    padding: 8px 12px 10px 12px;
-  }
-  
-  .coupon-message-spacer {
-    display: none;
-  }
 }
 
 /* 用戶資訊卡片樣式 */
@@ -1805,7 +1054,16 @@ export default {
 
 .user-info {
   flex: 1;
-  min-width: 0; /* 防止文字溢出 */
+  min-width: 0;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  border-radius: 8px;
+  padding: 4px 8px;
+  margin: -4px -8px;
+}
+
+.user-info:hover {
+  background-color: rgba(231, 40, 87, 0.1);
 }
 
 .user-nickname {
@@ -1820,70 +1078,36 @@ export default {
   color: rgba(255, 255, 255, 0.6);
 }
 
-.logout-btn {
-  flex-shrink: 0;
-  opacity: 0.7;
-  transition: opacity 0.2s ease-in-out;
-}
-
-.user-profile-card:hover .logout-btn {
-  opacity: 1;
-}
-
-.user-info {
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-  border-radius: 8px;
-  padding: 4px 8px;
-  margin: -4px -8px;
-}
-
-.user-info:hover {
-  background-color: rgba(231, 40, 87, 0.1);
-}
-
 .user-actions {
   display: flex;
   gap: 4px;
   flex-shrink: 0;
 }
 
-.switch-btn {
-  opacity: 0.8;
-  transition: opacity 0.2s ease-in-out;
-}
-
-.user-profile-card:hover .switch-btn {
-  opacity: 1;
-}
-
-/* API 狀態卡片樣式 */
-.api-status-card {
-  margin-bottom: 12px;
-  padding: 8px 12px;
-  border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.api-status-header {
+/* 暱稱輸入區域樣式 */
+.nickname-input-area {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
+  padding-top: 40px;
+  width: 100%;
 }
 
-.api-status-text {
-  flex: 1;
-  color: rgba(255, 255, 255, 0.8);
+/* 桌面版：靠上對齊 */
+@media (min-width: 769px) {
+  .nickname-input-area {
+    justify-content: flex-start;
+    padding-top: 60px;
+  }
 }
 
-.api-error-detail {
-  margin-top: 4px;
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.6);
-  padding: 4px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+/* 手機版：保持原有的居中效果 */
+@media (max-width: 768px) {
+  .nickname-input-area {
+    justify-content: center;
+    height: 100%;
+    padding-top: 20px;
+  }
 }
 
 /* 暱稱輸入容器樣式 */
@@ -1938,25 +1162,90 @@ export default {
   opacity: 1 !important;
 }
 
-/* 暱稱對話框樣式 */
-.nickname-dialog-item {
-  border-radius: 8px;
-  margin: 4px 0;
-  transition: all 0.2s ease-in-out;
+/* 響應式調整 */
+@media (max-width: 768px) {
+  .profile-card {
+    min-height: 450px;
+  }
+  
+  .user-profile-card {
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .user-nickname {
+    font-size: 1rem;
+  }
+  
+  .coupon-list-container {
+    height: 350px;
+  }
+  
+  .loading-container {
+    height: 350px;
+  }
+  
+  .coupon-main-row {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  
+  .coupon-code {
+    font-size: 0.9rem;
+  }
+  
+  .coupon-description {
+    font-size: 0.8rem;
+  }
+  
+  .coupon-action-btn {
+    min-width: 60px;
+  }
 }
 
-.nickname-dialog-item:hover {
-  background-color: rgba(231, 40, 87, 0.05);
+@media (max-width: 480px) {
+  .profile-card {
+    min-height: 400px;
+  }
+  
+  .user-profile-card {
+    padding: 12px;
+    gap: 10px;
+  }
+  
+  .user-subtitle {
+    display: none;
+  }
+  
+  .coupon-list-container {
+    height: 300px;
+  }
+  
+  .loading-container {
+    height: 300px;
+  }
+  
+  .coupon-main-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 12px;
+  }
+  
+  .coupon-code-row {
+    justify-content: space-between;
+  }
+  
+  .coupon-status-chip {
+    margin-left: auto;
+  }
+  
+  .coupon-message-row {
+    padding: 8px 12px 10px 12px;
+  }
+  
+  .coupon-message-spacer {
+    display: none;
+  }
 }
-
-.selected-nickname {
-  background-color: rgba(231, 40, 87, 0.1);
-  border: 1px solid rgba(231, 40, 87, 0.3);
-}
-
-.nickname-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-</style>
+</style> 
