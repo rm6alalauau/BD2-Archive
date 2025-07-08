@@ -840,24 +840,34 @@ watch(
   min-height: 500px;
 }
 
+/* 桌面版增加最小高度以平衡左右列 */
+@media (min-width: 769px) {
+  .profile-card {
+    min-height: 550px; /* 適度增加最小高度，平衡左右列但不擋到News */
+  }
+}
+
 /* 桌面版才使用動態高度 */
 @media (min-width: 769px) {
   .profile-card {
-    height: 100%;
+    height: 100%; /* 填滿分配的高度 */
     display: flex;
     flex-direction: column;
+    min-height: 550px; /* 適度增加最小高度，平衡左右列 */
   }
   
   .profile-card-content {
     flex: 1;
     display: flex;
     flex-direction: column;
+    min-height: 0; /* 允許內容收縮 */
   }
   
   .coupon-display-area {
     flex: 1;
     display: flex;
     flex-direction: column;
+    min-height: 0; /* 允許內容收縮 */
   }
 }
 
@@ -888,13 +898,13 @@ watch(
 @media (min-width: 769px) {
   .loading-container {
     flex: 1;
-    min-height: 300px;
+    min-height: 350px; /* 適度增加最小高度 */
     height: auto;
   }
   
   .coupon-list-container {
     flex: 1;
-    min-height: 300px;
+    min-height: 350px; /* 適度增加最小高度 */
     height: auto;
   }
 }
