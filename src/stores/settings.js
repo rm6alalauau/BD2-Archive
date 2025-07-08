@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { getTranslation } from '@/locales'
 
 export const useSettingsStore = defineStore('settings', {
   state: () => ({
@@ -20,6 +21,14 @@ export const useSettingsStore = defineStore('settings', {
     // 獲取當前語言資訊
     currentLanguage: (state) => {
       return state.supportedLanguages.find(lang => lang.code === state.selectedLanguage) || state.supportedLanguages[0]
+    },
+    
+    // 翻譯函數
+    t: (state) => {
+      return (key, language = null, params = {}) => {
+        const targetLanguage = language || state.selectedLanguage
+        return getTranslation(key, targetLanguage, params)
+      }
     }
   },
 
