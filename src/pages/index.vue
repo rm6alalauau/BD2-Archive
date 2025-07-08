@@ -2,14 +2,14 @@
 
   <v-container>
     <v-row class="ga">
-      <v-col cols="12" md="6" class="d-flex flex-column">
-        <News class="mb-4" />
-        <Profile class="flex-grow-1" />
+      <v-col cols="12" md="6" class="d-flex flex-column left-column">
+        <News class="news-section" />
+        <Profile class="profile-section" />
       </v-col>
-      <v-col cols="12" md="6" class="d-flex flex-column">
-        <Forums />
-        <PixivCard class="mb-2"/>
-        <OfficialMedia />
+      <v-col cols="12" md="6" class="d-flex flex-column right-column">
+        <Forums class="forums-section" />
+        <PixivCard class="pixiv-section mb-2"/>
+        <OfficialMedia class="media-section" />
       </v-col>
     </v-row>
     
@@ -175,8 +175,40 @@ export default {
 </script>
 
 <style scoped>
-.flex-grow-1 {
-  flex-grow: 1; /* 使組件填滿剩餘空間 */
+/* 左側列佈局 */
+.left-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 桌面版佈局 */
+@media (min-width: 769px) {
+  .news-section {
+    flex-shrink: 0; /* 固定高度，不縮放 */
+    margin-bottom: 1rem;
+  }
+  
+  .profile-section {
+    flex: 1; /* 填滿剩餘空間 */
+    min-height: 0; /* 允許收縮 */
+  }
+}
+
+/* 右側列佈局 */
+.right-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 手機版保持原有佈局 */
+@media (max-width: 768px) {
+  .news-section {
+    margin-bottom: 1rem;
+  }
+  
+  .profile-section {
+    flex-grow: 1;
+  }
 }
 
 /* 免責聲明卡片樣式 */
