@@ -87,11 +87,7 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/redeem/, ''),
       },
-      '/api/pixiv': {
-        target: 'https://api.obfs.dev',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/pixiv/, ''),
-      }
+
     }
   },
   build: {
