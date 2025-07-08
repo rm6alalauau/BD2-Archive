@@ -191,7 +191,9 @@ export default {
       fontSize: 'Font Size',
       fontSizeDescription: 'Adjust interface font display size',
       r18Content: 'R18 Content',
-      r18Description: 'Show R18 related content'
+      r18Description: 'Show R18 related content',
+      websiteIcon: 'Website Icon',
+      websiteIconDescription: 'Choose your favorite website icon'
     },
     
     // Content settings
@@ -254,7 +256,8 @@ export default {
     success: {
       cleared: 'Data cleared',
       reset: 'Settings reset',
-      saved: 'Settings saved'
+      saved: 'Settings saved',
+      iconChanged: 'Website icon changed!'
     }
   },
   

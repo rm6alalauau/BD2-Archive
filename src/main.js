@@ -12,9 +12,13 @@ import App from './App.vue'
 
 // Composables
 import { createApp } from 'vue'
+import { useSettingsStore } from './stores/settings'
 
 const app = createApp(App)
 
 registerPlugins(app)
+
+const settingsStore = useSettingsStore()
+settingsStore.loadSettings()
 
 app.mount('#app')

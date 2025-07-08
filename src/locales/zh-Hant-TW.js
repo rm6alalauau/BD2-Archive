@@ -191,7 +191,9 @@ export default {
       fontSize: '字體大小',
       fontSizeDescription: '調整介面字體的顯示大小',
       r18Content: 'R18 內容',
-      r18Description: '顯示 R18 相關內容'
+      r18Description: '顯示 R18 相關內容',
+      websiteIcon: '網站圖示',
+      websiteIconDescription: '選擇你喜歡的網站圖示'
     },
     
     // 內容設定
@@ -254,7 +256,8 @@ export default {
     success: {
       cleared: '資料已清除',
       reset: '設定已重置',
-      saved: '設定已儲存'
+      saved: '設定已儲存',
+      iconChanged: '網站圖示已切換！'
     }
   },
   

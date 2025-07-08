@@ -191,7 +191,9 @@ export default {
       fontSize: '글꼴 크기',
       fontSizeDescription: '인터페이스 글꼴 표시 크기 조정',
       r18Content: 'R18 콘텐츠',
-      r18Description: 'R18 관련 콘텐츠 표시'
+      r18Description: 'R18 관련 콘텐츠 표시',
+      websiteIcon: '웹사이트 아이콘',
+      websiteIconDescription: '마음에 드는 웹사이트 아이콘을 선택하세요'
     },
     
     // Content settings
@@ -254,7 +256,8 @@ export default {
     success: {
       cleared: '데이터가 지워졌습니다',
       reset: '설정이 초기화되었습니다',
-      saved: '설정이 저장되었습니다'
+      saved: '설정이 저장되었습니다',
+      iconChanged: '웹사이트 아이콘이 변경되었습니다!'
     }
   },
   
