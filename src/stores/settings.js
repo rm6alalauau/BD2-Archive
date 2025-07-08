@@ -1,6 +1,12 @@
 import { defineStore } from 'pinia'
 import { getTranslation } from '@/locales'
 
+// 1. 新增可選 icon 陣列
+export const availableIcons = Array.from({ length: 12 }, (_, i) => ({
+  id: `icon${i + 1}`,
+  path: `/favicon${String(i + 1).padStart(2, '0')}.png`
+}))
+
 export const useSettingsStore = defineStore('settings', {
   state: () => ({
     fontScale: 1.0,
@@ -15,6 +21,8 @@ export const useSettingsStore = defineStore('settings', {
       { code: 'ko-KR', name: '한국어', flag: '🇰🇷' }
     ],
     isLoaded: false,
+    // 2. 新增 icon 狀態
+    selectedIcon: 'icon1',
   }),
 
   getters: {
@@ -29,7 +37,12 @@ export const useSettingsStore = defineStore('settings', {
         const targetLanguage = language || state.selectedLanguage
         return getTranslation(key, targetLanguage, params)
       }
-    }
+    },
+    // 3. 新增 currentIconPath
+    currentIconPath(state) {
+      const found = availableIcons.find(icon => icon.id === state.selectedIcon)
+      return found ? found.path : availableIcons[0].path
+    },
   },
 
   actions: {
@@ -80,6 +93,8 @@ export const useSettingsStore = defineStore('settings', {
           this.showR18Content = settings.showR18Content || false
           this.selectedForums = settings.selectedForums || ['Bahamut', 'NGAList', 'PTTList', 'XPosts', 'RedditPosts']
           this.selectedLanguage = settings.selectedLanguage || this.detectBrowserLanguage()
+          // 載入 icon 設定
+          this.selectedIcon = settings.selectedIcon || 'icon1'
           
           this.applyFontScale()
         } else {
@@ -90,11 +105,13 @@ export const useSettingsStore = defineStore('settings', {
         }
         
         this.isLoaded = true
+        this.updateFavicon() // 載入時更新 favicon
       } catch (error) {
         console.error('載入設定時發生錯誤:', error)
         // 即使出錯也嘗試設定瀏覽器語言
         this.selectedLanguage = this.detectBrowserLanguage()
         this.isLoaded = true // 即使出錯也標記為已載入，使用預設值
+        this.updateFavicon()
       }
     },
 
@@ -105,6 +122,7 @@ export const useSettingsStore = defineStore('settings', {
         showR18Content: this.showR18Content,
         selectedForums: this.selectedForums,
         selectedLanguage: this.selectedLanguage,
+        selectedIcon: this.selectedIcon,
       }
       
       localStorage.setItem('bd2_settings', JSON.stringify(settings))
@@ -148,9 +166,37 @@ export const useSettingsStore = defineStore('settings', {
       this.showR18Content = false
       this.selectedForums = ['Bahamut', 'NGAList', 'PTTList', 'XPosts', 'RedditPosts']
       this.selectedLanguage = 'zh-Hant-TW'
+      this.selectedIcon = 'icon1'
       
       this.applyFontScale()
       this.saveSettings()
-    }
+      this.updateFavicon()
+    },
+
+    // 4. 新增 setIcon
+    setIcon(iconId) {
+      this.selectedIcon = iconId
+      this.saveSettings()
+      this.updateFavicon()
+    },
+
+    // 5. 新增 updateFavicon
+    updateFavicon() {
+      // 移除舊的 icon
+      document.querySelectorAll("link[rel*='icon']").forEach(el => el.remove())
+      // 新的 favicon
+      const link = document.createElement('link')
+      link.rel = 'icon'
+      link.href = this.currentIconPath
+      link.type = 'image/png'
+      document.head.appendChild(link)
+      // 兼容 iOS/Android 桌面捷徑
+      document.querySelectorAll("link[rel='apple-touch-icon']").forEach(el => el.remove())
+      const appleLink = document.createElement('link')
+      appleLink.rel = 'apple-touch-icon'
+      appleLink.href = this.currentIconPath
+      appleLink.sizes = '192x192'
+      document.head.appendChild(appleLink)
+    },
   }
 }) 

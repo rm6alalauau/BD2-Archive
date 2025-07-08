@@ -44,6 +44,54 @@
               </div>
             </div>
 
+            <!-- 網站圖示選擇 -->
+            <div class="setting-item mt-6" style="align-items: flex-start; flex-direction: column;">
+              <div class="setting-info">
+                <div class="setting-label">{{ t('settings.display.websiteIcon') }}</div>
+                <div class="setting-description">{{ t('settings.display.websiteIconDescription') }}</div>
+              </div>
+              
+              <!-- MD3 風格的 icon 選擇器 -->
+              <div class="icon-selector">
+                <v-row>
+                  <v-col 
+                    v-for="icon in availableIcons" 
+                    :key="icon.id" 
+                    cols="6" 
+                    sm="4" 
+                    md="3" 
+                    lg="2"
+                  >
+                    <v-card
+                      @click="onSelectIcon(icon.id)"
+                      :class="['icon-card', { 'icon-card--selected': settingsStore.selectedIcon === icon.id }]"
+                      variant="outlined"
+                      rounded="lg"
+                      elevation="0"
+                      hover
+                    >
+                      <v-card-text class="pa-3 text-center">
+                        <div class="icon-preview">
+                          <img 
+                            :src="icon.path" 
+                            :alt="`Icon ${icon.id}`"
+                            class="icon-image"
+                          />
+                        </div>
+                      </v-card-text>
+                      
+                      <!-- 選中狀態指示器 -->
+                      <div 
+                        v-if="settingsStore.selectedIcon === icon.id"
+                        class="icon-selected-indicator"
+                      >
+                        <v-icon color="primary" size="small">mdi-check-circle</v-icon>
+                      </div>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </div>
+            </div>
 
           </v-card-text>
         </v-card>
@@ -306,13 +354,13 @@
 </template>
 
 <script>
-import { useSettingsStore } from '@/stores/settings'
+import { useSettingsStore, availableIcons } from '@/stores/settings'
 
 export default {
   name: "SettingsPage",
   setup() {
     const settingsStore = useSettingsStore()
-    return { settingsStore }
+    return { settingsStore, availableIcons }
   },
   data() {
     return {
@@ -470,6 +518,14 @@ export default {
       };
       return texts[lang] || texts['zh-Hant-TW'];
     },
+
+    // icon 切換方法
+    onSelectIcon(iconId) {
+      if (this.settingsStore.selectedIcon !== iconId) {
+        this.settingsStore.setIcon(iconId)
+        this.showSuccess(this.t('settings.success.iconChanged'))
+      }
+    },
   },
   
   watch: {
@@ -592,6 +648,74 @@ export default {
 
 .forum-checkbox {
   margin: 0;
+}
+
+/* Icon 選擇器 - MD3 風格 */
+.icon-selector {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.icon-card {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  overflow: hidden;
+}
+
+.icon-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: rgba(255, 255, 255, 0.24) !important;
+}
+
+.icon-card--selected {
+  border-color: rgb(66, 185, 131) !important;
+  background: rgba(66, 185, 131, 0.08) !important;
+  box-shadow: 0 2px 8px rgba(66, 185, 131, 0.2);
+}
+
+.icon-card--selected:hover {
+  border-color: rgb(66, 185, 131) !important;
+  background: rgba(66, 185, 131, 0.12) !important;
+}
+
+.icon-preview {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 48px;
+  margin-bottom: 8px;
+}
+
+.icon-image {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+}
+
+.icon-card:hover .icon-image {
+  transform: scale(1.05);
+}
+
+
+
+.icon-selected-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(66, 185, 131, 0.9);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
 }
 
 /* 導航按鈕 */
