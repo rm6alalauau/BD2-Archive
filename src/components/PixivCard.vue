@@ -38,6 +38,7 @@
             min-height: 210px;
             padding: 4px;
           "
+          @scroll="handleScroll"
         >
           <div
             v-for="item in list"
@@ -110,6 +111,8 @@ export default {
       canLoadMore: true,
       lastFetchTime: null,
       cachedPages: {},
+      showLeftShadow: false,
+      showRightShadow: false,
     };
   },
   computed: {
@@ -152,22 +155,22 @@ export default {
     async fetchMoreDataIfNeeded() {
       if (this.isLoading) return;
 
-      this.isLoading = true;
-      try {
+        this.isLoading = true;
+        try {
         const newIllusts = await this.fetchPixivPage();
-        
-        if (newIllusts && newIllusts.length > 0) {
+          
+          if (newIllusts && newIllusts.length > 0) {
           this.allIllusts = newIllusts; // 直接替換所有數據
-          this.applyFilter();
-        } else {
+            this.applyFilter();
+          } else {
+            this.canLoadMore = false;
+          }
+        } catch (error) {
+          console.error('Error fetching data:', error);
           this.canLoadMore = false;
+        } finally {
+          this.isLoading = false;
         }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        this.canLoadMore = false;
-      } finally {
-        this.isLoading = false;
-      }
     },
     
     async fetchPixivPage() {
@@ -247,6 +250,15 @@ export default {
     scrollRight() {
       if(this.$refs.scrollContainer) {
         this.$refs.scrollContainer.scrollBy({ left: 200, behavior: "smooth" });
+      }
+    },
+    
+    handleScroll() {
+      const container = this.$refs.scrollContainer;
+      if (container) {
+        this.showLeftShadow = container.scrollLeft > 0;
+        this.showRightShadow =
+          container.scrollLeft + container.clientWidth < container.scrollWidth;
       }
     },
     
