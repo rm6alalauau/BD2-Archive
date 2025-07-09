@@ -12,7 +12,7 @@
             :items="options"
             item-title="title"
             item-value="value"
-            class="ml-4"
+            class="ml-4 pixiv-select"
             style="max-width: 160px; height: 60px; align-items: center"
             rounded="xl"
             @update:modelValue="onOptionChange"
@@ -32,14 +32,11 @@
         <div
           ref="scrollContainer"
           class="scroll-container"
-          @scroll="handleScroll"
           style="
             overflow-x: auto;
             white-space: nowrap;
-            scrollbar-width: thin;
-            scrollbar-color: #5c8a10 #000000;
             min-height: 210px;
-            padding-bottom: 16px;
+            padding: 4px;
           "
         >
           <div
@@ -252,9 +249,8 @@ export default {
         this.$refs.scrollContainer.scrollBy({ left: 200, behavior: "smooth" });
       }
     },
-    handleScroll() {
-      // 移除陰影邏輯，保留方法以避免錯誤
-    },
+    
+
     getPlaceholderImage() {
       // 返回一個簡單的佔位符圖片
       return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2MCIgdmlld0JveD0iMCAwIDE2MCAxNjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNjAiIGhlaWdodD0iMTYwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik04MCA2MEM4OC44MzY2IDYwIDk2IDY3LjE2MzQgOTYgNzZWODRDOTYgOTIuODM2NiA4OC44MzY2IDEwMCA4MCAxMDBDNzEuMTYzNCAxMDAgNjQgOTIuODM2NiA2NCA4NFY3NkM2NCA2Ny4xNjM0IDcxLjE2MzQgNjAgODAgNjBaIiBmaWxsPSIjRTBFMEUwIi8+Cjwvc3ZnPgo=';
@@ -281,5 +277,34 @@ export default {
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 150px;
+}
+
+/* 移除 v-select 下拉欄位的邊框線 */
+.pixiv-select :deep(.v-field__outline) {
+  display: none !important;
+}
+
+/* 自定義滾動條樣式 - 與 OfficialMedia 一致 */
+.scroll-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* 隱藏滾軸的箭頭按鈕 */
+.scroll-container::-webkit-scrollbar-button {
+  display: none;
 }
 </style>
