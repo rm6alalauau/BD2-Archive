@@ -82,74 +82,227 @@ export default {
       loading: false,
       error: null,
       settingsStore: useSettingsStore(),
-      // 移除 lastFetchTime 和 cachedData，因為緩存現在由 Worker 處理
+      lastFetchTime: null,
+      cachedData: {},
     };
   },
   computed: {
+    // 多語言文字
     t() {
       return (key, params) => this.$t(key, this.settingsStore.selectedLanguage, params);
     }
   },
-  mounted() {
+  async mounted() {
+    // 延遲載入新聞數據，避免阻塞頁面初始渲染
     this.$nextTick(() => {
       setTimeout(() => {
         this.fetchNewsData();
-      }, 200);
+      }, 200); // 延遲200ms，讓主要內容先載入
     });
   },
   watch: {
+    // 監聽語言變化，重新獲取資料
     'settingsStore.selectedLanguage'() {
       this.fetchNewsData();
     }
   },
   methods: {
-    /**
-     * 【LCP 優化版】只負責獲取已處理好的數據並渲染
-     */
+    // 從 HTML 內容中提取第一個圖片 URL
+    extractFirstImageUrl(htmlContent, tag) {
+      if (!htmlContent) {
+        return this.getDefaultImageByTag(tag);
+      }
+      
+      const imgMatch = htmlContent.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i);
+      return imgMatch ? imgMatch[1] : this.getDefaultImageByTag(tag);
+    },
+    
+    // 根據標籤獲取預設圖片
+    getDefaultImageByTag(tag) {
+      const baseUrl = 'https://www.browndust2.com/img/news/banner-';
+      const tagSuffix = tag || 'notice';
+      return `${baseUrl}${tagSuffix}.png`;
+    },
+    
+    // 從 HTML 內容中提取純文字描述
+    extractTextContent(htmlContent) {
+      if (!htmlContent) return '';
+      
+      // 移除 HTML 標籤，保留純文字
+      const textContent = htmlContent
+        .replace(/<[^>]*>/g, '') // 移除所有 HTML 標籤
+        .replace(/&nbsp;/g, ' ') // 替換 HTML 實體
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .trim();
+      
+      // 限制描述長度
+      return textContent.length > 100 ? textContent.substring(0, 100) + '...' : textContent;
+    },
+    
+    // 格式化日期
+    formatDate(dateString) {
+      if (!dateString) return '';
+      
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffTime = Math.abs(now - date);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === 1) {
+        return this.getLocalizedDateText('yesterday');
+      } else if (diffDays === 0) {
+        return this.getLocalizedDateText('today');
+      } else if (diffDays < 7) {
+        return `${diffDays} ${this.getLocalizedDateText('days_ago')}`;
+      } else {
+        return date.toLocaleDateString(this.getDateLocale(), {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+      }
+    },
+    
+    // 獲取本地化日期文字
+    getLocalizedDateText(key) {
+      const texts = {
+        'zh-Hant-TW': {
+          'yesterday': '昨天',
+          'today': '今天',
+          'days_ago': '天前'
+        },
+        'en': {
+          'yesterday': 'Yesterday',
+          'today': 'Today',
+          'days_ago': 'days ago'
+        },
+        'ja-JP': {
+          'yesterday': '昨日',
+          'today': '今日',
+          'days_ago': '日前'
+        },
+        'ko-KR': {
+          'yesterday': '어제',
+          'today': '오늘',
+          'days_ago': '일 전'
+        }
+      };
+      
+      const lang = this.settingsStore.selectedLanguage;
+      return texts[lang]?.[key] || texts['zh-Hant-TW'][key];
+    },
+    
+    // 根據選擇的語言返回對應的日期格式化地區設定
+    getDateLocale() {
+      const localeMap = {
+        'zh-Hant-TW': 'zh-TW',
+        'en': 'en-US',
+        'ja-JP': 'ja-JP',
+        'ko-KR': 'ko-KR'
+      };
+      return localeMap[this.settingsStore.selectedLanguage] || 'zh-TW';
+    },
+    
+    // 獲取標籤顏色
+    getTagColor(tag) {
+      const tagColors = {
+        'notice': '#ff5a21',
+        'maintenance': '#1258e8',
+        'event': '#e72857',
+        'dev_note': '#0000EE',
+        'package_deal': '#0000EE',
+        'issue': '#0000EE'
+      };
+      return tagColors[tag] || '#ff5a21';
+    },
+    
+    // 獲取標籤文字
+    getTagText(tag) {
+      return this.t(`news.tags.${tag}`) || tag;
+    },
+    
+    // 圖片載入錯誤處理
+    handleImageError(event) {
+      // 使用預設圖片
+      event.target.src = this.getDefaultImageByTag('notice');
+    },
+    
     async fetchNewsData() {
+      const selectedLanguage = this.settingsStore.selectedLanguage;
+      const now = Date.now();
+      const cacheKey = selectedLanguage;
+      
+      // 檢查緩存是否有效（5分鐘內）
+      const cacheValid = this.lastFetchTime && 
+                        this.cachedData[cacheKey] && 
+                        (now - this.lastFetchTime < 5 * 60 * 1000);
+      
+      if (cacheValid) {
+        // 使用緩存數據
+        this.newsList = this.cachedData[cacheKey];
+        this.carouselKey += 1;
+        return;
+      }
+      
       this.loading = true;
       this.error = null;
       
       try {
-        const selectedLanguage = this.settingsStore.selectedLanguage;
+        // 加上隨機參數避免快取
+        const timestamp = Date.now();
+        
+        // 根據語言選擇對應的API endpoint
         const languageEndpoint = this.getApiEndpoint(selectedLanguage);
-
-        // 使用 Vite 代理，或在生產環境直接請求
-        // 注意：這裡不再需要時間戳，因為 Worker 有 CDN 緩存
-        const workerUrl = 'https://bd2-official-proxy.zzz-archive-back-end.workers.dev';
-        const originalUrl = `${workerUrl}/news/${languageEndpoint}`;
+        const originalUrl = `https://bd2-official-proxy.zzz-archive-back-end.workers.dev/news/${languageEndpoint}?v=${timestamp}`;
         const apiUrl = this.$getApiUrl ? this.$getApiUrl(originalUrl) : originalUrl;
         
         const response = await fetch(apiUrl);
 
         if (!response.ok) {
-          throw new Error(`伺服器回應錯誤: ${response.status}`);
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
 
-        // 【關鍵簡化】不再需要 filter, sort, slice！
-        // Worker 已經幫我們處理好了，直接使用返回的數據。
-        const items = data.data || [];
+        // 處理資料：直接使用返回的資料（已經是對應語言）
+        const items = data.data || data || [];
+
+        // 過濾、排序、取最新10筆
+        const sorted = items
+          .filter(item => item.attributes?.createdAt) // 過濾掉沒有時間的
+          .sort((a, b) =>
+            new Date(b.attributes.createdAt) - new Date(a.attributes.createdAt)
+          )
+          .slice(0, 10); // 最新的10筆
 
         // 轉換資料格式以適配輪播組件
-        this.newsList = items.map((item) => {
-          // 這部分的邏輯保持不變，因為它只負責格式化
+        const processedNews = sorted.map((item) => {
           const imageUrl = this.extractFirstImageUrl(item.attributes.content || item.attributes.NewContent, item.attributes?.tag || '');
+          const description = this.extractTextContent(item.attributes.content || item.attributes.NewContent);
           
           return {
             id: item.id,
             title: item.attributes?.subject || this.t('common.notFound'),
             link: `https://www.browndust2.com/${this.getWebsiteLocale()}/news/view?id=${item.id}`,
-            imageUrl: this.normalizeUrl(imageUrl), // 使用輔助函式確保 URL 正確
+            imageUrl: imageUrl,
+            createdAt: item.attributes?.createdAt,
+            description: description,
             tag: item.attributes?.tag || '',
-            // 其他不再需要的欄位可以移除
+            publishedAt: item.attributes?.publishedAt,
+            locale: selectedLanguage,
           };
         });
 
+        // 更新資料和緩存
+        this.newsList = processedNews;
+        this.cachedData[cacheKey] = processedNews;
+        this.lastFetchTime = now;
+
         // 强制重新渲染 v-carousel
         this.carouselKey += 1;
-
       } catch (error) {
         console.error("Error fetching news data:", error);
         this.error = `${this.t('news.loadFailed')}: ${error.message}`;
@@ -158,48 +311,25 @@ export default {
       }
     },
 
-    /**
-     * 新增的輔助函式，確保 URL 正確
-     */
-    normalizeUrl(url) {
-        if (!url) return '';
-        if (url.startsWith('http')) return url;
-        return `https://www.browndust2.com${url}`;
-    },
-
-    // ===== 以下是您原有的、無需修改的輔助方法 =====
-    extractFirstImageUrl(htmlContent, tag) {
-      if (!htmlContent) return this.getDefaultImageByTag(tag);
-      const imgMatch = htmlContent.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i);
-      return imgMatch ? imgMatch[1] : this.getDefaultImageByTag(tag);
-    },
-    
-    getDefaultImageByTag(tag) {
-      const baseUrl = 'https://www.browndust2.com/img/news/banner-';
-      const tagSuffix = tag || 'notice';
-      return `${baseUrl}${tagSuffix}.png`;
-    },
-    
-    getTagColor(tag) {
-      const tagColors = { 'notice': '#ff5a21', 'maintenance': '#1258e8', 'event': '#e72857', 'dev_note': '#0000EE', 'package_deal': '#0000EE', 'issue': '#0000EE' };
-      return tagColors[tag] || '#ff5a21';
-    },
-    
-    getTagText(tag) {
-      return this.t(`news.tags.${tag}`) || tag;
-    },
-    
-    handleImageError(event) {
-      event.target.src = this.getDefaultImageByTag('notice');
-    },
-
+    // 根據選擇的語言返回對應的官網地區路徑
     getWebsiteLocale() {
-      const localeMap = { 'zh-Hant-TW': 'zh-tw', 'en': 'en-us', 'ja-JP': 'ja-jp', 'ko-KR': 'ko-kr' };
+      const localeMap = {
+        'zh-Hant-TW': 'zh-tw',
+        'en': 'en-us',
+        'ja-JP': 'ja-jp',
+        'ko-KR': 'ko-kr'
+      };
       return localeMap[this.settingsStore.selectedLanguage] || 'zh-tw';
     },
 
+    // 根據選擇的語言返回對應的API endpoint
     getApiEndpoint(language) {
-      const endpointMap = { 'zh-Hant-TW': 'tw', 'en': 'en', 'ja-JP': 'jp', 'ko-KR': 'kr' };
+      const endpointMap = {
+        'zh-Hant-TW': 'tw',
+        'en': 'en',
+        'ja-JP': 'jp',
+        'ko-KR': 'kr'
+      };
       return endpointMap[language] || 'tw';
     },
   },
