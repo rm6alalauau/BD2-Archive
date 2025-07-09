@@ -73,6 +73,7 @@
 
 <script>
 import { useSettingsStore } from '@/stores/settings'
+import { optimizeImageUrl } from '@/utils/cloudinary'
 
 export default {
   data() {
@@ -226,8 +227,16 @@ export default {
     
     // 圖片載入錯誤處理
     handleImageError(event) {
-      // 使用預設圖片
-      event.target.src = this.getDefaultImageByTag('notice');
+      const img = event.target;
+      const newsItem = this.newsList.find(item => item.imageUrl === img.src);
+      
+      if (newsItem && newsItem.originalImageUrl && newsItem.originalImageUrl !== img.src) {
+        // 如果Cloudinary優化失敗，嘗試使用原始圖片
+        img.src = newsItem.originalImageUrl;
+      } else {
+        // 使用預設圖片
+        img.src = this.getDefaultImageByTag('notice');
+      }
     },
     
     async fetchNewsData() {
@@ -280,14 +289,16 @@ export default {
 
         // 轉換資料格式以適配輪播組件
         const processedNews = sorted.map((item) => {
-          const imageUrl = this.extractFirstImageUrl(item.attributes.content || item.attributes.NewContent, item.attributes?.tag || '');
+          const originalImageUrl = this.extractFirstImageUrl(item.attributes.content || item.attributes.NewContent, item.attributes?.tag || '');
+          const optimizedImageUrl = optimizeImageUrl(originalImageUrl);
           const description = this.extractTextContent(item.attributes.content || item.attributes.NewContent);
           
           return {
             id: item.id,
             title: item.attributes?.subject || this.t('common.notFound'),
             link: `https://www.browndust2.com/${this.getWebsiteLocale()}/news/view?id=${item.id}`,
-            imageUrl: imageUrl,
+            imageUrl: optimizedImageUrl,
+            originalImageUrl: originalImageUrl, // 保留原始URL作為備用
             createdAt: item.attributes?.createdAt,
             description: description,
             tag: item.attributes?.tag || '',
