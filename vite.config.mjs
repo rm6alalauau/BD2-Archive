@@ -52,10 +52,8 @@ export default defineConfig({
       // `beasties` 的配置選項
       // `options` 物件會直接傳遞給底層的 `beasties` 核心庫
       options: {
-        // `preload` 設置為 'swap' 是官方推薦的一種高效異步加載策略
-        // 它會讓 <link> 標籤變成 <link rel="stylesheet" ... media="print" onload="this.media='all'">
-        // 與我們之前的目標一致
-        preload: 'swap',
+        // 改為更保守的預載入策略，避免瀏覽器警告
+        preload: false,
 
         // 為禁用了 JavaScript 的瀏覽器提供一個備用樣式表
         noscriptFallback: true,

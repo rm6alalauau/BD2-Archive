@@ -112,6 +112,7 @@ export const useAppStore = defineStore('app', {
       ptt: [],
       x: [],
       reddit: [],
+      naver: [],
       pixiv: []
     },
     // 載入狀態
@@ -284,7 +285,8 @@ export const useAppStore = defineStore('app', {
         { name: 'nga', url: 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/nga', key: 'nga' },
         { name: 'ptt', url: 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/ptt', key: 'ptt' },
         { name: 'reddit', url: 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/reddit', key: 'reddit' },
-        { name: 'x', url: 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/x', key: 'x' }
+        { name: 'x', url: 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/x', key: 'x' },
+        { name: 'naver', url: 'https://naver-lounge-proxy.zzz-archive-back-end.workers.dev', key: 'naver' }
       ];
       
       const results = await Promise.allSettled(
@@ -333,7 +335,8 @@ export const useAppStore = defineStore('app', {
       NGAList: state.apiData.nga,
       PTTList: state.apiData.ptt,
       XPosts: state.apiData.x,
-      RedditPosts: state.apiData.reddit
+      RedditPosts: state.apiData.reddit,
+      NaverPosts: state.apiData.naver
     }),
     // 是否有數據
     hasData: (state) => state.lastUpdated !== null,

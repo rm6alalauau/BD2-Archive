@@ -404,6 +404,7 @@ export default {
         { label: this.t('forums.ptt'), value: 'PTTList' },
         { label: this.t('forums.x'), value: 'XPosts' },
         { label: this.t('forums.reddit'), value: 'RedditPosts' },
+        { label: this.t('forums.naver'), value: 'NaverPosts' },
       ]
     }
   },
