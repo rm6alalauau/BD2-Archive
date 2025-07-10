@@ -10,7 +10,12 @@
     >
       <v-carousel-item v-for="(item, i) in items" :key="i">
         <v-card flat tile rounded="xl" @click="navigateTo(item.link)">
-          <v-img :src="getOptimizedImageUrl(item.imgSrc)" max-height="300">
+          <v-img 
+            :src="getOptimizedImageUrl(item.imgSrc)" 
+            height="300"
+            contain
+            class="bahamut-image"
+          >
             <v-row class="fill-height" align="end">
               <v-col
                 class="text-center white--text"
@@ -75,5 +80,9 @@ export default {
 }
 .v-col {
   padding: 0;
+}
+.bahamut-image {
+  min-height: 300px;
+  height: 300px;
 }
 </style>

@@ -116,6 +116,15 @@ export default defineConfig({
           }
           return `assets/[name]-[hash].${ext}`;
         },
+        // 新增 preloadStrategy 來控制預載入行為
+        preloadStrategy: (chunk) => {
+          // 如果是字型檔案，就不要預載入
+          if (/\.(woff|woff2|eot|ttf|otf)$/.test(chunk.fileName)) {
+            return null;
+          }
+          // 其他檔案（如 JS）維持 Vite 的預設策略
+          return 'module';
+        },
       },
     },
     // 添加更穩定的構建設定
