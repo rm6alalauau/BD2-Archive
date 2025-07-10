@@ -52,8 +52,8 @@ export default defineConfig({
       // `beasties` 的配置選項
       // `options` 物件會直接傳遞給底層的 `beasties` 核心庫
       options: {
-        // 啟用關鍵CSS內聯，減少阻塞
-        critical: true,
+        // 暫時禁用內聯以避免文件路徑錯誤
+        critical: false,
         
         // 使用更高效的預載入策略
         preload: 'swap',
@@ -63,9 +63,6 @@ export default defineConfig({
 
         // 壓縮內聯的 CSS
         compress: true,
-        
-        // 設置關鍵CSS的閾值
-        criticalThreshold: 0.1,
         
         // 啟用CSS優化
         optimize: true,
