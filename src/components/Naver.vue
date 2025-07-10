@@ -61,8 +61,8 @@ Naver Lounge 論壇組件
             <a :href="item.link" target="_blank" class="item-image">
               <v-img
                 :src="getOptimizedImageUrl(item.imageUrl) || generatePlaceholderImage(item.title)"
-                height="160"
-                width="160"
+                height="140"
+                width="150"
                 class="d-block mx-auto"
                 @error="handleImageError"
               ></v-img>
@@ -155,7 +155,7 @@ export default {
         // 檢查URL是否包含特殊字符或過長，如果有問題直接使用原始URL
         if (imageUrl.includes('%') || imageUrl.includes('&') || imageUrl.length > 500 || 
             imageUrl.includes('BD2_') || imageUrl.includes('공지사항')) {
-          console.warn('Image URL contains special characters or is problematic, using original URL');
+          console.log('Image URL contains special characters or is problematic, using original URL');
           this.imageCache.set(imageUrl, imageUrl);
           return imageUrl;
         }
@@ -165,7 +165,7 @@ export default {
         this.imageCache.set(imageUrl, optimizedUrl);
         return optimizedUrl;
       } catch (error) {
-        console.warn('Cloudinary optimization failed:', error);
+        console.log('Cloudinary optimization failed:', error);
         // 緩存原始URL作為回退
         this.imageCache.set(imageUrl, imageUrl);
         return imageUrl;
@@ -185,7 +185,7 @@ export default {
         return;
       }
       
-      console.warn('Image failed to load:', event.target.src);
+      console.log('Image failed to load:', event.target.src);
       
       // 如果圖片加載失敗，使用預設圖片
       const placeholderUrl = this.generatePlaceholderImage();
@@ -221,38 +221,47 @@ export default {
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 16px;
   overflow: hidden;
+  position: relative;
 }
 
 .forum-header {
-  height: 40px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0 16px 0 16px;
   flex-shrink: 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   background-color: rgba(255, 255, 255, 0.02);
+  position: relative;
+  z-index: 1;
 }
 
 .forum-title {
   font-size: 1rem;
   font-weight: 500;
+  transform: translateY(-4px);
 }
 
 .forum-controls {
   display: flex;
   align-items: center;
   gap: 8px;
+  transform: translateY(-4px);
 }
 
 .scroll-container {
-  height: 260px;
+  height: 264px;
   display: flex;
   overflow-x: auto;
   overflow-y: hidden;
   white-space: nowrap;
-  padding: 16px 16px 24px 16px; /* 底部增加8px內邊距避免滾軸被裁切 */
+  padding: 20px 16px 8px 16px; /* 頂部增加間距，底部避免被圓角裁切 */
   gap: 16px;
+  position: absolute;
+  top: 36px; /* 從 header 高度開始 */
+  left: 0;
+  right: 0;
 }
 
 /* 統一滾軸樣式 - 符合MD3規範 */
@@ -263,7 +272,7 @@ export default {
 .scroll-container::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 4px;
-  margin: 0 8px; /* 左右邊距避免被圓角裁切 */
+  margin: 0; /* 移除邊距讓滾軸直接貼在底部 */
 }
 
 .scroll-container::-webkit-scrollbar-thumb {
@@ -282,8 +291,8 @@ export default {
 }
 
 .content-item {
-  width: 160px;
-  height: 228px;
+  width: 150px;
+  height: 220px;
   display: flex;
   flex-direction: column;
   margin-right: 16px;
@@ -359,7 +368,7 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 120px;
+  max-width: 110px;
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
@@ -374,7 +383,7 @@ export default {
 @media (max-width: 768px) {
   .content-item {
     width: 140px;
-    height: 200px;
+    height: 210px;
     padding: 8px;
   }
   

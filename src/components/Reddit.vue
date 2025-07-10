@@ -150,37 +150,46 @@ export default {
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 16px;
   overflow: hidden;
+  position: relative;
 }
 
 .forum-header {
-  height: 40px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0 16px 0 16px;
   flex-shrink: 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   background-color: rgba(255, 255, 255, 0.02);
+  position: relative;
+  z-index: 1;
 }
 
 .forum-title {
   font-size: 1rem;
   font-weight: 500;
+  transform: translateY(-4px);
 }
 
 .forum-controls {
   display: flex;
   align-items: center;
   gap: 8px;
+  transform: translateY(-4px);
 }
 
 .scroll-container {
-  height: 260px;
+  height: 264px;
   display: flex;
   overflow-x: auto;
   overflow-y: hidden;
   white-space: nowrap;
-  padding: 16px 16px 24px 16px; /* 底部增加8px內邊距避免滾軸被裁切 */
+  padding: 20px 16px 8px 16px; /* 頂部增加間距，底部避免被圓角裁切 */
+  position: absolute;
+  top: 36px; /* 從 header 高度開始 */
+  left: 0;
+  right: 0;
 }
 
 /* 統一滾軸樣式 - 符合MD3規範 */
@@ -191,7 +200,7 @@ export default {
 .scroll-container::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 4px;
-  margin: 0 8px; /* 左右邊距避免被圓角裁切 */
+  margin: 0; /* 移除邊距讓滾軸直接貼在底部 */
 }
 
 .scroll-container::-webkit-scrollbar-thumb {
@@ -211,7 +220,7 @@ export default {
 
 .content-item {
   width: 160px;
-  height: 228px;
+  height: 220px;
   display: flex;
   flex-direction: column;
   margin-right: 16px;
@@ -224,19 +233,20 @@ export default {
 }
 
 .item-title {
-  height: 40px;
-  line-height: 20px;
+  height: 32px;
+  line-height: 16px;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  margin-bottom: 4px;
+  margin-bottom: 1px;
   font-size: 0.875rem;
+  text-overflow: ellipsis;
 }
 
 .item-stats {
-  height: 20px;
-  line-height: 20px;
+  height: 16px;
+  line-height: 16px;
   display: flex;
   align-items: center;
   gap: 4px;
