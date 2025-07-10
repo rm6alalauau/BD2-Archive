@@ -6,7 +6,6 @@ import Layouts from "vite-plugin-vue-layouts";
 import Vue from "@vitejs/plugin-vue";
 import VueRouter from "unplugin-vue-router/vite";
 import Vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
-import { beasties } from 'vite-plugin-beasties'
 
 // Utilities
 import { defineConfig } from "vite";
@@ -47,26 +46,6 @@ export default defineConfig({
         enabled: true,
       },
       vueTemplate: true,
-    }),
-    beasties({
-      // `beasties` 的配置選項
-      // `options` 物件會直接傳遞給底層的 `beasties` 核心庫
-      options: {
-        // 暫時禁用內聯以避免文件路徑錯誤
-        critical: false,
-        
-        // 使用更高效的預載入策略
-        preload: 'swap',
-        
-        // 為禁用了 JavaScript 的瀏覽器提供一個備用樣式表
-        noscriptFallback: true,
-
-        // 壓縮內聯的 CSS
-        compress: true,
-        
-        // 啟用CSS優化
-        optimize: true,
-      }
     }),
   ],
   define: { "process.env": {} },
