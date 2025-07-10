@@ -10,7 +10,7 @@
     >
       <v-carousel-item v-for="(item, i) in items" :key="i">
         <v-card flat tile rounded="xl" @click="navigateTo(item.link)">
-          <v-img :src="item.imgSrc" max-height="300">
+          <v-img :src="getOptimizedImageUrl(item.imgSrc)" max-height="300">
             <v-row class="fill-height" align="end">
               <v-col
                 class="text-center white--text"
@@ -27,6 +27,8 @@
 </template>
 
 <script>
+import { optimizeImageUrl } from '@/utils/cloudinary'
+
 export default {
   name: "Bahamut",
   props: {
@@ -51,6 +53,17 @@ export default {
   methods: {
     navigateTo(link) {
       window.open(link, "_blank");
+    },
+    getOptimizedImageUrl(imageUrl) {
+      if (!imageUrl) return '';
+      
+      // 如果已經是Cloudinary URL，直接返回（避免重複處理）
+      if (imageUrl.includes('cloudinary.com')) {
+        return imageUrl;
+      }
+      
+      // 使用Cloudinary優化
+      return optimizeImageUrl(imageUrl);
     },
   },
 };

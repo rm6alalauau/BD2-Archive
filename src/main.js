@@ -14,6 +14,12 @@ import App from './App.vue'
 import { createApp } from 'vue'
 import { useSettingsStore } from './stores/settings'
 
+// Import critical CSS first for better performance
+import './styles/critical.css'
+
+// Import MDI font with proper preload handling
+import '@mdi/font/css/materialdesignicons.css'
+
 const app = createApp(App)
 
 registerPlugins(app)
