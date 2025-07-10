@@ -52,14 +52,23 @@ export default defineConfig({
       // `beasties` 的配置選項
       // `options` 物件會直接傳遞給底層的 `beasties` 核心庫
       options: {
-        // 改為更保守的預載入策略，避免瀏覽器警告
-        preload: false,
-
+        // 啟用關鍵CSS內聯，減少阻塞
+        critical: true,
+        
+        // 使用更高效的預載入策略
+        preload: 'swap',
+        
         // 為禁用了 JavaScript 的瀏覽器提供一個備用樣式表
         noscriptFallback: true,
 
         // 壓縮內聯的 CSS
         compress: true,
+        
+        // 設置關鍵CSS的閾值
+        criticalThreshold: 0.1,
+        
+        // 啟用CSS優化
+        optimize: true,
       }
     }),
   ],
@@ -122,8 +131,24 @@ export default defineConfig({
             name.slice(driveLetter.length).replace(INVALID_CHAR_REGEX, "")
           );
         },
+        // 確保CSS文件正確生成
+        assetFileNames: (assetInfo) => {
+          const info = assetInfo.name.split('.');
+          const ext = info[info.length - 1];
+          if (/\.(css)$/.test(assetInfo.name)) {
+            return `assets/[name]-[hash].${ext}`;
+          }
+          return `assets/[name]-[hash].${ext}`;
+        },
       },
     },
+    // 添加更穩定的構建設定
+    sourcemap: false,
+    minify: 'terser',
+    target: 'es2015',
+    // CSS優化設定
+    cssCodeSplit: true,
+    cssMinify: true,
   },
   optimizeDeps: {
     include: ['vue', 'vue-router', 'pinia', 'vuetify']
