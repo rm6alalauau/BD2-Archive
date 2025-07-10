@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-col>
-      <v-card rounded="xl" class="position-relative">
+      <v-card rounded="t-xl" class="position-relative">
         <v-card-title
           class="headline"
           style="font-size: 1rem; display: flex; align-items: center"
@@ -32,12 +32,6 @@
         <div
           ref="scrollContainer"
           class="scroll-container"
-          style="
-            overflow-x: auto;
-            white-space: nowrap;
-            min-height: 210px;
-            padding: 4px;
-          "
           @scroll="handleScroll"
         >
           <div
@@ -296,19 +290,33 @@ export default {
   display: none !important;
 }
 
-/* 自定義滾動條樣式 - 與 OfficialMedia 一致 */
+/* 滾動容器樣式 - 解決滾軸被圓角裁切的問題 */
+.scroll-container {
+  overflow-x: auto;
+  white-space: nowrap;
+  min-height: 210px;
+  padding-top: 4px;
+  padding-left: 4px;
+  padding-right: 4px;
+  
+  /* 關鍵修正：在底部增加空間讓滾動條顯示 */
+  padding-bottom: 12px;
+}
+
+/* 自定義滾動條樣式 - 符合MD3規範 */
 .scroll-container::-webkit-scrollbar {
-  height: 6px;
+  height: 8px; /* MD3建議最小8px以確保點擊區域 */
 }
 
 .scroll-container::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
 .scroll-container::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.3);
-  border-radius: 3px;
+  border-radius: 4px;
+  min-width: 20px; /* 確保最小寬度 */
 }
 
 .scroll-container::-webkit-scrollbar-thumb:hover {

@@ -166,6 +166,7 @@ export default {
     ptt: 'PTT',
     x: 'X (Twitter)',
     reddit: 'Reddit',
+    naver: 'Naver Lounge',
     noData: 'No forum data available',
     loading: 'Loading...',
     loadFailed: 'Load Failed'

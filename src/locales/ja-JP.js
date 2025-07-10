@@ -166,6 +166,7 @@ export default {
     ptt: 'PTT',
     x: 'X (Twitter)',
     reddit: 'Reddit',
+    naver: 'Naver Lounge',
     noData: 'フォーラムデータがありません',
     loading: '読み込み中...',
     loadFailed: '読み込み失敗'

@@ -23,6 +23,7 @@ import NGAList from "./Nga.vue";
 import PTTList from "./Ptt.vue";
 import XPosts from "./X.vue";
 import RedditPosts from "./Reddit.vue";
+import NaverPosts from "./Naver.vue";
 
 export default {
   name: "ParentComponent",
@@ -32,6 +33,7 @@ export default {
     PTTList,
     XPosts,
     RedditPosts,
+    NaverPosts,
   },
   data() {
     return {
@@ -42,6 +44,7 @@ export default {
         { text: "PTT", value: "PTTList" },
         { text: "X", value: "XPosts" },
         { text: "Reddit", value: "RedditPosts" },
+        { text: "Naver", value: "NaverPosts" },
       ],
       components: [
         { text: "巴哈", value: "Bahamut" },
@@ -49,6 +52,7 @@ export default {
         { text: "PTT", value: "PTTList" },
         { text: "X", value: "XPosts" },
         { text: "Reddit", value: "RedditPosts" },
+        { text: "Naver", value: "NaverPosts" },
       ],
       items: {
         Bahamut: [],
@@ -56,6 +60,7 @@ export default {
         PTTList: [],
         XPosts: [],
         RedditPosts: [],
+        NaverPosts: [],
       },
     };
   },
@@ -72,7 +77,7 @@ export default {
       } catch (error) {
         console.error('載入論壇設定時發生錯誤:', error);
       }
-      return ['Bahamut', 'NGAList', 'PTTList', 'XPosts', 'RedditPosts']; // 預設全選
+      return ['Bahamut', 'NGAList', 'PTTList', 'XPosts', 'RedditPosts']; // 預設全選（不包含Naver）
     },
     
     // 根據用戶設定過濾的組件列表

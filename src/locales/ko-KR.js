@@ -166,6 +166,7 @@ export default {
     ptt: 'PTT',
     x: 'X (Twitter)',
     reddit: 'Reddit',
+    naver: 'Naver Lounge',
     noData: '포럼 데이터가 없습니다',
     loading: '로딩 중...',
     loadFailed: '로딩 실패'

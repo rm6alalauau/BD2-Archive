@@ -146,6 +146,10 @@ export default {
   height: 300px;
   display: flex;
   flex-direction: column;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  overflow: hidden;
 }
 
 .forum-header {
@@ -155,6 +159,8 @@ export default {
   justify-content: space-between;
   padding: 0 16px;
   flex-shrink: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.02);
 }
 
 .forum-title {
@@ -174,9 +180,33 @@ export default {
   overflow-x: auto;
   overflow-y: hidden;
   white-space: nowrap;
-  scrollbar-width: thin;
-  scrollbar-color: #5c8a10 #000000;
-  padding: 16px;
+  padding: 16px 16px 24px 16px; /* 底部增加8px內邊距避免滾軸被裁切 */
+}
+
+/* 統一滾軸樣式 - 符合MD3規範 */
+.scroll-container::-webkit-scrollbar {
+  height: 8px; /* MD3建議最小8px以確保點擊區域 */
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  margin: 0 8px; /* 左右邊距避免被圓角裁切 */
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  min-width: 20px; /* 確保最小寬度 */
+}
+
+.scroll-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* 隱藏滾軸的箭頭按鈕 */
+.scroll-container::-webkit-scrollbar-button {
+  display: none;
 }
 
 .content-item {
