@@ -144,7 +144,7 @@ export default defineConfig({
     },
     // 添加更穩定的構建設定
     sourcemap: false,
-    minify: 'terser',
+    minify: 'esbuild',
     target: 'es2015',
     // CSS優化設定
     cssCodeSplit: true,
