@@ -57,6 +57,13 @@ export default defineConfig({
         pruneSource: false,
         preloadFonts: false,
         inlineFonts: false,
+        // 針對行動裝置優化
+        criticalThreshold: 0,
+        criticalTestPage: '/',
+        // 更激進的內聯策略
+        inlineCritical: true,
+        // 減少外部資源
+        externalThreshold: 0,
       }
     }),
   ],
@@ -137,6 +144,9 @@ export default defineConfig({
     // CSS優化設定
     cssCodeSplit: true,
     cssMinify: true,
+    // 針對行動裝置的額外優化
+    assetsInlineLimit: 4096, // 內聯小於4KB的資源
+    chunkSizeWarningLimit: 800, // 降低警告閾值
   },
   optimizeDeps: {
     include: ['vue', 'vue-router', 'pinia', 'vuetify'],

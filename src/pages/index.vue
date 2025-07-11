@@ -137,10 +137,14 @@ export default {
     }
     
     // 延遲載入API數據，避免阻塞頁面渲染
+    // 行動裝置使用更短的延遲，桌面版使用較長延遲
+    const isMobile = window.innerWidth <= 768;
+    const delay = isMobile ? 50 : 100;
+    
     this.$nextTick(() => {
       setTimeout(() => {
         this.fetchDataAsync();
-      }, 100); // 延遲100ms，讓頁面先完成初始渲染
+      }, delay);
     });
   },
   
@@ -187,7 +191,10 @@ export default {
     flex-shrink: 0; /* 固定高度，不縮放 */
     margin-bottom: 1rem;
   }
-  
+  .forums-section {
+    flex-shrink: 0; /* 固定高度，不縮放 */
+    margin-bottom: 1rem;
+  }
   .profile-section {
     flex: 1; /* 填滿剩餘空間 */
     min-height: 0; /* 允許收縮 */
