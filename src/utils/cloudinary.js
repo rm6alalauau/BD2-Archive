@@ -2,6 +2,7 @@
 const CLOUDINARY_CLOUD_NAME = 'daifne7zq';
 const CLOUDINARY_TRANSFORMATION = 'w_800,f_auto,q_auto';
 const CLOUDINARY_SMALL_TRANSFORMATION = 'w_160,h_160,c_fit,f_auto,q_auto';
+const CLOUDINARY_MOBILE_TRANSFORMATION = 'w_400,f_auto,q_60'; // 行動裝置使用更小的尺寸和更低的品質
 
 /**
  * 將圖片URL轉換為Cloudinary優化版本
@@ -73,6 +74,10 @@ export function getOptimizedImageUrl(imageUrl, transformation = CLOUDINARY_TRANS
     return imageUrl;
   }
   
+  // 檢測是否為行動裝置
+  const isMobile = window.innerWidth <= 768;
+  const effectiveTransformation = isMobile ? CLOUDINARY_MOBILE_TRANSFORMATION : transformation;
+  
   // 如果URL是相對路徑，轉換為完整URL
   let fullUrl = imageUrl;
   if (imageUrl.startsWith('/')) {
@@ -85,7 +90,7 @@ export function getOptimizedImageUrl(imageUrl, transformation = CLOUDINARY_TRANS
   
   // 構建Cloudinary fetch URL
   const encodedUrl = encodeURIComponent(fullUrl);
-  return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/fetch/${transformation}/${encodedUrl}`;
+  return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/fetch/${effectiveTransformation}/${encodedUrl}`;
 }
 
 /**

@@ -3,6 +3,26 @@
 /* Import Material Design Icons font via CSS to avoid preload warnings */
 @import '@mdi/font/css/materialdesignicons.css';
 
+/* 行動裝置優化 */
+@media (max-width: 768px) {
+  /* 減少動畫和過渡效果以提升效能 */
+  * {
+    transition-duration: 0.15s !important;
+    animation-duration: 0.15s !important;
+  }
+  
+  /* 優化圖片載入 */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* 減少陰影和模糊效果 */
+  .v-card {
+    backdrop-filter: blur(5px);
+  }
+}
+
 /* 基礎佈局 */
 body {
   margin: 0;

@@ -95,10 +95,14 @@ export default {
   },
   async mounted() {
     // 延遲載入新聞數據，避免阻塞頁面初始渲染
+    // 行動裝置使用更短的延遲
+    const isMobile = window.innerWidth <= 768;
+    const delay = isMobile ? 100 : 200;
+    
     this.$nextTick(() => {
       setTimeout(() => {
         this.fetchNewsData();
-      }, 200); // 延遲200ms，讓主要內容先載入
+      }, delay);
     });
   },
   watch: {
