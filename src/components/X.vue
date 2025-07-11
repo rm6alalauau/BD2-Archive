@@ -31,6 +31,7 @@
             <a :href="item.link" target="_blank" class="item-image">
               <v-img
                 :src="item.image || generatePlaceholderImage(item.title)"
+                :alt="item.title || 'X 貼文圖片'"
                 height="140"
                 width="140"
                 class="d-block mx-auto"

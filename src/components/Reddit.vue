@@ -39,6 +39,7 @@
                 <v-img
                   v-if="item.image"
                   :src="item.image"
+                  :alt="item.title || 'Reddit 貼文圖片'"
                   height="160"
                   width="160"
                   class="d-block mx-auto"
@@ -46,6 +47,7 @@
                 <v-img
                   v-else
                   :src="generatePlaceholderImage(item.title)"
+                  :alt="item.title || 'Reddit 貼文預設圖片'"
                   height="160"
                   width="160"
                   class="d-block mx-auto"

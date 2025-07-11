@@ -61,6 +61,7 @@ Naver Lounge 論壇組件
             <a :href="item.link" target="_blank" class="item-image">
               <v-img
                 :src="getOptimizedImageUrl(item.imageUrl) || generatePlaceholderImage(item.title)"
+                :alt="item.title || 'Naver 貼文圖片'"
                 height="140"
                 width="150"
                 class="d-block mx-auto"

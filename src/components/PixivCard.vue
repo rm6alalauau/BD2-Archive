@@ -46,6 +46,7 @@
             >
               <v-img
                 :src="item.imageUrl"
+                :alt="item.title || 'Pixiv 插畫'"
                 height="160"
                 width="160"
                 class="d-block mx-auto"
@@ -64,6 +65,7 @@
                 >
                   <v-img
                     :src="item.authorAvatar"
+                    :alt="item.authorName || '作者頭像'"
                     height="24"
                     width="24"
                     class="d-block mx-auto"
