@@ -6,6 +6,7 @@ import Layouts from "vite-plugin-vue-layouts";
 import Vue from "@vitejs/plugin-vue";
 import VueRouter from "unplugin-vue-router/vite";
 import Vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
+import { beasties } from "vite-plugin-beasties";
 
 // Utilities
 import { defineConfig } from "vite";
@@ -47,49 +48,17 @@ export default defineConfig({
       },
       vueTemplate: true,
     }),
-    {
-      name: 'html-transform',
-      transformIndexHtml: {
-        order: 'post',
-        handler(html) {
-          let transformedHtml = html;
-          
-          // 移除所有字型檔案的預載入標籤
-          transformedHtml = transformedHtml.replace(
-            /<link[^>]*rel="preload"[^>]*as="font"[^>]*>/g,
-            ''
-          );
-          
-          // 移除包含字型檔案路徑的預載入標籤
-          transformedHtml = transformedHtml.replace(
-            /<link[^>]*rel="preload"[^>]*materialdesignicons[^>]*>/g,
-            ''
-          );
-          
-          // 移除包含 .woff, .woff2, .ttf, .eot 的預載入標籤
-          transformedHtml = transformedHtml.replace(
-            /<link[^>]*rel="preload"[^>]*\.(woff|woff2|ttf|eot)[^>]*>/g,
-            ''
-          );
-          
-          // 移除無效的 type 屬性
-          transformedHtml = transformedHtml.replace(
-            /<link[^>]*rel="preload"[^>]*type="[^"]*"[^>]*>/g,
-            (match) => {
-              return match.replace(/type="[^"]*"/g, '');
-            }
-          );
-          
-          // 為所有 preload 標籤添加 crossorigin 屬性（如果沒有的話）
-          transformedHtml = transformedHtml.replace(
-            /<link([^>]*rel="preload"[^>]*)(?!.*crossorigin)/g,
-            '<link$1 crossorigin="anonymous"'
-          );
-          
-          return transformedHtml;
-        }
+    // Beasties plugin for Critical CSS
+    beasties({
+      options: {
+        preload: 'swap',
+        inlineThreshold: 0,
+        minimumExternalSize: 0,
+        pruneSource: false,
+        preloadFonts: false,
+        inlineFonts: false,
       }
-    }
+    }),
   ],
   define: { "process.env": {} },
   resolve: {
