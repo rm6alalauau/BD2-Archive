@@ -73,7 +73,7 @@
 
 <script>
 import { useSettingsStore } from '@/stores/settings'
-import { optimizeImageUrl } from '@/utils/cloudinary'
+import { getOptimizedImageUrl } from '@/utils/cloudinary'
 
 export default {
   data() {
@@ -290,7 +290,8 @@ export default {
         // 轉換資料格式以適配輪播組件
         const processedNews = sorted.map((item) => {
           const originalImageUrl = this.extractFirstImageUrl(item.attributes.content || item.attributes.NewContent, item.attributes?.tag || '');
-          const optimizedImageUrl = optimizeImageUrl(originalImageUrl);
+          // 使用更精確的 Cloudinary 轉換參數，針對新聞輪播圖片進行優化
+          const optimizedImageUrl = getOptimizedImageUrl(originalImageUrl, 'w_800,h_300,c_fill,f_auto,q_auto');
           const description = this.extractTextContent(item.attributes.content || item.attributes.NewContent);
           
           return {

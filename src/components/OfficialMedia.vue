@@ -37,7 +37,7 @@
           <!-- 縮圖 -->
           <div class="media-thumbnail">
             <img 
-              :src="item.fullThumbnailUrl" 
+              :src="item.optimizedThumbnailUrl" 
               :alt="item.title"
               class="thumbnail-image"
               @error="handleImageError"
@@ -66,6 +66,7 @@
 
 <script>
 import { useSettingsStore } from '@/stores/settings'
+import { getOptimizedImageUrl } from '@/utils/cloudinary'
 
 export default {
   data() {
@@ -189,10 +190,16 @@ export default {
               thumbnailUrl = `https://www.browndust2.com${thumbnailUrl}`;
             }
 
+            // 使用 Cloudinary 優化圖片，針對縮圖尺寸進行優化
+            const optimizedThumbnailUrl = thumbnailUrl ? 
+              getOptimizedImageUrl(thumbnailUrl, 'w_160,h_120,c_fill,f_auto,q_auto') : 
+              'https://img.youtube.com/vi/default/mqdefault.jpg';
+
             return {
               ...item,
               url: `https://www.youtube.com/watch?v=${item.videoId}`,
-              fullThumbnailUrl: thumbnailUrl, 
+              fullThumbnailUrl: thumbnailUrl, // 保留原始 URL 作為備用
+              optimizedThumbnailUrl, // 新增優化後的 URL
               formattedDate: new Date(item.publishedAt).toLocaleDateString(this.getDateLocale(), { 
                 year: 'numeric', 
                 month: 'long', 
