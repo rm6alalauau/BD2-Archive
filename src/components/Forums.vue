@@ -1,7 +1,15 @@
 <template>
   <v-row>
     <v-col>
-      <component :is="selectedComponent" :items="items[selectedComponent]" />
+      <!-- 載入狀態 -->
+      <div v-if="!hasAnyData()" class="d-flex justify-center align-center" style="height: 300px;">
+        <v-progress-circular indeterminate color="primary" size="64"></v-progress-circular>
+      </div>
+      
+      <!-- 內容區域 -->
+      <component v-else :is="selectedComponent" :items="items[selectedComponent]" />
+      
+      <!-- 標籤組 -->
       <v-chip-group v-model="selectedComponent" column mandatory>
         <v-chip
           v-for="component in components"
@@ -108,10 +116,16 @@ export default {
     }
   },
   mounted() {
+    // 立即顯示載入狀態，不等待數據
     this.loadDataFromStore();
     
     // 監聽設定變化
     window.addEventListener('storage', this.handleSettingsChange);
+    
+    // 如果沒有數據，立即開始獲取
+    if (!this.hasAnyData()) {
+      this.fetchData();
+    }
   },
   
   beforeUnmount() {
@@ -119,6 +133,11 @@ export default {
   },
   
   methods: {
+    // 檢查是否有任何數據
+    hasAnyData() {
+      return Object.values(this.items).some(items => items && items.length > 0);
+    },
+    
     loadDataFromStore() {
       try {
         const appStore = useAppStore();
