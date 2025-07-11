@@ -34,6 +34,7 @@
               :class="['news-image', { 'banner-image': newsItem.imageUrl.includes('banner-') }]"
               alt="news"
               :loading="i === 0 ? 'eager' : 'lazy'"
+              :fetchpriority="i === 0 ? 'high' : 'auto'"
               @error="handleImageError"
             />
             
@@ -292,10 +293,14 @@ export default {
           .slice(0, 10); // 最新的10筆
 
         // 轉換資料格式以適配輪播組件
-        const processedNews = sorted.map((item) => {
+        const processedNews = sorted.map((item, index) => {
           const originalImageUrl = this.extractFirstImageUrl(item.attributes.content || item.attributes.NewContent, item.attributes?.tag || '');
-          // 使用更精確的 Cloudinary 轉換參數，針對新聞輪播圖片進行優化
-          const optimizedImageUrl = getOptimizedImageUrl(originalImageUrl, 'w_800,h_300,c_fill,f_auto,q_auto');
+          
+          // 第一張圖片使用更激進的優化，其他使用標準優化
+          const isFirstImage = index === 0;
+          const transformation = isFirstImage ? 'w_400,h_300,c_fill,f_auto,q_60' : 'w_800,h_300,c_fill,f_auto,q_auto';
+          const optimizedImageUrl = getOptimizedImageUrl(originalImageUrl, transformation);
+          
           const description = this.extractTextContent(item.attributes.content || item.attributes.NewContent);
           
           return {
@@ -316,6 +321,11 @@ export default {
         this.newsList = processedNews;
         this.cachedData[cacheKey] = processedNews;
         this.lastFetchTime = now;
+
+        // 預載入第一張圖片
+        if (processedNews.length > 0 && processedNews[0].imageUrl) {
+          this.preloadImage(processedNews[0].imageUrl);
+        }
 
         // 强制重新渲染 v-carousel
         this.carouselKey += 1;
@@ -347,6 +357,20 @@ export default {
         'ko-KR': 'kr'
       };
       return endpointMap[language] || 'tw';
+    },
+    
+    // 預載入圖片
+    preloadImage(src) {
+      if (!src) return;
+      
+      const img = new Image();
+      img.onload = () => {
+        console.log('Image preloaded:', src);
+      };
+      img.onerror = () => {
+        console.warn('Failed to preload image:', src);
+      };
+      img.src = src;
     },
   },
 };

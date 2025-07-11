@@ -3,6 +3,7 @@ const CLOUDINARY_CLOUD_NAME = 'daifne7zq';
 const CLOUDINARY_TRANSFORMATION = 'w_800,f_auto,q_auto';
 const CLOUDINARY_SMALL_TRANSFORMATION = 'w_160,h_160,c_fit,f_auto,q_auto';
 const CLOUDINARY_MOBILE_TRANSFORMATION = 'w_400,f_auto,q_60'; // 行動裝置使用更小的尺寸和更低的品質
+const CLOUDINARY_LCP_TRANSFORMATION = 'w_300,h_200,c_fill,f_auto,q_50'; // LCP 圖片使用最激進的優化
 
 /**
  * 將圖片URL轉換為Cloudinary優化版本
@@ -76,7 +77,12 @@ export function getOptimizedImageUrl(imageUrl, transformation = CLOUDINARY_TRANS
   
   // 檢測是否為行動裝置
   const isMobile = window.innerWidth <= 768;
-  const effectiveTransformation = isMobile ? CLOUDINARY_MOBILE_TRANSFORMATION : transformation;
+  let effectiveTransformation = isMobile ? CLOUDINARY_MOBILE_TRANSFORMATION : transformation;
+  
+  // 如果是 LCP 圖片（第一張圖片），使用最激進的優化
+  if (transformation.includes('w_400,h_300') && isMobile) {
+    effectiveTransformation = CLOUDINARY_LCP_TRANSFORMATION;
+  }
   
   // 如果URL是相對路徑，轉換為完整URL
   let fullUrl = imageUrl;
