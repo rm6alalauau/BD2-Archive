@@ -47,6 +47,46 @@ export default defineConfig({
       },
       vueTemplate: true,
     }),
+    {
+      name: 'html-transform',
+      transformIndexHtml(html) {
+        let transformedHtml = html;
+        
+        // 移除字型檔案的預載入標籤（更精確的匹配）
+        transformedHtml = transformedHtml.replace(
+          /<link[^>]*rel="preload"[^>]*as="font"[^>]*>/g,
+          ''
+        );
+        
+        // 移除包含字型檔案路徑的預載入標籤
+        transformedHtml = transformedHtml.replace(
+          /<link[^>]*rel="preload"[^>]*materialdesignicons[^>]*>/g,
+          ''
+        );
+        
+        // 移除無效的 type 屬性（如 type="font/woff2", type="module" 等）
+        transformedHtml = transformedHtml.replace(
+          /<link[^>]*rel="preload"[^>]*type="[^"]*"[^>]*>/g,
+          (match) => {
+            return match.replace(/type="[^"]*"/g, '');
+          }
+        );
+        
+        // 為所有 preload 標籤添加 crossorigin 屬性（如果沒有的話）
+        transformedHtml = transformedHtml.replace(
+          /<link([^>]*rel="preload"[^>]*)(?!.*crossorigin)/g,
+          '<link$1 crossorigin="anonymous"'
+        );
+        
+        // 移除開發模式下的 main.js preload（因為路徑可能不正確）
+        transformedHtml = transformedHtml.replace(
+          /<link[^>]*rel="preload"[^>]*href="[^"]*main\.js"[^>]*>/g,
+          ''
+        );
+        
+        return transformedHtml;
+      }
+    }
   ],
   define: { "process.env": {} },
   resolve: {
@@ -116,15 +156,6 @@ export default defineConfig({
           }
           return `assets/[name]-[hash].${ext}`;
         },
-        // 新增 preloadStrategy 來控制預載入行為
-        preloadStrategy: (chunk) => {
-          // 如果是字型檔案，就不要預載入
-          if (/\.(woff|woff2|eot|ttf|otf)$/.test(chunk.fileName)) {
-            return null;
-          }
-          // 其他檔案（如 JS）維持 Vite 的預設策略
-          return 'module';
-        },
       },
     },
     // 添加更穩定的構建設定
@@ -136,6 +167,7 @@ export default defineConfig({
     cssMinify: true,
   },
   optimizeDeps: {
-    include: ['vue', 'vue-router', 'pinia', 'vuetify']
+    include: ['vue', 'vue-router', 'pinia', 'vuetify'],
+    exclude: ['@mdi/font']
   }
 });

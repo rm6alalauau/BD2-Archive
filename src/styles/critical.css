@@ -1,4 +1,7 @@
-/* 關鍵CSS - 首屏渲染必需的樣式 */
+/* Critical CSS for better performance */
+
+/* Import Material Design Icons font via CSS to avoid preload warnings */
+@import '@mdi/font/css/materialdesignicons.css';
 
 /* 基礎佈局 */
 body {
