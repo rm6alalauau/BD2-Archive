@@ -74,7 +74,6 @@
 
 <script>
 import { useSettingsStore } from '@/stores/settings'
-import { getOptimizedImageUrl } from '@/utils/cloudinary'
 
 export default {
   data() {
@@ -294,12 +293,9 @@ export default {
 
         // 轉換資料格式以適配輪播組件
         const processedNews = sorted.map((item, index) => {
-          const originalImageUrl = this.extractFirstImageUrl(item.attributes.content || item.attributes.NewContent, item.attributes?.tag || '');
-          
-          // 第一張圖片使用更激進的優化，其他使用標準優化
-          const isFirstImage = index === 0;
-          const transformation = isFirstImage ? 'w_400,h_300,c_fill,f_auto,q_60' : 'w_800,h_300,c_fill,f_auto,q_auto';
-          const optimizedImageUrl = getOptimizedImageUrl(originalImageUrl, transformation);
+          // 直接使用 API 返回的優化圖片 URL
+          const optimizedImageUrl = item.attributes?.optimizedImageUrl || 
+                                   this.extractFirstImageUrl(item.attributes.content || item.attributes.NewContent, item.attributes?.tag || '');
           
           const description = this.extractTextContent(item.attributes.content || item.attributes.NewContent);
           
@@ -308,7 +304,7 @@ export default {
             title: item.attributes?.subject || this.t('common.notFound'),
             link: `https://www.browndust2.com/${this.getWebsiteLocale()}/news/view?id=${item.id}`,
             imageUrl: optimizedImageUrl,
-            originalImageUrl: originalImageUrl, // 保留原始URL作為備用
+            originalImageUrl: item.attributes?.originalImageUrl || optimizedImageUrl, // 保留原始URL作為備用
             createdAt: item.attributes?.createdAt,
             description: description,
             tag: item.attributes?.tag || '',
@@ -322,7 +318,7 @@ export default {
         this.cachedData[cacheKey] = processedNews;
         this.lastFetchTime = now;
 
-        // 預載入第一張圖片
+        // 預載入第一張圖片（API 已經優化，但保留預載入功能）
         if (processedNews.length > 0 && processedNews[0].imageUrl) {
           this.preloadImage(processedNews[0].imageUrl);
         }
