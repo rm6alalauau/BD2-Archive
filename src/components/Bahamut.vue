@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { optimizeImageUrl } from '@/utils/cloudinary'
+import { getOptimizedImageUrl } from '@/utils/cloudinary'
 
 export default {
   name: "Bahamut",
@@ -67,8 +67,9 @@ export default {
         return imageUrl;
       }
       
-      // 使用Cloudinary優化
-      return optimizeImageUrl(imageUrl);
+      // 使用 c_scale 模式，以高度為基準進行縮放
+      // 這樣圖片會保持完整高度，左右可能會被裁切，但視覺效果更好
+      return getOptimizedImageUrl(imageUrl, 'h_300,c_scale,f_auto,q_auto');
     },
   },
 };
