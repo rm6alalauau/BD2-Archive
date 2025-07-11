@@ -165,15 +165,29 @@ export const useAppStore = defineStore('app', {
     
     // iOS 順序加載策略
     async fetchDataSequentially() {
-      const tasks = [
-        { name: 'redeemCodes', fn: () => this.fetchRedeemCodes() },
+      // 優先載入論壇數據，因為它是用戶最常查看的內容
+      const priorityTasks = [
         { name: 'forumData', fn: () => this.fetchForumData() },
+      ];
+      
+      const secondaryTasks = [
+        { name: 'redeemCodes', fn: () => this.fetchRedeemCodes() },
         { name: 'news', fn: () => this.fetchNews() },
         { name: 'officialMedia', fn: () => this.fetchOfficialMedia() },
         { name: 'pixivCards', fn: () => this.fetchPixivCards() },
       ];
       
-      for (const task of tasks) {
+      // 先載入優先任務
+      for (const task of priorityTasks) {
+        try {
+          await task.fn();
+        } catch (error) {
+          // 不中斷整個流程，繼續載入其他數據
+        }
+      }
+      
+      // 然後載入次要任務
+      for (const task of secondaryTasks) {
         try {
           await task.fn();
           
@@ -187,16 +201,23 @@ export const useAppStore = defineStore('app', {
     
     // 非 iOS 並行加載策略
     async fetchDataInParallel() {
-      const tasks = [
-        this.fetchRedeemCodes().catch(e => {}),
+      // 優先載入論壇數據
+      const priorityTasks = [
         this.fetchForumData().catch(e => {}),
+      ];
+      
+      const secondaryTasks = [
+        this.fetchRedeemCodes().catch(e => {}),
         this.fetchNews().catch(e => {}),
         this.fetchOfficialMedia().catch(e => {}),
         this.fetchPixivCards().catch(e => {}),
       ];
       
-      // 等待所有任務完成，即使某些失敗也不會影響其他
-      await Promise.allSettled(tasks);
+      // 先等待優先任務完成
+      await Promise.allSettled(priorityTasks);
+      
+      // 然後載入次要任務
+      await Promise.allSettled(secondaryTasks);
     },
     
     // 手動重試API調用

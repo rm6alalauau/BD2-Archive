@@ -21,6 +21,18 @@
   .v-card {
     backdrop-filter: blur(5px);
   }
+  
+  /* 優先載入首屏內容 */
+  .news-carousel {
+    contain: layout style paint;
+  }
+  
+  /* 優化輪播圖片載入 */
+  .news-image {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
 }
 
 /* 基礎佈局 */

@@ -1,11 +1,17 @@
 <template>
   <v-col>
+    <!-- 載入狀態 -->
+    <div v-if="items.length === 0" class="d-flex justify-center align-center" style="height: 300px;">
+      <v-progress-circular indeterminate color="primary" size="64"></v-progress-circular>
+    </div>
+    
+    <!-- 輪播內容 -->
     <v-carousel
+      v-else
       height="300"
       show-arrows="hover"
       hide-delimiters
       cycle
-      v-if="items.length > 0"
       :key="carouselKey"
     >
       <v-carousel-item v-for="(item, i) in items" :key="i">

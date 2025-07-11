@@ -33,7 +33,7 @@
               :src="newsItem.imageUrl" 
               :class="['news-image', { 'banner-image': newsItem.imageUrl.includes('banner-') }]"
               alt="news"
-              loading="lazy"
+              :loading="i === 0 ? 'eager' : 'lazy'"
               @error="handleImageError"
             />
             

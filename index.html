@@ -11,14 +11,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The BD2 Pulse</title>
   
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-E4DJGM8X5P"></script>
+  <!-- 預載入關鍵資源 -->
+  <link rel="preload" href="/src/main.js" as="script" type="module">
+  <link rel="preload" href="/src/styles/critical.css" as="style">
+  
+  <!-- DNS 預解析 -->
+  <link rel="dns-prefetch" href="//res.cloudinary.com">
+  <link rel="dns-prefetch" href="//www.googletagmanager.com">
+  
+  <!-- Google tag (gtag.js) - 延遲載入以避免影響 LCP -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-E4DJGM8X5P');
+    // 延遲載入 Google Analytics，避免影響頁面載入效能
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-E4DJGM8X5P';
+        document.head.appendChild(script);
+        
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-E4DJGM8X5P');
+        };
+      }, 1000); // 延遲1秒載入
+    });
   </script>
 </head>
 

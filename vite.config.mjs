@@ -64,6 +64,10 @@ export default defineConfig({
         inlineCritical: true,
         // 減少外部資源
         externalThreshold: 0,
+        // 更激進的效能優化
+        inlineStylesheets: true,
+        // 內聯所有關鍵 CSS
+        inlineCriticalThreshold: 0,
       }
     }),
   ],
