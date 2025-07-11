@@ -18,6 +18,7 @@
         <v-card flat tile rounded="xl" @click="navigateTo(item.link)">
           <v-img 
             :src="getOptimizedImageUrl(item.imgSrc)" 
+            :alt="item.title || 'Brown Dust 2 遊戲圖片'"
             height="300"
             contain
             class="bahamut-image"
