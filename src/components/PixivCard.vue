@@ -21,10 +21,10 @@
             :disabled="isLoading"
           ></v-select>
           <div style="margin-left: auto; display: flex; align-items: center">
-            <v-btn icon @click="scrollLeft" :disabled="isLoading">
+            <v-btn icon @click="scrollLeft" :disabled="isLoading" aria-label="向左滾動">
               <v-icon>mdi-chevron-left</v-icon>
             </v-btn>
-            <v-btn icon @click="scrollRight" :disabled="isLoading">
+            <v-btn icon @click="scrollRight" :disabled="isLoading" aria-label="向右滾動">
               <v-icon>mdi-chevron-right</v-icon>
             </v-btn>
           </div>

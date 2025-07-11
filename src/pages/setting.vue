@@ -28,6 +28,7 @@
                   icon
                   size="small"
                   variant="outlined"
+                  aria-label="減少字體大小"
                 >
                   <v-icon>mdi-minus</v-icon>
                 </v-btn>
@@ -38,6 +39,7 @@
                   icon
                   size="small"
                   variant="outlined"
+                  aria-label="增加字體大小"
                 >
                   <v-icon>mdi-plus</v-icon>
                 </v-btn>
@@ -333,7 +335,7 @@
     >
       {{ successMessage }}
       <template v-slot:actions>
-        <v-btn @click="showSuccessMessage = false" icon="mdi-close" variant="text"></v-btn>
+        <v-btn @click="showSuccessMessage = false" icon="mdi-close" variant="text" aria-label="關閉訊息"></v-btn>
       </template>
     </v-snackbar>
 
@@ -348,7 +350,7 @@
       :style="{ bottom: fabBottom + 'px' }"
     >
       <v-icon>mdi-home</v-icon>
-      <v-tooltip activator="parent" location="left">{{ t('settings.actions.backToHome') }}</v-tooltip>
+      <v-tooltip activator="parent" location="left" :aria-label="t('settings.actions.backToHome')">{{ t('settings.actions.backToHome') }}</v-tooltip>
     </v-fab>
   </v-container>
 </template>

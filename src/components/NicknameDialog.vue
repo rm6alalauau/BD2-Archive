@@ -47,6 +47,7 @@
                   variant="text"
                   color="error"
                   :title="t('profile.nickname.deleteTitle')"
+                  :aria-label="`刪除暱稱 ${name}`"
                 ></v-btn>
               </div>
             </template>

@@ -90,6 +90,7 @@
           variant="outlined"
           color="primary"
           @click="showDisclaimerDialog = false"
+          aria-label="關閉免責聲明"
         >
           {{ t('common.close') }}
         </v-btn>

@@ -101,6 +101,9 @@
                 <div class="alert-content">
                   {{ submitStatus.message }}
                 </div>
+                <template v-slot:actions>
+                  <v-btn @click="showSuccessMessage = false" icon="mdi-close" variant="text" aria-label="關閉訊息"></v-btn>
+                </template>
               </v-alert>
             </v-card-text>
 

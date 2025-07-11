@@ -6,7 +6,9 @@ export default {
     settings: 'Settings',
     feedback: 'Feedback',
     switchLanguage: 'Switch Language',
-    languageSelection: 'Language Selection'
+    languageSelection: 'Language Selection',
+    openMenu: 'Open Menu',
+    closeMenu: 'Close Menu'
   },
   
   // Profile/Coupon page
