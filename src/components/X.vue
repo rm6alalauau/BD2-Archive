@@ -6,10 +6,10 @@
         <div class="forum-header">
           <span class="forum-title">X Posts</span>
           <div class="forum-controls">
-            <v-btn icon size="small" @click="scrollLeft">
+            <v-btn icon size="small" @click="scrollLeft" aria-label="向左滾動">
               <v-icon>mdi-chevron-left</v-icon>
             </v-btn>
-            <v-btn icon size="small" @click="scrollRight">
+            <v-btn icon size="small" @click="scrollRight" aria-label="向右滾動">
               <v-icon>mdi-chevron-right</v-icon>
             </v-btn>
           </div>

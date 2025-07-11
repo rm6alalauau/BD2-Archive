@@ -53,6 +53,7 @@
                       variant="text"
                       color="grey"
                       class="nickname-delete-btn"
+                      :aria-label="`刪除暱稱 ${savedNickname}`"
                     ></v-btn>
                   </template>
                 </v-list-item>
@@ -78,7 +79,7 @@
             <div class="user-subtitle">{{ t('profile.userProfile.clickAvatarToChange') }}</div>
           </div>
           <div class="user-actions">
-            <v-btn @click="exitNicknameMode" icon="mdi-logout" size="small" variant="text" :title="t('profile.userProfile.reenterNickname')"></v-btn>
+            <v-btn @click="exitNicknameMode" icon="mdi-logout" size="small" variant="text" :title="t('profile.userProfile.reenterNickname')" :aria-label="t('profile.userProfile.reenterNickname')"></v-btn>
           </div>
         </div>
         

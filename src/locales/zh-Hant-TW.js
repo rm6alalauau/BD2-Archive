@@ -6,7 +6,9 @@ export default {
     settings: '設定',
     feedback: '意見回饋',
     switchLanguage: '切換語言',
-    languageSelection: '語言選擇'
+    languageSelection: '語言選擇',
+    openMenu: '開啟選單',
+    closeMenu: '關閉選單'
   },
   
   // 個人資料/兌換碼頁面

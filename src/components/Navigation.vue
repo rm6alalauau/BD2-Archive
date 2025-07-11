@@ -25,9 +25,10 @@
               icon
               class="mr-2"
               size="large"
+              :aria-label="t('nav.switchLanguage')"
             >
               <v-icon>mdi-web</v-icon>
-              <v-tooltip activator="parent" location="bottom">
+              <v-tooltip activator="parent" location="bottom" :aria-label="t('nav.switchLanguage')">
                 {{ t('nav.switchLanguage') }}
               </v-tooltip>
             </v-btn>
@@ -53,9 +54,10 @@
           icon
           class="mr-2"
           @click="$router.push('/setting')"
+          :aria-label="t('nav.settings')"
         >
           <v-icon>mdi-cog</v-icon>
-          <v-tooltip activator="parent" location="bottom">{{ t('nav.settings') }}</v-tooltip>
+          <v-tooltip activator="parent" location="bottom" :aria-label="t('nav.settings')">{{ t('nav.settings') }}</v-tooltip>
         </v-btn>
 
         <!-- 意見回饋按鈕 -->
@@ -65,9 +67,10 @@
           variant="text"
           class="nav-action-btn"
           size="large"
+          :aria-label="t('nav.feedback')"
         >
           <v-icon size="20">mdi-comment-question-outline</v-icon>
-          <v-tooltip activator="parent" location="bottom">{{ t('nav.feedback') }}</v-tooltip>
+          <v-tooltip activator="parent" location="bottom" :aria-label="t('nav.feedback')">{{ t('nav.feedback') }}</v-tooltip>
         </v-btn>
       </div>
 
@@ -78,6 +81,7 @@
         variant="text"
         class="nav-action-btn d-sm-none"
         size="large"
+        :aria-label="mobileMenu ? t('nav.closeMenu') : t('nav.openMenu')"
       >
         <v-icon size="20">{{ mobileMenu ? 'mdi-close' : 'mdi-menu' }}</v-icon>
       </v-btn>
