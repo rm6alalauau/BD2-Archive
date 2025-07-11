@@ -110,7 +110,7 @@ export default defineConfig({
     }
   },
   build: {
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 800, // 降低警告閾值，針對行動裝置優化
     rollupOptions: {
       output: {
         manualChunks: {
@@ -146,7 +146,6 @@ export default defineConfig({
     cssMinify: true,
     // 針對行動裝置的額外優化
     assetsInlineLimit: 4096, // 內聯小於4KB的資源
-    chunkSizeWarningLimit: 800, // 降低警告閾值
   },
   optimizeDeps: {
     include: ['vue', 'vue-router', 'pinia', 'vuetify'],
