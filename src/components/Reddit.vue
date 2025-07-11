@@ -240,6 +240,7 @@ export default {
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   margin-bottom: 1px;
   font-size: 0.875rem;
