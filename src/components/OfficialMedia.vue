@@ -85,8 +85,17 @@ export default {
       return (key, params) => this.$t(key, this.settingsStore.selectedLanguage, params);
     }
   },
-  async created() {
-    await this.fetchMediaData();
+  async mounted() {
+    // 延遲載入媒體數據，避免阻塞頁面初始渲染
+    // 行動裝置使用更短的延遲
+    const isMobile = window.innerWidth <= 768;
+    const delay = isMobile ? 300 : 500;
+    
+    this.$nextTick(() => {
+      setTimeout(() => {
+        this.fetchMediaData();
+      }, delay);
+    });
   },
   watch: {
     // 監聽語言變化，重新獲取資料
@@ -190,10 +199,19 @@ export default {
               thumbnailUrl = `https://www.browndust2.com${thumbnailUrl}`;
             }
 
-            // 使用 Cloudinary 優化圖片，針對縮圖尺寸進行優化
-            const optimizedThumbnailUrl = thumbnailUrl ? 
-              getOptimizedImageUrl(thumbnailUrl, 'w_160,h_120,c_fill,f_auto,q_auto') : 
-              'https://img.youtube.com/vi/default/mqdefault.jpg';
+            // 嘗試從 API 返回的數據中獲取優化圖片 URL
+            let optimizedThumbnailUrl = thumbnailUrl;
+            if (thumbnailUrl) {
+              // 檢查是否有優化後的 URL
+              const originalItem = data.data.find(original => 
+                original.attributes?.poster?.data?.attributes?.url === item.thumbnail ||
+                original.attributes?.poster?.data?.attributes?.originalUrl === item.thumbnail
+              );
+              
+              if (originalItem?.attributes?.poster?.data?.attributes?.optimizedUrl) {
+                optimizedThumbnailUrl = originalItem.attributes.poster.data.attributes.optimizedUrl;
+              }
+            }
 
             return {
               ...item,
