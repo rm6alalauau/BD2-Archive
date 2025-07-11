@@ -411,6 +411,9 @@ export default {
   height: 100%;
   object-fit: cover;
   object-position: left center;
+  /* 確保 banner-image 的裁切位置正確 */
+  min-width: 100%;
+  min-height: 100%;
 }
 
 /* 覆蓋層內容 */
