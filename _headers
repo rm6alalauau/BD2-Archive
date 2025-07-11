@@ -2,3 +2,25 @@
 Content-Type: text/css
 /assets/*.js
 Content-Type: application/javascript
+
+# 字型檔案配置
+/assets/*.woff2
+Content-Type: font/woff2
+Cache-Control: public, max-age=31536000, immutable
+
+/assets/*.woff
+Content-Type: font/woff
+Cache-Control: public, max-age=31536000, immutable
+
+/assets/*.ttf
+Content-Type: font/ttf
+Cache-Control: public, max-age=31536000, immutable
+
+/assets/*.eot
+Content-Type: application/vnd.ms-fontobject
+Cache-Control: public, max-age=31536000, immutable
+
+# 禁用字型檔案的預載入
+/*
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff

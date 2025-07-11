@@ -69,4 +69,10 @@ export default createVuetify({
       bd2DarkTheme,
     },
   },
+  defaults: {
+    // 禁用自動字型載入
+    global: {
+      ripple: false,
+    },
+  },
 })

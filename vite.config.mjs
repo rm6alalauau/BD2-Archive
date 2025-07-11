@@ -49,42 +49,45 @@ export default defineConfig({
     }),
     {
       name: 'html-transform',
-      transformIndexHtml(html) {
-        let transformedHtml = html;
-        
-        // 移除字型檔案的預載入標籤（更精確的匹配）
-        transformedHtml = transformedHtml.replace(
-          /<link[^>]*rel="preload"[^>]*as="font"[^>]*>/g,
-          ''
-        );
-        
-        // 移除包含字型檔案路徑的預載入標籤
-        transformedHtml = transformedHtml.replace(
-          /<link[^>]*rel="preload"[^>]*materialdesignicons[^>]*>/g,
-          ''
-        );
-        
-        // 移除無效的 type 屬性（如 type="font/woff2", type="module" 等）
-        transformedHtml = transformedHtml.replace(
-          /<link[^>]*rel="preload"[^>]*type="[^"]*"[^>]*>/g,
-          (match) => {
-            return match.replace(/type="[^"]*"/g, '');
-          }
-        );
-        
-        // 為所有 preload 標籤添加 crossorigin 屬性（如果沒有的話）
-        transformedHtml = transformedHtml.replace(
-          /<link([^>]*rel="preload"[^>]*)(?!.*crossorigin)/g,
-          '<link$1 crossorigin="anonymous"'
-        );
-        
-        // 移除開發模式下的 main.js preload（因為路徑可能不正確）
-        transformedHtml = transformedHtml.replace(
-          /<link[^>]*rel="preload"[^>]*href="[^"]*main\.js"[^>]*>/g,
-          ''
-        );
-        
-        return transformedHtml;
+      transformIndexHtml: {
+        order: 'post',
+        handler(html) {
+          let transformedHtml = html;
+          
+          // 移除所有字型檔案的預載入標籤
+          transformedHtml = transformedHtml.replace(
+            /<link[^>]*rel="preload"[^>]*as="font"[^>]*>/g,
+            ''
+          );
+          
+          // 移除包含字型檔案路徑的預載入標籤
+          transformedHtml = transformedHtml.replace(
+            /<link[^>]*rel="preload"[^>]*materialdesignicons[^>]*>/g,
+            ''
+          );
+          
+          // 移除包含 .woff, .woff2, .ttf, .eot 的預載入標籤
+          transformedHtml = transformedHtml.replace(
+            /<link[^>]*rel="preload"[^>]*\.(woff|woff2|ttf|eot)[^>]*>/g,
+            ''
+          );
+          
+          // 移除無效的 type 屬性
+          transformedHtml = transformedHtml.replace(
+            /<link[^>]*rel="preload"[^>]*type="[^"]*"[^>]*>/g,
+            (match) => {
+              return match.replace(/type="[^"]*"/g, '');
+            }
+          );
+          
+          // 為所有 preload 標籤添加 crossorigin 屬性（如果沒有的話）
+          transformedHtml = transformedHtml.replace(
+            /<link([^>]*rel="preload"[^>]*)(?!.*crossorigin)/g,
+            '<link$1 crossorigin="anonymous"'
+          );
+          
+          return transformedHtml;
+        }
       }
     }
   ],
@@ -169,5 +172,15 @@ export default defineConfig({
   optimizeDeps: {
     include: ['vue', 'vue-router', 'pinia', 'vuetify'],
     exclude: ['@mdi/font']
+  },
+  // 禁用字型預載入
+  experimental: {
+    renderBuiltUrl(filename, { hostType }) {
+      if (hostType === 'js') {
+        return { relative: true }
+      } else {
+        return { relative: true }
+      }
+    }
   }
 });
