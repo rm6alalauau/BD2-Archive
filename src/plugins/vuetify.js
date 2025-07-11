@@ -11,9 +11,6 @@ import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
 
-// Import MDI font here to avoid preload warnings
-import '@mdi/font/css/materialdesignicons.css'
-
 // BD2 Dark Theme
 const bd2DarkTheme = {
   dark: true,
