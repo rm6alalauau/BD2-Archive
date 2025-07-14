@@ -66,7 +66,6 @@
 
 <script>
 import { useSettingsStore } from '@/stores/settings'
-import { getOptimizedImageUrl } from '@/utils/cloudinary'
 
 export default {
   data() {
