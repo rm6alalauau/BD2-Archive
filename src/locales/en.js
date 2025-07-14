@@ -171,7 +171,7 @@ export default {
     naver: 'Naver Lounge',
     noData: 'No forum data available',
     loading: 'Loading...',
-    loadFailed: 'Load Failed'
+    loadFailed: 'Load failed'
   },
   
   // Pixiv card
@@ -260,7 +260,8 @@ export default {
       cleared: 'Data cleared',
       reset: 'Settings reset',
       saved: 'Settings saved',
-      iconChanged: 'Website icon changed!'
+      iconChanged: 'Website icon changed!',
+      forumsUpdated: 'Forum settings updated, reloading data...'
     }
   },
   

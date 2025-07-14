@@ -128,11 +128,19 @@ export const logger = {
     if (isDev) console.warn(...args)
   },
   error: (...args) => {
-    // 錯誤信息始終顯示
-    console.error(...args)
+    // 錯誤信息始終顯示，但生產環境中簡化
+    if (isDev) {
+      console.error(...args)
+    } else {
+      // 生產環境中只顯示簡化的錯誤信息
+      console.error('An error occurred. Please try again later.')
+    }
   },
   info: (...args) => {
     if (isDev) console.info(...args)
+  },
+  debug: (...args) => {
+    if (isDev) console.debug(...args)
   }
 }
 

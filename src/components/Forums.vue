@@ -2,7 +2,7 @@
   <v-row>
     <v-col>
       <!-- 載入狀態 -->
-      <div v-if="!hasAnyData()" class="d-flex justify-center align-center" style="height: 300px;">
+      <div v-if="!hasAnyData" class="d-flex justify-center align-center" style="height: 300px;">
         <v-progress-circular indeterminate color="primary" size="64"></v-progress-circular>
       </div>
       
@@ -98,6 +98,11 @@ export default {
       // 確保至少有一個組件
       const result = filtered.length > 0 ? filtered : this.allComponents;
       return result;
+    },
+    
+    // 檢查是否有任何數據
+    hasAnyData() {
+      return Object.values(this.items).some(items => items && items.length > 0);
     }
   },
   watch: {
@@ -123,7 +128,7 @@ export default {
     window.addEventListener('storage', this.handleSettingsChange);
     
     // 如果沒有數據，立即開始獲取
-    if (!this.hasAnyData()) {
+    if (!this.hasAnyData) {
       this.fetchData();
     }
   },
@@ -133,11 +138,6 @@ export default {
   },
   
   methods: {
-    // 檢查是否有任何數據
-    hasAnyData() {
-      return Object.values(this.items).some(items => items && items.length > 0);
-    },
-    
     loadDataFromStore() {
       try {
         const appStore = useAppStore();
@@ -173,7 +173,22 @@ export default {
       if (event.key === 'bd2_settings') {
         // 觸發 computed 重新計算
         this.$forceUpdate();
+        
+        // 重新載入數據，因為用戶可能改變了論壇選擇
+        this.$nextTick(() => {
+          this.loadDataFromStore();
+          
+          // 如果沒有數據，重新獲取
+          if (!this.hasAnyData) {
+            this.fetchData();
+          }
+        });
       }
+    },
+    
+    // 檢查當前選中的組件是否有數據
+    hasSelectedComponentData() {
+      return this.items[this.selectedComponent] && this.items[this.selectedComponent].length > 0;
     }
   },
 };

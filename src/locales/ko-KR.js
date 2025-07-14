@@ -255,12 +255,13 @@ export default {
       cancel: '취소'
     },
     
-    // Success messages
+    // 성공 메시지
     success: {
       cleared: '데이터가 지워졌습니다',
       reset: '설정이 초기화되었습니다',
       saved: '설정이 저장되었습니다',
-      iconChanged: '웹사이트 아이콘이 변경되었습니다!'
+      iconChanged: '웹사이트 아이콘이 변경되었습니다!',
+      forumsUpdated: '포럼 설정이 업데이트되어 데이터를 다시 로드 중...'
     }
   },
   

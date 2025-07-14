@@ -260,17 +260,12 @@ const loadRedeemCodes = async () => {
   loading.value = true
   
   try {
-    console.log('開始載入兌換碼...')
-    
     // 檢查 appStore 狀態
     if (appStore.loading) {
-      console.log('API 正在載入中，等待完成...')
       await waitForApiAndLoadData()
     } else if (appStore.hasData) {
-      console.log('API 已有資料，直接載入兌換碼')
       loadCouponCodesFromStore()
     } else {
-      console.log('API 未載入，觸發載入')
       await appStore.fetchAllData()
       loadCouponCodesFromStore()
     }
@@ -325,20 +320,17 @@ const executeClaim = async (coupon, index) => {
     // 使用真正的 API 客戶端執行兌換
     const result = await claimCoupon(currentNickname.value, coupon.code)
     
-    console.log('兌換結果:', result)
-    
     // 檢查是否成功
     if (result.success === true) {
       // 兌換成功
       redeemCodes.value[index].claimed = true
       redeemCodes.value[index].claiming = false
       redeemCodes.value[index].errorMessage = null
-              redeemCodes.value[index].statusMessage = t.value('profile.errors.claimSuccess')
+      redeemCodes.value[index].statusMessage = t.value('profile.errors.claimSuccess')
       
       // 保存兌換狀態到 localStorage
       saveClaimedStatus()
       
-      console.log(`兌換碼 ${coupon.code} 兌換成功！`)
     } else {
       // 如果 success 不是 true，當作錯誤處理
       throw result
@@ -355,22 +347,22 @@ const executeClaim = async (coupon, index) => {
       // 已經使用過的兌換碼，標記為已兌換
       redeemCodes.value[index].claimed = true
       redeemCodes.value[index].errorMessage = null
-              redeemCodes.value[index].statusMessage = t.value('profile.errors.alreadyUsed')
+      redeemCodes.value[index].statusMessage = t.value('profile.errors.alreadyUsed')
       saveClaimedStatus()
       
     } else if (error.errorCode === 'InvalidCode') {
       // 無效的兌換碼
-              redeemCodes.value[index].errorMessage = t.value('profile.errors.invalidCoupon')
+      redeemCodes.value[index].errorMessage = t.value('profile.errors.invalidCoupon')
       redeemCodes.value[index].statusMessage = null
       
     } else if (error.errorCode === 'IncorrectUser') {
       // 暱稱驗證失敗
-              redeemCodes.value[index].errorMessage = t.value('profile.errors.nicknameValidationFailed')
+      redeemCodes.value[index].errorMessage = t.value('profile.errors.nicknameValidationFailed')
       redeemCodes.value[index].statusMessage = null
       
     } else if (error.errorCode === 'ExpiredCode') {
       // 兌換碼已到期
-              redeemCodes.value[index].errorMessage = t.value('profile.errors.couponExpired')
+      redeemCodes.value[index].errorMessage = t.value('profile.errors.couponExpired')
       redeemCodes.value[index].statusMessage = null
       
     } else {
@@ -378,11 +370,11 @@ const executeClaim = async (coupon, index) => {
       if (error.name === 'AbortError') {
         redeemCodes.value[index].errorMessage = t.value('profile.errors.requestTimeout')
       } else if (error.message && error.message.includes('Failed to fetch')) {
-                  redeemCodes.value[index].errorMessage = t.value('profile.errors.networkConnection')
+        redeemCodes.value[index].errorMessage = t.value('profile.errors.networkConnection')
       } else if (error.message && error.message.includes('NetworkError')) {
-                  redeemCodes.value[index].errorMessage = t.value('profile.errors.networkError')
+        redeemCodes.value[index].errorMessage = t.value('profile.errors.networkError')
       } else {
-                  redeemCodes.value[index].errorMessage = t.value('profile.errors.claimFailed')
+        redeemCodes.value[index].errorMessage = t.value('profile.errors.claimFailed')
       }
       
       redeemCodes.value[index].statusMessage = null
@@ -448,8 +440,6 @@ const removeSavedNickname = (nickname) => {
     if (currentNickname.value === nickname) {
       exitNicknameMode()
     }
-    
-    console.log('移除暱稱:', nickname)
   }
 }
 
@@ -528,24 +518,13 @@ const waitForApiAndLoadData = async () => {
 // 從 store 載入兌換碼數據
 const loadCouponCodesFromStore = () => {
   try {
-    console.log('從 store 載入兌換碼數據...')
     const redeemData = appStore.redeemCodes
-    
-    console.log('Store 狀態詳細信息:', {
-      redeemData: redeemData,
-      hasData: appStore.hasData,
-      loading: appStore.loading,
-      error: appStore.error,
-      lastUpdated: appStore.lastUpdated,
-      lastFetchTime: appStore.lastFetchTime
-    })
     
     if (redeemData && redeemData.length > 0) {
       // 檢查是否有 API 錯誤
       const hasApiError = redeemData.some(item => item.code === 'API_ERROR')
       
       if (hasApiError) {
-        console.log('檢測到 API 錯誤')
         redeemCodes.value = [
           { 
             code: 'API_ERROR', 
@@ -579,11 +558,8 @@ const loadCouponCodesFromStore = () => {
       
       // 載入已兌換狀態
       loadClaimedStatus()
-      console.log('兌換碼載入成功，暱稱:', currentNickname.value)
       
     } else {
-      console.log('沒有可用的兌換碼數據')
-      
       // 檢查是否有API錯誤
       if (appStore.error) {
         redeemCodes.value = [
@@ -642,8 +618,6 @@ const claimCoupon = async (userId = '', code = '') => {
   
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      console.log(`兌換嘗試 ${attempt}/${maxRetries} - 代碼: ${code} (iOS: ${isIOSDevice})`)
-      
       // 使用最簡單的請求配置避免觸發 OPTIONS 預檢
       const requestBody = JSON.stringify({
         appId,
@@ -655,7 +629,6 @@ const claimCoupon = async (userId = '', code = '') => {
       const timeoutMs = isIOSDevice ? 8000 : 15000
       const controller = new AbortController()
       const timeoutId = setTimeout(() => {
-        console.log(`兌換請求超時 ${timeoutMs}ms`)
         controller.abort()
       }, timeoutMs)
       
@@ -675,7 +648,6 @@ const claimCoupon = async (userId = '', code = '') => {
       clearTimeout(timeoutId)
       
       if (response.ok) {
-        console.log(`兌換成功，嘗試次數: ${attempt}`)
         return await response.json()
       }
 
@@ -689,8 +661,6 @@ const claimCoupon = async (userId = '', code = '') => {
           errorCode: `HTTP_${response.status}`
         }
       }
-      
-      console.warn('API 錯誤回應:', errorData)
       
       // 5xx 錯誤值得重試
       if (response.status >= 500 && attempt < maxRetries) {
@@ -711,7 +681,6 @@ const claimCoupon = async (userId = '', code = '') => {
 
     } catch (error) {
       lastError = error
-      console.warn(`兌換嘗試 ${attempt} 失敗:`, error.message)
       
       // 最後一次嘗試失敗
       if (attempt === maxRetries) {
@@ -728,13 +697,11 @@ const claimCoupon = async (userId = '', code = '') => {
         error.message.includes('Load failed') // 載入失敗
       
       if (!isRetryableError) {
-        console.log('不可重試的錯誤，放棄:', error.message)
         throw error
       }
       
       // 計算重試延遲
       const delay = baseDelay * Math.pow(2, attempt - 1)
-      console.log(`等待 ${delay}ms 後重試...`)
       await new Promise(resolve => setTimeout(resolve, delay))
     }
   }
@@ -744,14 +711,11 @@ const claimCoupon = async (userId = '', code = '') => {
 
 // --- Lifecycle ---
 onMounted(() => {
-  console.log('ProfileTest 組件掛載')
-  
   loadSavedNicknames()
   
   // 載入保存的暱稱
   const savedNickname = localStorage.getItem('nickname')
   if (savedNickname) {
-    console.log('找到保存的暱稱:', savedNickname)
     currentNickname.value = savedNickname
     loadRedeemCodes()
   }
@@ -770,7 +734,6 @@ onMounted(() => {
   
   // 確保 appStore 已經初始化
   if (!appStore.hasData && !appStore.loading) {
-    console.log('觸發 appStore 初始化載入')
     appStore.fetchAllData().catch(error => {
       console.error('初始化載入失敗:', error)
     })
@@ -788,13 +751,6 @@ watch(
     redeemCodes: appStore.redeemCodes
   }),
   (newVal, oldVal) => {
-    console.log('AppStore 狀態變化:', {
-      old: oldVal,
-      new: newVal,
-      hasNickname: !!currentNickname.value,
-      hasRedeemCodes: redeemCodes.value.length > 0
-    })
-    
     // 只有當用戶已輸入暱稱時才處理
     if (!currentNickname.value) {
       return
@@ -807,21 +763,18 @@ watch(
     
     // 如果API從載入中變為完成，載入兌換碼
     if (oldVal && oldVal.loading && !newVal.loading) {
-      console.log('API載入完成，自動載入兌換碼')
       loadCouponCodesFromStore()
       return
     }
     
     // 如果API從沒有數據變為有數據，載入兌換碼
     if (oldVal && !oldVal.hasData && newVal.hasData) {
-      console.log('API數據可用，自動載入兌換碼')
       loadCouponCodesFromStore()
       return
     }
     
     // 如果lastFetchTime更新（表示有新數據），載入兌換碼
     if (oldVal && oldVal.lastFetchTime !== newVal.lastFetchTime && newVal.lastFetchTime) {
-      console.log('API數據更新，自動載入兌換碼')
       loadCouponCodesFromStore()
       return
     }
@@ -829,7 +782,6 @@ watch(
     // 如果兌換碼數據直接更新
     if (newVal.redeemCodes && newVal.redeemCodes.length > 0 && 
         (!oldVal || JSON.stringify(oldVal.redeemCodes) !== JSON.stringify(newVal.redeemCodes))) {
-      console.log('兌換碼數據直接更新')
       loadCouponCodesFromStore()
       return
     }
