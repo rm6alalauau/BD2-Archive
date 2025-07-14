@@ -334,26 +334,20 @@ export const useAppStore = defineStore('app', {
           });
         }
         
-        // 檢查用戶是否選擇了 Naver，只有選擇了才呼叫 Naver API
-        const userSelectedForums = getUserSelectedForums();
-        if (userSelectedForums.includes('NaverPosts')) {
-          try {
-            const naverApiUrl = getApiUrl(NAVER_API_ENDPOINT);
-            const naverResponse = await retryFetch(naverApiUrl);
-            const naverData = await naverResponse.json();
-            
-            if (naverData && Array.isArray(naverData)) {
-              this.apiData.naver = naverData;
-            } else {
-              console.warn('Naver API 返回的數據格式不正確');
-              this.apiData.naver = [];
-            }
-          } catch (naverError) {
-            console.error("Error fetching Naver data:", naverError);
+        // 獲取 Naver 數據（使用獨立 API）
+        try {
+          const naverApiUrl = getApiUrl(NAVER_API_ENDPOINT);
+          const naverResponse = await retryFetch(naverApiUrl);
+          const naverData = await naverResponse.json();
+          
+          if (naverData && Array.isArray(naverData)) {
+            this.apiData.naver = naverData;
+          } else {
+            console.warn('Naver API 返回的數據格式不正確');
             this.apiData.naver = [];
           }
-        } else {
-          // 如果用戶沒有選擇 Naver，清空 Naver 數據
+        } catch (naverError) {
+          console.error("Error fetching Naver data:", naverError);
           this.apiData.naver = [];
         }
         
