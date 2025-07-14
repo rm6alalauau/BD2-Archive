@@ -125,6 +125,9 @@ const FORUM_API_CONFIG = {
   'XPosts': { name: 'x', key: 'x' }
 };
 
+// Naver 使用獨立的 API 端點
+const NAVER_API_ENDPOINT = 'https://naver-lounge-proxy.zzz-archive-back-end.workers.dev';
+
 // 新的統一論壇 API 端點
 const FORUMS_API_ENDPOINT = 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/forums';
 
@@ -298,9 +301,10 @@ export const useAppStore = defineStore('app', {
       }
     },
 
-    // 獲取論壇數據 - 使用新的統一 API
+    // 獲取論壇數據 - 使用新的統一 API 和 Naver 獨立 API
     async fetchForumData() {
       try {
+        // 獲取統一論壇 API 數據
         const apiUrl = getApiUrl(FORUMS_API_ENDPOINT);
         const response = await retryFetch(apiUrl);
         const data = await response.json();
@@ -330,6 +334,29 @@ export const useAppStore = defineStore('app', {
           });
         }
         
+        // 檢查用戶是否選擇了 Naver，只有選擇了才呼叫 Naver API
+        const userSelectedForums = getUserSelectedForums();
+        if (userSelectedForums.includes('NaverPosts')) {
+          try {
+            const naverApiUrl = getApiUrl(NAVER_API_ENDPOINT);
+            const naverResponse = await retryFetch(naverApiUrl);
+            const naverData = await naverResponse.json();
+            
+            if (naverData && Array.isArray(naverData)) {
+              this.apiData.naver = naverData;
+            } else {
+              console.warn('Naver API 返回的數據格式不正確');
+              this.apiData.naver = [];
+            }
+          } catch (naverError) {
+            console.error("Error fetching Naver data:", naverError);
+            this.apiData.naver = [];
+          }
+        } else {
+          // 如果用戶沒有選擇 Naver，清空 Naver 數據
+          this.apiData.naver = [];
+        }
+        
         // 更新最後更新時間
         this.lastUpdated = new Date();
         
@@ -341,6 +368,7 @@ export const useAppStore = defineStore('app', {
           const config = FORUM_API_CONFIG[forumName];
           this.apiData[config.key] = [];
         });
+        this.apiData.naver = [];
         
         throw error;
       }
