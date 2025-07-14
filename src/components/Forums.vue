@@ -178,34 +178,12 @@ export default {
         this.$nextTick(() => {
           this.loadDataFromStore();
           
-          // 檢查是否需要重新獲取數據（特別是 Naver 的開關）
-          const needsRefresh = this.checkIfNeedsRefresh();
-          if (needsRefresh || !this.hasAnyData) {
+          // 如果沒有數據，重新獲取
+          if (!this.hasAnyData) {
             this.fetchData();
           }
         });
       }
-    },
-    
-    // 檢查是否需要重新獲取數據
-    checkIfNeedsRefresh() {
-      try {
-        const saved = localStorage.getItem('bd2_settings');
-        if (saved) {
-          const settings = JSON.parse(saved);
-          const currentForums = settings.selectedForums || [];
-          
-          // 檢查 Naver 的狀態變化
-          const hasNaverNow = currentForums.includes('NaverPosts');
-          const hadNaverBefore = this.userSelectedForums.includes('NaverPosts');
-          
-          // 如果 Naver 狀態發生變化，需要重新獲取數據
-          return hasNaverNow !== hadNaverBefore;
-        }
-      } catch (error) {
-        console.error('檢查設定變化時發生錯誤:', error);
-      }
-      return false;
     },
     
     // 檢查當前選中的組件是否有數據
