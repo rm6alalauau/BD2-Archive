@@ -260,7 +260,8 @@ export default {
       cleared: '資料已清除',
       reset: '設定已重置',
       saved: '設定已儲存',
-      iconChanged: '網站圖示已切換！'
+      iconChanged: '網站圖示已切換！',
+      forumsUpdated: '論壇設定已更新，正在重新載入數據...'
     }
   },
   

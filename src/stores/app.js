@@ -102,6 +102,32 @@ const retryFetch = async (url, options = {}, maxRetries = 3, delayMs = 1000) => 
   throw lastError;
 };
 
+// 獲取用戶選擇的論壇設定
+const getUserSelectedForums = () => {
+  try {
+    const saved = localStorage.getItem('bd2_settings');
+    if (saved) {
+      const settings = JSON.parse(saved);
+      return settings.selectedForums || ['Bahamut', 'NGAList', 'PTTList', 'XPosts', 'RedditPosts'];
+    }
+  } catch (error) {
+    console.error('載入論壇設定時發生錯誤:', error);
+  }
+  return ['Bahamut', 'NGAList', 'PTTList', 'XPosts', 'RedditPosts']; // 預設全選（不包含Naver）
+};
+
+// 論壇 API 配置映射 - 更新為新的統一 API
+const FORUM_API_CONFIG = {
+  'Bahamut': { name: 'baha', key: 'baha' },
+  'NGAList': { name: 'nga', key: 'nga' },
+  'PTTList': { name: 'ptt', key: 'ptt' },
+  'RedditPosts': { name: 'reddit', key: 'reddit' },
+  'XPosts': { name: 'x', key: 'x' }
+};
+
+// 新的統一論壇 API 端點
+const FORUMS_API_ENDPOINT = 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/forums';
+
 export const useAppStore = defineStore('app', {
   state: () => ({
     // API數據
@@ -156,7 +182,6 @@ export const useAppStore = defineStore('app', {
         this.lastFetchTime = now;
         
       } catch (error) {
-        console.error('📱 Error fetching data:', error);
         this.error = error.message || 'Failed to fetch data';
       } finally {
         this.loading = false;
@@ -174,7 +199,6 @@ export const useAppStore = defineStore('app', {
         { name: 'redeemCodes', fn: () => this.fetchRedeemCodes() },
         { name: 'news', fn: () => this.fetchNews() },
         { name: 'officialMedia', fn: () => this.fetchOfficialMedia() },
-        { name: 'pixivCards', fn: () => this.fetchPixivCards() },
       ];
       
       // 先載入優先任務
@@ -210,7 +234,6 @@ export const useAppStore = defineStore('app', {
         this.fetchRedeemCodes().catch(e => {}),
         this.fetchNews().catch(e => {}),
         this.fetchOfficialMedia().catch(e => {}),
-        this.fetchPixivCards().catch(e => {}),
       ];
       
       // 先等待優先任務完成
@@ -246,29 +269,6 @@ export const useAppStore = defineStore('app', {
       // 暫時保持空實現，等待具體的 API 端點
     },
     
-    // 獲取 Pixiv 卡片數據
-    async fetchPixivCards() {
-      try {
-        // 使用自己的 API 端點，就像論壇和兌換碼一樣
-        const originalUrl = 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/pixiv';
-        const apiUrl = getApiUrl(originalUrl);
-        
-        const response = await retryFetch(apiUrl);
-        const data = await response.json();
-        
-        // 更新 Pixiv 數據
-        this.apiData.pixiv = data || [];
-        
-      } catch (error) {
-        console.error("Error fetching pixiv data:", error);
-        
-        // 設置空數組，避免UI錯誤
-        this.apiData.pixiv = [];
-        
-        throw error; // 重新拋出錯誤，讓上層處理
-      }
-    },
-    
     // 獲取兌換碼數據
     async fetchRedeemCodes() {
       try {
@@ -298,51 +298,51 @@ export const useAppStore = defineStore('app', {
       }
     },
 
-    // 獲取論壇數據
+    // 獲取論壇數據 - 使用新的統一 API
     async fetchForumData() {
-      // 定義所有論壇API端點
-      const forumApis = [
-        { name: 'baha', url: 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/baha', key: 'baha' },
-        { name: 'nga', url: 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/nga', key: 'nga' },
-        { name: 'ptt', url: 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/ptt', key: 'ptt' },
-        { name: 'reddit', url: 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/reddit', key: 'reddit' },
-        { name: 'x', url: 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/x', key: 'x' },
-        { name: 'naver', url: 'https://naver-lounge-proxy.zzz-archive-back-end.workers.dev', key: 'naver' }
-      ];
-      
-      const results = await Promise.allSettled(
-        forumApis.map(async (forum) => {
-          try {
-            const apiUrl = getApiUrl(forum.url);
-            
-            const response = await retryFetch(apiUrl);
-            const data = await response.json();
+      try {
+        const apiUrl = getApiUrl(FORUMS_API_ENDPOINT);
+        const response = await retryFetch(apiUrl);
+        const data = await response.json();
+        
+        // 解析統一 API 返回的數據
+        if (data && typeof data === 'object') {
+          // 更新各個論壇的數據
+          Object.keys(FORUM_API_CONFIG).forEach(forumName => {
+            const config = FORUM_API_CONFIG[forumName];
+            const forumData = data[config.key] || [];
             
             // 更新對應的數據
-            this.apiData[forum.key] = data || [];
-            
-            return { forum: forum.name, success: true };
-          } catch (error) {
-            console.error(`Error fetching ${forum.name} data:`, error);
-            
-            // 設置空數組，避免UI錯誤
-            this.apiData[forum.key] = [];
-            
-            return { forum: forum.name, success: false, error: error.message };
+            this.apiData[config.key] = forumData;
+          });
+          
+          // 處理 Pixiv 數據（如果有的話）
+          if (data.pixiv) {
+            this.apiData.pixiv = data.pixiv;
           }
-        })
-      );
-      
-      // 檢查結果
-      const successful = results.filter(r => r.status === 'fulfilled' && r.value.success).length;
-      const failed = results.length - successful;
-      
-      // 更新最後更新時間
-      this.lastUpdated = new Date();
-      
-      // 即使部分失敗也不拋出錯誤，讓其他數據能正常顯示
-      if (successful === 0) {
-        throw new Error('All forum APIs failed to load');
+          
+        } else {
+          console.warn('論壇 API 返回的數據格式不正確');
+          // 設置空數據
+          Object.keys(FORUM_API_CONFIG).forEach(forumName => {
+            const config = FORUM_API_CONFIG[forumName];
+            this.apiData[config.key] = [];
+          });
+        }
+        
+        // 更新最後更新時間
+        this.lastUpdated = new Date();
+        
+      } catch (error) {
+        console.error("Error fetching forum data:", error);
+        
+        // 設置空數組，避免UI錯誤
+        Object.keys(FORUM_API_CONFIG).forEach(forumName => {
+          const config = FORUM_API_CONFIG[forumName];
+          this.apiData[config.key] = [];
+        });
+        
+        throw error;
       }
     },
   },
@@ -357,7 +357,7 @@ export const useAppStore = defineStore('app', {
       PTTList: state.apiData.ptt,
       XPosts: state.apiData.x,
       RedditPosts: state.apiData.reddit,
-      NaverPosts: state.apiData.naver
+      NaverPosts: state.apiData.naver // Naver 保持獨立
     }),
     // 是否有數據
     hasData: (state) => state.lastUpdated !== null,

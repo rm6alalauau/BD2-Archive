@@ -255,12 +255,13 @@ export default {
       cancel: 'キャンセル'
     },
     
-    // Success messages
+    // 成功メッセージ
     success: {
       cleared: 'データがクリアされました',
       reset: '設定がリセットされました',
       saved: '設定が保存されました',
-      iconChanged: 'ウェブサイトアイコンが変更されました！'
+      iconChanged: 'ウェブサイトアイコンが変更されました！',
+      forumsUpdated: 'フォーラム設定が更新され、データを再読み込み中...'
     }
   },
   

@@ -534,15 +534,21 @@ export default {
   watch: {
     // 監聽論壇選擇變化，手動觸發 storage 事件來通知其他組件
     selectedForums: {
-      handler() {
-        // 使用 setTimeout 確保設定已經保存到 localStorage
-        this.$nextTick(() => {
-          // 手動觸發 storage 事件來通知其他組件
-          window.dispatchEvent(new StorageEvent('storage', {
-            key: 'bd2_settings',
-            newValue: localStorage.getItem('bd2_settings')
-          }));
-        });
+      handler(newForums, oldForums) {
+        // 檢查是否有實際變化
+        if (JSON.stringify(newForums) !== JSON.stringify(oldForums)) {
+          // 使用 setTimeout 確保設定已經保存到 localStorage
+          this.$nextTick(() => {
+            // 手動觸發 storage 事件來通知其他組件
+            window.dispatchEvent(new StorageEvent('storage', {
+              key: 'bd2_settings',
+              newValue: localStorage.getItem('bd2_settings')
+            }));
+            
+            // 顯示成功訊息
+            this.showSuccess(this.t('settings.success.forumsUpdated'));
+          });
+        }
       },
       deep: true
     }
