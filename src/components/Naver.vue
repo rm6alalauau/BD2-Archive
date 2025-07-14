@@ -60,7 +60,7 @@ Naver Lounge 論壇組件
             <!-- 圖片 -->
             <a :href="item.link" target="_blank" class="item-image">
               <v-img
-                :src="getOptimizedImageUrl(item.imageUrl) || generatePlaceholderImage(item.title)"
+                :src="item.imageUrl || generatePlaceholderImage(item.title)"
                 :alt="item.title || 'Naver 貼文圖片'"
                 height="140"
                 width="150"
@@ -92,7 +92,7 @@ Naver Lounge 論壇組件
 </template>
 
 <script>
-import { getSmallOptimizedImageUrl } from '@/utils/cloudinary'
+// import { getSmallOptimizedImageUrl } from '@/utils/cloudinary'
 
 export default {
   name: "NaverPosts",
@@ -143,35 +143,25 @@ export default {
       }
     },
     
-    // 獲取優化的圖片URL
-    getOptimizedImageUrl(imageUrl) {
-      if (!imageUrl) return '';
-      
-      // 檢查緩存
-      if (this.imageCache.has(imageUrl)) {
-        return this.imageCache.get(imageUrl);
-      }
-      
-      try {
-        // 檢查URL是否包含特殊字符或過長，如果有問題直接使用原始URL
-        if (imageUrl.includes('%') || imageUrl.includes('&') || imageUrl.length > 500 || 
-            imageUrl.includes('BD2_') || imageUrl.includes('공지사항')) {
-          console.log('Image URL contains special characters or is problematic, using original URL');
-          this.imageCache.set(imageUrl, imageUrl);
-          return imageUrl;
-        }
-        
-        const optimizedUrl = getSmallOptimizedImageUrl(imageUrl);
-        // 緩存結果
-        this.imageCache.set(imageUrl, optimizedUrl);
-        return optimizedUrl;
-      } catch (error) {
-        console.log('Cloudinary optimization failed:', error);
-        // 緩存原始URL作為回退
-        this.imageCache.set(imageUrl, imageUrl);
-        return imageUrl;
-      }
-    },
+    // getOptimizedImageUrl(imageUrl) {
+    //   if (!imageUrl) return '';
+    //   if (this.imageCache.has(imageUrl)) {
+    //     return this.imageCache.get(imageUrl);
+    //   }
+    //   try {
+    //     if (imageUrl.includes('%') || imageUrl.includes('&') || imageUrl.length > 500 || 
+    //         imageUrl.includes('BD2_') || imageUrl.includes('공지사항')) {
+    //       this.imageCache.set(imageUrl, imageUrl);
+    //       return imageUrl;
+    //     }
+    //     const optimizedUrl = getSmallOptimizedImageUrl(imageUrl);
+    //     this.imageCache.set(imageUrl, optimizedUrl);
+    //     return optimizedUrl;
+    //   } catch (error) {
+    //     this.imageCache.set(imageUrl, imageUrl);
+    //     return imageUrl;
+    //   }
+    // },
     
     // 生成預設圖片
     generatePlaceholderImage(title) {
@@ -181,14 +171,9 @@ export default {
     
     // 處理圖片加載錯誤
     handleImageError(event) {
-      // 確保event和event.target存在
       if (!event || !event.target) {
         return;
       }
-      
-      console.log('Image failed to load:', event.target.src);
-      
-      // 如果圖片加載失敗，使用預設圖片
       const placeholderUrl = this.generatePlaceholderImage();
       if (event.target.src !== placeholderUrl) {
         event.target.src = placeholderUrl;

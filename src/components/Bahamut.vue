@@ -17,7 +17,7 @@
       <v-carousel-item v-for="(item, i) in items" :key="i">
         <v-card flat tile rounded="xl" @click="navigateTo(item.link)">
           <v-img 
-            :src="getOptimizedImageUrl(item.imgSrc)" 
+            :src="item.imgSrc" 
             :alt="item.title || 'Brown Dust 2 遊戲圖片'"
             height="300"
             contain
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { getOptimizedImageUrl } from '@/utils/cloudinary'
+// import { getOptimizedImageUrl } from '@/utils/cloudinary'
 
 export default {
   name: "Bahamut",
@@ -66,18 +66,13 @@ export default {
     navigateTo(link) {
       window.open(link, "_blank");
     },
-    getOptimizedImageUrl(imageUrl) {
-      if (!imageUrl) return '';
-      
-      // 如果已經是Cloudinary URL，直接返回（避免重複處理）
-      if (imageUrl.includes('cloudinary.com')) {
-        return imageUrl;
-      }
-      
-      // 使用 c_scale 模式，以高度為基準進行縮放
-      // 這樣圖片會保持完整高度，左右可能會被裁切，但視覺效果更好
-      return getOptimizedImageUrl(imageUrl, 'h_300,c_scale,f_auto,q_auto');
-    },
+    // getOptimizedImageUrl(imageUrl) {
+    //   if (!imageUrl) return '';
+    //   if (imageUrl.includes('cloudinary.com')) {
+    //     return imageUrl;
+    //   }
+    //   return getOptimizedImageUrl(imageUrl, 'h_300,c_scale,f_auto,q_auto');
+    // },
   },
 };
 </script>
