@@ -108,12 +108,14 @@
                     variant="flat"
                     class="coupon-status-chip"
                   >
-                    {{ coupon.status }}
+                    {{ formatDateStatus(coupon.status) }}
                   </v-chip>
                 </div>
                 
-                <div v-if="coupon.description" class="coupon-description">
-                  {{ coupon.description }}
+                <div v-if="coupon.description || getDateDisplayText(coupon.status)" class="coupon-description">
+                  <span v-if="coupon.description">{{ coupon.description }}</span>
+                  <span v-if="coupon.description && getDateDisplayText(coupon.status)" class="coupon-description-separator"> • </span>
+                  <span v-if="getDateDisplayText(coupon.status)" class="coupon-date-text">{{ getDateDisplayText(coupon.status) }}</span>
                 </div>
               </div>
               
@@ -394,7 +396,67 @@ const getButtonText = (coupon) => {
   return t.value('profile.actions.claim')
 }
 
+// 檢查是否為日期格式
+const isDateStatus = (status) => {
+  const datePattern = /^\d{4}\/\d{1,2}\/\d{1,2}$/
+  return datePattern.test(status)
+}
+
+// 格式化日期顯示
+const formatDateStatus = (status) => {
+  if (!isDateStatus(status)) return status
+  
+  const statusDate = new Date(status)
+  const currentDate = new Date()
+  
+  // 比較日期（忽略時間）
+  const statusDateOnly = new Date(statusDate.getFullYear(), statusDate.getMonth(), statusDate.getDate())
+  const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())
+  
+  // 格式化日期顯示
+  const month = statusDate.getMonth() + 1
+  const day = statusDate.getDate()
+  
+  if (statusDateOnly < currentDateOnly) {
+    return `已過期` // 已過期
+  } else if (statusDateOnly.getTime() === currentDateOnly.getTime()) {
+    return `今天到期` // 今天是最後一天，但仍可使用
+  } else {
+    return `目前可用` // 尚未到期
+  }
+}
+
+// 獲取日期顯示文字（用於描述區域）
+const getDateDisplayText = (status) => {
+  if (!isDateStatus(status)) return null
+  
+  const statusDate = new Date(status)
+  const month = statusDate.getMonth() + 1
+  const day = statusDate.getDate()
+  
+  return `${month}/${day} 到期`
+}
+
 const getStatusColor = (status) => {
+  // 檢查是否為日期格式 (YYYY/M/D 或 YYYY/M/DD)
+  if (isDateStatus(status)) {
+    const statusDate = new Date(status)
+    const currentDate = new Date()
+    
+    // 比較日期（忽略時間）
+    const statusDateOnly = new Date(statusDate.getFullYear(), statusDate.getMonth(), statusDate.getDate())
+    const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())
+    
+    if (statusDateOnly < currentDateOnly) {
+      return 'error' // 已過期
+    } else if (statusDateOnly.getTime() === currentDateOnly.getTime()) {
+      return 'warning' // 今天是最後一天，但仍可使用
+    } else {
+      return 'success' // 尚未到期
+    }
+  }
+  
+  // 原有的狀態顏色邏輯
   const statusColors = {
     '限時可用': 'warning',
     '目前可用': 'success',
@@ -936,11 +998,35 @@ watch(
   flex-shrink: 0;
 }
 
+/* 今天是最後一天的特殊樣式 */
+.coupon-status-chip.v-chip--color-warning {
+  animation: pulse-warning 2s infinite;
+}
+
+@keyframes pulse-warning {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
 .coupon-description {
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.7);
   line-height: 1.2;
   margin-top: 2px;
+}
+
+.coupon-description-separator {
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0 4px;
+}
+
+.coupon-date-text {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
 }
 
 .coupon-action-btn {
