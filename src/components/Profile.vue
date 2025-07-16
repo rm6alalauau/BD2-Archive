@@ -422,7 +422,7 @@ const formatDateStatus = (status) => {
   } else if (statusDateOnly.getTime() === currentDateOnly.getTime()) {
     return `今天到期` // 今天是最後一天，但仍可使用
   } else {
-    return `目前可用` // 尚未到期
+    return `限時可用` // 尚未到期
   }
 }
 
@@ -452,7 +452,7 @@ const getStatusColor = (status) => {
     } else if (statusDateOnly.getTime() === currentDateOnly.getTime()) {
       return 'warning' // 今天是最後一天，但仍可使用
     } else {
-      return 'success' // 尚未到期
+      return 'warning' // 尚未到期 - 統一使用 warning 顏色
     }
   }
   
