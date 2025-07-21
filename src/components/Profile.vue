@@ -607,8 +607,30 @@ const loadCouponCodesFromStore = () => {
         return
       }
       
-      // 轉換正常數據格式
-      redeemCodes.value = redeemData.map(item => ({
+      // 轉換正常數據格式並過濾已過期的兌換碼
+      const filteredRedeemData = redeemData.filter(item => {
+        // 如果不是日期格式，保留所有項目
+        if (!isDateStatus(item.status)) {
+          return true
+        }
+        
+        // 檢查日期是否已過期超過一天
+        const statusDate = new Date(item.status)
+        const currentDate = new Date()
+        
+        // 比較日期（忽略時間）
+        const statusDateOnly = new Date(statusDate.getFullYear(), statusDate.getMonth(), statusDate.getDate())
+        const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())
+        
+        // 計算日期差（以天為單位）
+        const timeDiff = currentDateOnly.getTime() - statusDateOnly.getTime()
+        const daysDiff = timeDiff / (1000 * 3600 * 24)
+        
+        // 如果過期超過1天，則過濾掉
+        return daysDiff <= 1
+      })
+      
+      redeemCodes.value = filteredRedeemData.map(item => ({
         code: item.code || '未知代碼',
         description: item.reward || '未知獎勵',
         status: item.status || '未知狀態',
