@@ -122,9 +122,8 @@
             <div v-if="showR18Content" class="mt-4">
               <v-divider class="mb-4"></v-divider>
               
-              <!-- 感謝訊息（僅繁體中文顯示） -->
+              <!-- 多語系贊助感謝訊息 -->
               <v-alert
-                v-if="settingsStore.selectedLanguage === 'zh-Hant-TW'"
                 color="primary"
                 variant="tonal"
                 rounded="lg"
@@ -132,16 +131,10 @@
                 class="mb-4"
               >
                 <div class="text-body-2">
-                  <strong>支持 The BD2 Pulse 持續運行</strong>
+                  <strong>{{ t('settings.supportTitle') }}</strong>
                 </div>
-                <div class="text-body-2 mt-2">
-                  大家好，我是本站的開發者。感謝大家的支持！網站上線第二天，Cloudflare 的用量就超出了免費額度，這份熱情真的超乎我的想像。
-                </div>
-                <div class="text-body-2 mt-2">
-                  為了讓大家能持續穩定地使用，我已經將服務升級到了付費方案。如果你覺得這個小工具對你有幫助，並有多餘的能力，歡迎通過下方的連結「請我喝杯咖啡」，任何一點支持都將成為我維護和優化網站的巨大動力！
-                </div>
-                <div class="text-body-2 mt-2">
-                  <strong>再次感謝每一位使用者。</strong>
+                <div class="text-body-2 mt-2" v-for="(line, idx) in supportContentLines" :key="idx">
+                  {{ line }}
                 </div>
               </v-alert>
 
@@ -408,6 +401,9 @@ export default {
         { label: this.t('forums.reddit'), value: 'RedditPosts' },
         { label: this.t('forums.naver'), value: 'NaverPosts' },
       ]
+    },
+    supportContentLines() {
+      return this.t('settings.supportContent').split('\n');
     }
   },
   methods: {
