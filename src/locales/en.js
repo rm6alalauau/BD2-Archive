@@ -123,7 +123,10 @@ export default {
       slow: 'Coupon service is responding slowly, please wait',
       unreachable: 'Cannot connect to coupon service, please check your network',
       corsError: 'iOS Safari compatibility issue'
-    }
+    },
+    nicknameHelpTitle: 'What is the in-game nickname?',
+    nicknameHelp: 'Please enter your in-game nickname (as shown in the picture) to receive rewards correctly.',
+    nicknameDialogTitle: 'Select Nickname',
   },
   
   // News
@@ -262,7 +265,13 @@ export default {
       saved: 'Settings saved',
       iconChanged: 'Website icon changed!',
       forumsUpdated: 'Forum settings updated, reloading data...'
-    }
+    },
+    supportTitle: 'Support The BD2 Pulse',
+    supportContent: `Hello everyone, I'm the developer of this site.
+Thank you to every player who uses The BD2 Pulse! Knowing that this little tool is helpful to you is my biggest motivation.
+To handle the growing traffic and ensure the site remains fast and stable, I've upgraded our infrastructure to a paid plan.
+If you find this website useful and would like to support its long-term operation, please consider "buying me a coffee" through the link below. Every bit of support goes directly towards server and domain costs, and encourages me to spend more time on maintenance and developing new features.
+Thank you again for all your support!`,
   },
   
   // Feedback page
