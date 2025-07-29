@@ -161,9 +161,12 @@ export default {
         const allMediaForLanguage = data.data.flatMap(item => {
           const mainAttrs = item.attributes;
           
+          // 語言映射：簡體中文使用繁體中文的資料
+          const apiLanguage = this.getApiLanguage(selectedLanguage);
+          
           // 根據語言找到對應的本地化資料
           const localization = mainAttrs.localizations?.data.find(
-            loc => loc.attributes.locale === selectedLanguage
+            loc => loc.attributes.locale === apiLanguage
           );
 
           if (localization) {
@@ -239,10 +242,23 @@ export default {
       }
     },
 
+    // 根據選擇的語言返回對應的 API 語言代碼
+    getApiLanguage(selectedLanguage) {
+      const apiLanguageMap = {
+        'zh-Hant-TW': 'zh-Hant-TW',
+        'zh-Hans-CN': 'zh-Hant-TW',
+        'en': 'en',
+        'ja-JP': 'ja-JP',
+        'ko-KR': 'ko-KR'
+      };
+      return apiLanguageMap[selectedLanguage] || 'zh-Hant-TW';
+    },
+
     // 根據選擇的語言返回對應的日期格式化地區設定
     getDateLocale() {
       const localeMap = {
         'zh-Hant-TW': 'zh-TW',
+        'zh-Hans-CN': 'zh-CN',
         'en': 'en-US',
         'ja-JP': 'ja-JP',
         'ko-KR': 'ko-KR'

@@ -337,6 +337,7 @@ export default {
     getWebsiteLocale() {
       const localeMap = {
         'zh-Hant-TW': 'zh-tw',
+        'zh-Hans-CN': 'zh-tw',
         'en': 'en-us',
         'ja-JP': 'ja-jp',
         'ko-KR': 'ko-kr'
@@ -348,6 +349,7 @@ export default {
     getApiEndpoint(language) {
       const endpointMap = {
         'zh-Hant-TW': 'tw',
+        'zh-Hans-CN': 'tw',
         'en': 'en',
         'ja-JP': 'jp',
         'ko-KR': 'kr'

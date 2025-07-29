@@ -232,6 +232,8 @@
                 {{ t('settings.dataManagement.clearButton') }}
               </v-btn>
             </div>
+            
+
           </v-card-text>
         </v-card>
 
@@ -478,6 +480,8 @@ export default {
       this.showSuccess(this.t('settings.success.reset'));
     },
     
+
+    
     // 顯示成功訊息
     showSuccess(message) {
       this.successMessage = message;
@@ -500,6 +504,7 @@ export default {
       const lang = this.settingsStore.selectedLanguage;
       const texts = {
         'zh-Hant-TW': 'Ko-fi 請喝咖啡',
+        'zh-Hans-CN': 'Ko-fi 请喝咖啡',
         'en': 'Buy me a coffee',
         'ja-JP': 'コーヒーをおごる',
         'ko-KR': '커피 한 잔 사주세요'
@@ -511,6 +516,7 @@ export default {
       const lang = this.settingsStore.selectedLanguage;
       const texts = {
         'zh-Hant-TW': 'Gank 小額贊助',
+        'zh-Hans-CN': 'Gank 小额赞助',
         'en': 'Support via Gank',
         'ja-JP': 'Gankで支援',
         'ko-KR': 'Gank으로 후원'
