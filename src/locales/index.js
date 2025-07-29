@@ -1,5 +1,6 @@
 // 多語言資源系統
 import zhHantTW from './zh-Hant-TW.js'
+import zhHansCN from './zh-Hans-CN.js'
 import en from './en.js'
 import jaJP from './ja-JP.js'
 import koKR from './ko-KR.js'
@@ -7,6 +8,7 @@ import koKR from './ko-KR.js'
 // 語言資源對照表
 const messages = {
   'zh-Hant-TW': zhHantTW,
+  'zh-Hans-CN': zhHansCN,
   'en': en,
   'ja-JP': jaJP,
   'ko-KR': koKR

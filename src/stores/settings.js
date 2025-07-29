@@ -16,6 +16,7 @@ export const useSettingsStore = defineStore('settings', {
     selectedLanguage: 'zh-Hant-TW',
     supportedLanguages: [
       { code: 'zh-Hant-TW', name: '繁體中文', flag: '🇹🇼' },
+      { code: 'zh-Hans-CN', name: '简体中文', flag: '🇨🇳' },
       { code: 'en', name: 'English', flag: '🇺🇸' },
       { code: 'ja-JP', name: '日本語', flag: '🇯🇵' },
       { code: 'ko-KR', name: '한국어', flag: '🇰🇷' }
@@ -55,7 +56,8 @@ export const useSettingsStore = defineStore('settings', {
         'zh-TW': 'zh-Hant-TW',
         'zh-HK': 'zh-Hant-TW', 
         'zh-MO': 'zh-Hant-TW',
-        'zh': 'zh-Hant-TW',        // 預設中文為繁體
+        'zh-CN': 'zh-Hans-CN',
+        'zh-SG': 'zh-Hans-CN',
         'en': 'en',
         'en-US': 'en',
         'en-GB': 'en',
@@ -75,6 +77,12 @@ export const useSettingsStore = defineStore('settings', {
       // 檢查語言代碼的前綴匹配（例如 en-CA -> en）
       const langPrefix = browserLang.split('-')[0]
       if (langMap[langPrefix]) {
+        // 對於中文，需要更精確的處理
+        if (langPrefix === 'zh') {
+          // 如果只是 'zh' 沒有地區代碼，預設使用繁體中文
+          // 因為大部分繁體中文用戶的瀏覽器設定是 'zh' 或 'zh-TW'
+          return 'zh-Hant-TW'
+        }
         return langMap[langPrefix]
       }
       
