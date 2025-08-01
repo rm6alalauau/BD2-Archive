@@ -85,7 +85,7 @@ export default {
       nicknameValidationFailed: 'Nickname validation failed, please check if the nickname is correct',
       couponExpired: 'Coupon code has expired',
       invalidCoupon: 'Invalid coupon code',
-      alreadyUsed: 'This serial number has already been used',
+      alreadyUsed: 'This code has already been redeemed on your account',
       claimSuccess: 'Claim successful',
       claimFailed: 'Claim failed, please refresh the page and try again',
       requestTimeout: 'Request timeout, please retry',

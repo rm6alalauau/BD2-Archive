@@ -85,7 +85,7 @@ export default {
       nicknameValidationFailed: '昵称验证失败，请确认昵称是否正确',
       couponExpired: '兑换码已过期',
       invalidCoupon: '无效的兑换码',
-      alreadyUsed: '已使用过该序号',
+      alreadyUsed: '您的帐号先前已兑换过此序号',
       claimSuccess: '兑换成功',
       claimFailed: '兑换失败，请重新整理页面后再试',
       requestTimeout: '请求超时，请重试',

@@ -85,7 +85,7 @@ export default {
       nicknameValidationFailed: 'ニックネーム検証に失敗しました。ニックネームが正しいかご確認ください',
       couponExpired: 'クーポンコードが期限切れです',
       invalidCoupon: '無効なクーポンコード',
-      alreadyUsed: 'このシリアル番号は既に使用されています',
+      alreadyUsed: 'このアカウントでは、このコードは既に受け取り済みです',
       claimSuccess: '引き換え成功',
       claimFailed: '引き換えに失敗しました。ページを更新してもう一度お試しください',
       requestTimeout: 'リクエストタイムアウト、再試行してください',
