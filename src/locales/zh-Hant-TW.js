@@ -85,7 +85,7 @@ export default {
       nicknameValidationFailed: '暱稱驗證失敗，請確認暱稱是否正確',
       couponExpired: '兌換碼已過期',
       invalidCoupon: '無效的兌換碼',
-      alreadyUsed: '已使用過該序號',
+      alreadyUsed: '您的帳號先前已兌換過此序號',
       claimSuccess: '兌換成功',
       claimFailed: '兌換失敗，請重新整理頁面後再試',
       requestTimeout: '請求超時，請重試',

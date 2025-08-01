@@ -85,7 +85,7 @@ export default {
       nicknameValidationFailed: '닉네임 검증에 실패했습니다. 닉네임이 올바른지 확인해 주세요',
       couponExpired: '쿠폰 코드가 만료되었습니다',
       invalidCoupon: '유효하지 않은 쿠폰 코드',
-      alreadyUsed: '이 시리얼 번호는 이미 사용되었습니다',
+      alreadyUsed: '이 계정에서는 이미 사용된 코드입니다',
       claimSuccess: '교환 성공',
       claimFailed: '교환에 실패했습니다. 페이지를 새로고침한 후 다시 시도해 주세요',
       requestTimeout: '요청 시간 초과, 다시 시도해 주세요',
