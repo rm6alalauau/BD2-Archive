@@ -101,7 +101,7 @@ export default defineConfig({
         },
       },
       '/api/db2pulse': {
-        target: 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev',
+        target: 'https://api.thebd2pulse.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/db2pulse/, ''),
       },

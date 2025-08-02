@@ -185,11 +185,11 @@ export default {
       
       try {
         // 使用自己的 API 端點，就像論壇和兌換碼一樣
-        const originalUrl = 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/pixiv';
+        const originalUrl = 'https://api.thebd2pulse.com/pixiv';
         const url = this.$getApiUrl ? this.$getApiUrl(originalUrl) : originalUrl;
         
         // 獲取 Pixiv 資料
-        const response = await fetch(url);
+        const response = await this.$customFetch(url);
         if (!response.ok) throw new Error(`API error: ${response.status}`);
         const data = await response.json();
         if (!data || !Array.isArray(data) || data.length === 0) return null;
