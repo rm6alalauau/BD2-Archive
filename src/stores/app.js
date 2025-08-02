@@ -1,6 +1,6 @@
 // Utilities
 import { defineStore } from 'pinia'
-import { getApiUrl } from '@/plugins/index.js'
+import { getApiUrl, customFetch } from '@/plugins/index.js'
 
 // 重試工具函數
 const retryFetch = async (url, options = {}, maxRetries = 3, delayMs = 1000) => {
@@ -56,7 +56,11 @@ const retryFetch = async (url, options = {}, maxRetries = 3, delayMs = 1000) => 
         };
       }
       
-      const response = await fetch(url, fetchOptions);
+      // 根據 URL 選擇使用 customFetch 或普通 fetch
+      const isThebd2pulseApi = url.includes('api.thebd2pulse.com') || url.includes('/api/db2pulse');
+      const response = isThebd2pulseApi 
+        ? await customFetch(url, fetchOptions)
+        : await fetch(url, fetchOptions);
       clearTimeout(timeoutId);
       
       // 檢查回應狀態
@@ -129,7 +133,7 @@ const FORUM_API_CONFIG = {
 const NAVER_API_ENDPOINT = 'https://naver-lounge-proxy.zzz-archive-back-end.workers.dev';
 
 // 新的統一論壇 API 端點
-const FORUMS_API_ENDPOINT = 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/forums';
+const FORUMS_API_ENDPOINT = 'https://api.thebd2pulse.com/forums';
 
 export const useAppStore = defineStore('app', {
   state: () => ({
@@ -276,7 +280,7 @@ export const useAppStore = defineStore('app', {
     async fetchRedeemCodes() {
       try {
         // 檢查是否為開發環境並使用代理 URL
-        const originalUrl = 'https://thedb2pulse-api.zzz-archive-back-end.workers.dev/redeem';
+        const originalUrl = 'https://api.thebd2pulse.com/redeem';
         const apiUrl = getApiUrl(originalUrl);
         
         const response = await retryFetch(apiUrl);

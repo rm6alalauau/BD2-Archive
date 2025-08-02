@@ -17,8 +17,8 @@ export const getApiUrl = (endpoint) => {
   
   // 開發環境使用代理，避免 CORS 問題
   if (isDev) {
-    if (endpoint.includes('thedb2pulse-api.zzz-archive-back-end.workers.dev')) {
-      return endpoint.replace('https://thedb2pulse-api.zzz-archive-back-end.workers.dev', '/api/db2pulse');
+    if (endpoint.includes('api.thebd2pulse.com')) {
+      return endpoint.replace('https://api.thebd2pulse.com', '/api/db2pulse');
     }
     if (endpoint.includes('bd2-official-proxy.zzz-archive-back-end.workers.dev')) {
       return endpoint.replace('https://bd2-official-proxy.zzz-archive-back-end.workers.dev', '/api/bd2-proxy');
@@ -30,6 +30,26 @@ export const getApiUrl = (endpoint) => {
   
   // 生產環境直接使用原始 URL
   return endpoint;
+};
+
+// 帶有 API Key 的 customFetch 函數，專門用於 api.thebd2pulse.com
+export const customFetch = (url, options = {}) => {
+  // 檢查是否為 api.thebd2pulse.com 的請求（包括開發環境的代理）
+  const isThebd2pulseApi = url.includes('api.thebd2pulse.com') || url.includes('/api/db2pulse');
+  
+  if (isThebd2pulseApi) {
+    // 只對 api.thebd2pulse.com 的請求添加 API Key
+    const headers = {
+      ...options.headers,
+      // 從 Vite 環境變數中讀取 API 金鑰
+      'X-API-Key': import.meta.env.VITE_API_KEY
+    };
+    
+    return fetch(url, { ...options, headers });
+  } else {
+    // 其他 API 使用原本的 fetch
+    return fetch(url, options);
+  }
 };
 
 // iOS 檢測工具
@@ -106,6 +126,7 @@ export function registerGlobalUtils(app) {
   app.config.globalProperties.$getApiUrl = getApiUrl;
   app.config.globalProperties.$isIOS = isIOS;
   app.config.globalProperties.$iosFetch = iosFetch;
+  app.config.globalProperties.$customFetch = customFetch;
   
   // 註冊多語言函數
   app.config.globalProperties.$t = t;
@@ -114,6 +135,7 @@ export function registerGlobalUtils(app) {
   app.provide('getApiUrl', getApiUrl);
   app.provide('isIOS', isIOS);
   app.provide('iosFetch', iosFetch);
+  app.provide('customFetch', customFetch);
   app.provide('t', t);
 }
 
