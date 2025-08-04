@@ -142,15 +142,15 @@
                 </div>
 
                 <div
-                  v-if="coupon.description || getDateDisplayText(coupon.expiry_date)"
+                  v-if="(getLocalizedReward(coupon.reward) || coupon.description) || getDateDisplayText(coupon.expiry_date)"
                   class="coupon-description"
                 >
-                  <span v-if="coupon.description">{{
-                    coupon.description
+                  <span v-if="getLocalizedReward(coupon.reward) || coupon.description">{{
+                    getLocalizedReward(coupon.reward) || coupon.description
                   }}</span>
                   <span
                     v-if="
-                      coupon.description && getDateDisplayText(coupon.expiry_date)
+                      (getLocalizedReward(coupon.reward) || coupon.description) && getDateDisplayText(coupon.expiry_date)
                     "
                     class="coupon-description-separator"
                   >
@@ -778,7 +778,8 @@ const loadCouponCodesFromStore = () => {
 
       redeemCodes.value = filteredRedeemData.map((item) => ({
         code: item.code || "未知代碼",
-        description: getLocalizedReward(item.reward) || "未知獎勵",
+        reward: item.reward, // 保留原始的多語系物件
+        description: getLocalizedReward(item.reward) || "未知獎勵", // 保留作為備用
         status: item.status || "未知狀態",
         expiry_date: item.expiry_date || null, // 添加過期日期
         claimed: false,
