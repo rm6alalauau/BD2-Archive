@@ -1,5 +1,10 @@
 // Korean language resources
 export default {
+  // Common terms
+  common: {
+    today: '오늘'
+  },
+  
   // Navigation
   nav: {
     home: '홈',
@@ -56,6 +61,7 @@ export default {
     status: {
       limited: '기간 한정',
       available: '현재 사용 가능',
+      active: '활성',
       permanent: '영구',
       expired: '기간 만료',
       unknown: '알 수 없음'

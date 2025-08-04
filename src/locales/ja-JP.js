@@ -1,5 +1,10 @@
 // Japanese language resources
 export default {
+  // Common terms
+  common: {
+    today: '今日'
+  },
+  
   // Navigation
   nav: {
     home: 'ホーム',
@@ -56,6 +61,7 @@ export default {
     status: {
       limited: '期間限定',
       available: '現在利用可能',
+      active: '有効',
       permanent: '永続',
       expired: '期限切れ',
       unknown: '不明'
