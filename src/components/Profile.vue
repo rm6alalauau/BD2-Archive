@@ -142,7 +142,7 @@
                 </div>
 
                 <div
-                  v-if="coupon.description || getDateDisplayText(coupon.status)"
+                  v-if="coupon.description || getDateDisplayText(coupon.expiry_date)"
                   class="coupon-description"
                 >
                   <span v-if="coupon.description">{{
@@ -150,16 +150,16 @@
                   }}</span>
                   <span
                     v-if="
-                      coupon.description && getDateDisplayText(coupon.status)
+                      coupon.description && getDateDisplayText(coupon.expiry_date)
                     "
                     class="coupon-description-separator"
                   >
                     •
                   </span>
                   <span
-                    v-if="getDateDisplayText(coupon.status)"
+                    v-if="getDateDisplayText(coupon.expiry_date)"
                     class="coupon-date-text"
-                    >{{ getDateDisplayText(coupon.status) }}</span
+                    >{{ getDateDisplayText(coupon.expiry_date) }}</span
                   >
                 </div>
               </div>
@@ -526,14 +526,16 @@ const formatDateStatus = (status) => {
 };
 
 // 獲取日期顯示文字（用於描述區域）
-const getDateDisplayText = (status) => {
-  if (!isDateStatus(status)) return null;
+const getDateDisplayText = (expiryDate) => {
+  if (!expiryDate || !isDateStatus(expiryDate)) return null;
 
-  const statusDate = new Date(status);
+  const statusDate = new Date(expiryDate);
   const month = statusDate.getMonth() + 1;
   const day = statusDate.getDate();
 
-  return `${month}/${day} 到期`;
+  // 使用多語系文字
+  const expiryText = t.value('profile.expiryDate') || '到期';
+  return `${month}/${day} ${expiryText}`;
 };
 
 const getStatusColor = (status) => {
@@ -778,6 +780,7 @@ const loadCouponCodesFromStore = () => {
         code: item.code || "未知代碼",
         description: getLocalizedReward(item.reward) || "未知獎勵",
         status: item.status || "未知狀態",
+        expiry_date: item.expiry_date || null, // 添加過期日期
         claimed: false,
         claiming: false,
         statusMessage: null,

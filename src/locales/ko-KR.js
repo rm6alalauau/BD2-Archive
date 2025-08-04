@@ -28,6 +28,7 @@ export default {
     retryLoadingTitle: '쿠폰 코드 재로딩 중...',
     retryButton: '재로딩',
     processing: '처리 중...',
+    expiryDate: '만료',
     
     // User profile
     userProfile: {

@@ -28,6 +28,7 @@ export default {
     retryLoadingTitle: 'Reloading coupon codes...',
     retryButton: 'Reload',
     processing: 'Processing...',
+    expiryDate: 'Expires',
     
     // User profile
     userProfile: {

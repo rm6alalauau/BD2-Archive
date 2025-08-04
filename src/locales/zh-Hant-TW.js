@@ -28,6 +28,7 @@ export default {
     retryLoadingTitle: '重新載入兌換碼中...',
     retryButton: '重新載入',
     processing: '處理中...',
+    expiryDate: '到期',
     
     // 用戶資訊
     userProfile: {
