@@ -64,7 +64,11 @@ export default {
       active: '目前可用',
       permanent: '永久',
       expired: '已過期',
-      unknown: '未知狀態'
+      unknown: '未知狀態',
+      // 如果您需要更多狀態，可以添加：
+      // coming_soon: '即將推出',
+      // maintenance: '維護中',
+      // special: '特殊活動'
     },
     
     // 操作按鈕
