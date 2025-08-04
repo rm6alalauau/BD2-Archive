@@ -28,6 +28,7 @@ export default {
     retryLoadingTitle: 'クーポンコード再読み込み中...',
     retryButton: '再読み込み',
     processing: '処理中...',
+    expiryDate: '期限',
     
     // User profile
     userProfile: {

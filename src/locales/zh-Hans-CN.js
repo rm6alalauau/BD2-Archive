@@ -28,6 +28,7 @@ export default {
     retryLoadingTitle: '重新加载兑换码中...',
     retryButton: '重新加载',
     processing: '处理中...',
+    expiryDate: '到期',
     
     // 用户信息
     userProfile: {
