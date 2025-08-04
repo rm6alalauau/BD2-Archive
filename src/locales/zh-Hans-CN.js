@@ -1,5 +1,10 @@
 // 简体中文语言资源
 export default {
+  // 通用词汇
+  common: {
+    today: '今天'
+  },
+  
   // 导航栏
   nav: {
     home: '首页',
@@ -56,6 +61,7 @@ export default {
     status: {
       limited: '限时可用',
       available: '目前可用',
+      active: '目前可用',
       permanent: '永久',
       expired: '已过期',
       unknown: '未知状态'

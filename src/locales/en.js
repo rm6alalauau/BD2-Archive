@@ -1,5 +1,10 @@
 // English language resources
 export default {
+  // Common terms
+  common: {
+    today: 'Today'
+  },
+  
   // Navigation
   nav: {
     home: 'Home',
@@ -56,6 +61,7 @@ export default {
     status: {
       limited: 'Limited Time Available',
       available: 'Currently Available',
+      active: 'Active',
       permanent: 'Permanent',
       expired: 'Expired',
       unknown: 'Unknown'

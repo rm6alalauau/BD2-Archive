@@ -492,7 +492,10 @@ const isDateStatus = (status) => {
 
 // 格式化日期顯示
 const formatDateStatus = (status) => {
-  if (!isDateStatus(status)) return status;
+  if (!isDateStatus(status)) {
+    // 如果不是日期格式，檢查是否為預定義的 status 值
+    return t.value(`profile.status.${status}`) || status;
+  }
 
   const statusDate = new Date(status);
   const currentDate = new Date();
@@ -514,11 +517,11 @@ const formatDateStatus = (status) => {
   const day = statusDate.getDate();
 
   if (statusDateOnly < currentDateOnly) {
-    return `已過期`; // 已過期
+    return t.value('profile.status.expired'); // 已過期
   } else if (statusDateOnly.getTime() === currentDateOnly.getTime()) {
-    return `今天到期`; // 今天是最後一天，但仍可使用
+    return `${t.value('profile.status.limited')} (${t.value('common.today')})`; // 今天到期
   } else {
-    return `限時可用`; // 尚未到期
+    return t.value('profile.status.limited'); // 尚未到期
   }
 };
 
@@ -686,6 +689,24 @@ const waitForApiAndLoadData = async () => {
   });
 };
 
+// 獲取本地化的獎勵文字
+const getLocalizedReward = (reward) => {
+  if (!reward) return null;
+  
+  // 如果 reward 是字串，直接返回（舊格式相容）
+  if (typeof reward === 'string') {
+    return reward;
+  }
+  
+  // 如果 reward 是物件，根據當前語言選擇對應文字
+  if (typeof reward === 'object' && reward !== null) {
+    const currentLanguage = settingsStore.language;
+    return reward[currentLanguage] || reward['zh-Hant-TW'] || reward['en'] || Object.values(reward)[0];
+  }
+  
+  return null;
+};
+
 // 從 store 載入兌換碼數據
 const loadCouponCodesFromStore = () => {
   try {
@@ -749,7 +770,7 @@ const loadCouponCodesFromStore = () => {
 
       redeemCodes.value = filteredRedeemData.map((item) => ({
         code: item.code || "未知代碼",
-        description: item.reward || "未知獎勵",
+        description: getLocalizedReward(item.reward) || "未知獎勵",
         status: item.status || "未知狀態",
         claimed: false,
         claiming: false,

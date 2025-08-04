@@ -1,5 +1,10 @@
 // 繁體中文語言資源
 export default {
+  // 通用詞彙
+  common: {
+    today: '今天'
+  },
+  
   // 導航欄
   nav: {
     home: '首頁',
@@ -56,6 +61,7 @@ export default {
     status: {
       limited: '限時可用',
       available: '目前可用',
+      active: '目前可用',
       permanent: '永久',
       expired: '已過期',
       unknown: '未知狀態'
