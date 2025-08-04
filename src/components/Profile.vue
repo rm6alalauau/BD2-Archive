@@ -565,11 +565,15 @@ const getStatusColor = (status) => {
 
   // 更新的狀態顏色邏輯 - 使用英文狀態值
   const statusColors = {
-    active: "success",      // 目前可用
-    expired: "error",       // 已過期
-    limited: "warning",     // 限時可用
-    permanent: "info",      // 永久
-    unknown: "default"      // 未知狀態
+    active: "success",      // 目前可用 - 綠色
+    expired: "error",       // 已過期 - 紅色
+    limited: "warning",     // 限時可用 - 橙色
+    permanent: "info",      // 永久 - 藍色
+    unknown: "default",     // 未知狀態 - 灰色
+    // 如果您需要更多狀態，可以添加：
+    // coming_soon: "secondary", // 即將推出 - 紫色
+    // maintenance: "default",   // 維護中 - 灰色
+    // special: "primary"        // 特殊活動 - 主色調
   };
   
   return statusColors[status] || "default";
@@ -702,7 +706,7 @@ const getLocalizedReward = (reward) => {
   
   // 如果 reward 是物件，根據當前語言選擇對應文字
   if (typeof reward === 'object' && reward !== null) {
-    const currentLanguage = settingsStore.language;
+    const currentLanguage = settingsStore.selectedLanguage;
     return reward[currentLanguage] || reward['zh-Hant-TW'] || reward['en'] || Object.values(reward)[0];
   }
   
