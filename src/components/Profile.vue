@@ -563,13 +563,15 @@ const getStatusColor = (status) => {
     }
   }
 
-  // 原有的狀態顏色邏輯
+  // 更新的狀態顏色邏輯 - 使用英文狀態值
   const statusColors = {
-    限時可用: "warning",
-    目前可用: "success",
-    永久: "info",
-    已過期: "error",
+    active: "success",      // 目前可用
+    expired: "error",       // 已過期
+    limited: "warning",     // 限時可用
+    permanent: "info",      // 永久
+    unknown: "default"      // 未知狀態
   };
+  
   return statusColors[status] || "default";
 };
 
@@ -739,20 +741,20 @@ const loadCouponCodesFromStore = () => {
 
       // 轉換正常數據格式並過濾已過期的兌換碼
       const filteredRedeemData = redeemData.filter((item) => {
-        // 如果不是日期格式，保留所有項目
-        if (!isDateStatus(item.status)) {
+        // 如果沒有過期日期，保留所有項目
+        if (!item.expiry_date || !isDateStatus(item.expiry_date)) {
           return true;
         }
 
         // 檢查日期是否已過期超過一天
-        const statusDate = new Date(item.status);
+        const expiryDate = new Date(item.expiry_date);
         const currentDate = new Date();
 
         // 比較日期（忽略時間）
-        const statusDateOnly = new Date(
-          statusDate.getFullYear(),
-          statusDate.getMonth(),
-          statusDate.getDate()
+        const expiryDateOnly = new Date(
+          expiryDate.getFullYear(),
+          expiryDate.getMonth(),
+          expiryDate.getDate()
         );
         const currentDateOnly = new Date(
           currentDate.getFullYear(),
@@ -761,7 +763,7 @@ const loadCouponCodesFromStore = () => {
         );
 
         // 計算日期差（以天為單位）
-        const timeDiff = currentDateOnly.getTime() - statusDateOnly.getTime();
+        const timeDiff = currentDateOnly.getTime() - expiryDateOnly.getTime();
         const daysDiff = timeDiff / (1000 * 3600 * 24);
 
         // 如果過期超過1天，則過濾掉
