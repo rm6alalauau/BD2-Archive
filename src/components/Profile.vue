@@ -1,10 +1,20 @@
 <template>
   <v-card rounded="xl" class="d-flex flex-column profile-card">
     <v-card-title
-      class="headline"
+      class="headline d-flex align-center"
       style="font-size: 1rem; font-weight: bold; color: #e72857"
     >
       {{ t("profile.title") }}
+      <v-btn
+        icon
+        size="small"
+        variant="text"
+        color="primary"
+        class="ml-2"
+        @click="showHelpDialog = true"
+      >
+        <v-icon size="18">mdi-help-circle-outline</v-icon>
+      </v-btn>
     </v-card-title>
 
     <v-card-text class="flex-grow-1 profile-card-content">
@@ -225,6 +235,63 @@
       @delete="deleteNickname"
       @new="enterNewNickname"
     />
+    
+    <!-- 兌換碼功能說明對話框 -->
+    <v-dialog v-model="showHelpDialog" max-width="600">
+      <v-card>
+        <v-card-title class="text-h6 pa-4">
+          {{ t('profile.helpDialog.title') }}
+        </v-card-title>
+        
+        <v-divider />
+        
+        <v-card-text class="pa-4">
+          <!-- 運作方式 -->
+          <div class="mb-4">
+            <h3 class="text-subtitle-1 font-weight-bold mb-2 text-primary">
+              {{ t('profile.helpDialog.howItWorks') }}
+            </h3>
+            <div class="mb-2">{{ t('profile.helpDialog.step1') }}</div>
+            <div class="mb-2">{{ t('profile.helpDialog.step2') }}</div>
+            <div class="mb-2">{{ t('profile.helpDialog.step3') }}</div>
+          </div>
+          
+          <!-- 狀態說明 -->
+          <div>
+            <h3 class="text-subtitle-1 font-weight-bold mb-2 text-primary">
+              {{ t('profile.helpDialog.statusMeaning') }}
+            </h3>
+            <div class="mb-2">{{ t('profile.helpDialog.statusDescription') }}</div>
+            <div class="mb-1">
+              <span style="color: #4CAF50; font-weight: bold;">{{ t('profile.helpDialog.statusSuccess') }}</span>
+            </div>
+            <div class="mb-1">
+              <span style="color: #FB8C00; font-weight: bold;">{{ t('profile.helpDialog.statusUsed') }}</span>
+            </div>
+            <div class="mb-1">
+              <span style="color: #F44336; font-weight: bold;">{{ t('profile.helpDialog.statusFailed') }}</span>
+            </div>
+          </div>
+          
+          <!-- 本地儲存提醒 -->
+          <div class="mt-4">
+            <h3 class="text-subtitle-1 font-weight-bold mb-2 text-warning">
+              {{ t('profile.helpDialog.importantNote') }}
+            </h3>
+            <div class="text-body-2 text-medium-emphasis">
+              {{ t('profile.helpDialog.localStorageNote') }}
+            </div>
+          </div>
+        </v-card-text>
+        
+        <v-card-actions class="pa-4">
+          <v-spacer />
+          <v-btn color="primary" @click="showHelpDialog = false">
+            {{ t('common.close') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-card>
 </template>
 
@@ -251,6 +318,7 @@ const savedNicknames = ref([]);
 const currentAvatar = ref(1);
 const avatarDialog = ref(false);
 const nicknameDialog = ref(false);
+const showHelpDialog = ref(false);
 const loading = ref(false);
 const redeemCodes = ref([]);
 const showNicknameSuggestions = ref(false);

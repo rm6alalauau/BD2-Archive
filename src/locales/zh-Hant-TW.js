@@ -23,7 +23,7 @@ export default {
     nicknameRequired: '請輸入暱稱',
     nicknamePlaceholder: '遊戲暱稱',
     nicknameInputPlaceholder: '請輸入您的遊戲暱稱',
-    queryButton: '查詢兌換碼',
+    queryButton: '查看兌換碼列表',
     loadingTitle: '載入兌換碼中...',
     retryLoadingTitle: '重新載入兌換碼中...',
     retryButton: '重新載入',
@@ -137,7 +137,23 @@ export default {
     },
     nicknameHelpTitle: '什麼是遊戲暱稱？',
     nicknameHelp: '請輸入您在遊戲內的暱稱（如圖所示），否則無法正確領取獎勵。',
-    nicknameDialogTitle: '選擇暱稱'
+    nicknameDialogTitle: '選擇暱稱',
+    
+    // 兌換碼功能說明
+    helpDialog: {
+      title: '兌換碼功能說明',
+      howItWorks: '這是如何運作的？',
+      step1: '輸入暱稱：首先，請輸入您在遊戲中完全相同的暱稱。',
+      step2: '查看列表：點擊按鈕後，網站會載入目前所有已知的可用兌換碼。',
+      step3: '點擊兌換：您可以逐一點擊「兌換」按鈕。網站會將您的暱稱和對應的兌換碼，直接發送到遊戲官方的兌換伺服器。',
+      statusMeaning: '兌換狀態是什麼意思？',
+      statusDescription: '網站會根據官方伺服器返回的真實訊息，顯示不同的狀態：',
+      statusSuccess: '成功（綠色）：代表您的帳號首次成功領取該序號。',
+      statusUsed: '已兌換（黃色）：代表您的帳號之前已領過，無法重複領取。',
+      statusFailed: '失敗（紅色）：代表序號可能已過期、無效，或您的暱稱輸入錯誤。',
+      importantNote: '重要提醒',
+      localStorageNote: '兌換記錄僅儲存在目前的瀏覽器中。如果您在其他裝置或瀏覽器使用，將需要重新逐一點擊兌換按鈕來確認狀態。'
+    }
   },
   
   // 新聞

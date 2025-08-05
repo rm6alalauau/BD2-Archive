@@ -23,7 +23,7 @@ export default {
     nicknameRequired: '请输入昵称',
     nicknamePlaceholder: '游戏昵称',
     nicknameInputPlaceholder: '请输入您的游戏昵称',
-    queryButton: '查询兑换码',
+    queryButton: '查看兑换码列表',
     loadingTitle: '加载兑换码中...',
     retryLoadingTitle: '重新加载兑换码中...',
     retryButton: '重新加载',
@@ -133,7 +133,23 @@ export default {
     },
     nicknameHelpTitle: '什么是游戏昵称？',
     nicknameHelp: '请输入您在游戏内的昵称（如图所示），否则无法正确领取奖励。',
-    nicknameDialogTitle: '选择昵称'
+    nicknameDialogTitle: '选择昵称',
+    
+    // 兑换码功能说明
+    helpDialog: {
+      title: '兑换码功能说明',
+      howItWorks: '这是如何运作的？',
+      step1: '输入昵称：首先，请输入您在游戏中完全相同的昵称。',
+      step2: '查看列表：点击按钮后，网站会加载目前所有已知的可用兑换码。',
+      step3: '点击兑换：您可以逐一点击「兑换」按钮。网站会将您的昵称和对应的兑换码，直接发送到游戏官方的兑换服务器。',
+      statusMeaning: '兑换状态是什么意思？',
+      statusDescription: '网站会根据官方服务器返回的真实信息，显示不同的状态：',
+      statusSuccess: '成功（绿色）：代表您的账号首次成功领取该序号。',
+      statusUsed: '已兑换（黄色）：代表您的账号之前已领过，无法重复领取。',
+      statusFailed: '失败（红色）：代表序号可能已过期、无效，或您的昵称输入错误。',
+      importantNote: '重要提醒',
+      localStorageNote: '兑换记录仅储存在当前的浏览器中。如果您在其他设备或浏览器使用，将需要重新逐一点击兑换按钮来确认状态。'
+    }
   },
   
   // 新闻
