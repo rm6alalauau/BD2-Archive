@@ -10,6 +10,20 @@ import { beasties } from "vite-plugin-beasties";
 
 // Utilities
 import { defineConfig } from "vite";
+
+// 移除 MDI 字體預載入的插件
+function removeMDIPreload() {
+  return {
+    name: 'remove-mdi-preload',
+    transformIndexHtml(html) {
+      // 移除 MDI 字體的預載入標籤
+      return html.replace(
+        /<link[^>]*rel=["'](?:modulepreload|preload)["'][^>]*materialdesignicons[^>]*>/gi,
+        ''
+      );
+    }
+  };
+}
 import { fileURLToPath, URL } from "node:url";
 
 const INVALID_CHAR_REGEX = /[\u0000-\u001F"#\$&*+,:;<=>?[\]^`{|}\u007F]/g;
@@ -70,6 +84,8 @@ export default defineConfig({
         inlineCriticalThreshold: 0,
       }
     }),
+    // 移除 MDI 字體預載入以避免警告
+    removeMDIPreload(),
   ],
   define: { "process.env": {} },
   resolve: {
