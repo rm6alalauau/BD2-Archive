@@ -23,7 +23,7 @@ export default {
     nicknameRequired: '닉네임을 입력해 주세요',
     nicknamePlaceholder: '게임 닉네임',
     nicknameInputPlaceholder: '게임 닉네임을 입력하세요',
-    queryButton: '쿠폰 코드 조회',
+    queryButton: '코드 목록 보기',
     loadingTitle: '쿠폰 코드 로딩 중...',
     retryLoadingTitle: '쿠폰 코드 재로딩 중...',
     retryButton: '재로딩',
@@ -115,8 +115,24 @@ export default {
       deleteTitle: '이 닉네임 삭제',
       nicknameHelpTitle: '게임 닉네임이란?',
       nicknameHelp: '게임 내 닉네임을 입력해 주세요(이미지 참고). 올바르게 보상을 받으려면 필요합니다.',
-      nicknameDialogTitle: '닉네임 선택'
-    },
+          nicknameDialogTitle: '닉네임 선택',
+    
+    // 쿠폰 코드 기능 설명
+    helpDialog: {
+      title: '쿠폰 코드 기능 가이드',
+      howItWorks: '이것이 어떻게 작동하나요？',
+      step1: '닉네임 입력：먼저 게임에서 사용하는 정확한 닉네임을 입력해 주세요.',
+      step2: '목록 보기：버튼을 클릭하면 현재 사용 가능한 모든 쿠폰 코드가 로드됩니다.',
+      step3: '교환 클릭：「교환」 버튼을 하나씩 클릭할 수 있습니다. 웹사이트가 귀하의 닉네임과 해당 쿠폰 코드를 게임 공식 교환 서버로 직접 전송합니다.',
+      statusMeaning: '교환 상태가 무엇을 의미하나요？',
+      statusDescription: '웹사이트는 공식 서버에서 반환되는 실제 메시지를 바탕으로 다른 상태를 표시합니다：',
+      statusSuccess: '성공（녹색）：귀하의 계정이 해당 코드를 처음으로 성공적으로 획득했습니다.',
+      statusUsed: '교환 완료（노란색）：귀하의 계정이 이전에 이미 교환했으며, 중복 교환할 수 없습니다.',
+      statusFailed: '실패（빨간색）：코드가 만료되었거나 유효하지 않거나, 닉네임이 잘못 입력되었을 가능성이 있습니다.',
+      importantNote: '중요 안내',
+      localStorageNote: '교환 기록은 현재 브라우저에만 저장됩니다. 다른 기기나 브라우저에서 사용하는 경우, 상태를 확인하기 위해 교환 버튼을 다시 클릭해야 합니다.'
+    }
+  },
     
     // Help text
     helpText: {

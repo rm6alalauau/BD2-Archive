@@ -23,7 +23,7 @@ export default {
     nicknameRequired: 'Please enter nickname',
     nicknamePlaceholder: 'Game Nickname',
     nicknameInputPlaceholder: 'Enter your game nickname',
-    queryButton: 'Query Coupon Codes',
+    queryButton: 'View Code List',
     loadingTitle: 'Loading coupon codes...',
     retryLoadingTitle: 'Reloading coupon codes...',
     retryButton: 'Reload',
@@ -134,6 +134,22 @@ export default {
     nicknameHelpTitle: 'What is the in-game nickname?',
     nicknameHelp: 'Please enter your in-game nickname (as shown in the picture) to receive rewards correctly.',
     nicknameDialogTitle: 'Select Nickname',
+    
+    // Redeem Code Help
+    helpDialog: {
+      title: 'Redeem Code Function Guide',
+      howItWorks: 'How does this work?',
+      step1: 'Enter Nickname: First, please enter your exact in-game nickname.',
+      step2: 'View List: After clicking the button, the website will load all currently known available redeem codes.',
+      step3: 'Click Redeem: You can click the "Redeem" button one by one. The website will send your nickname and the corresponding redeem code directly to the game\'s official redemption server.',
+      statusMeaning: 'What do the redemption statuses mean?',
+      statusDescription: 'The website displays different statuses based on real messages returned from the official server:',
+      statusSuccess: 'Success (Green): Your account successfully claimed this code for the first time.',
+      statusUsed: 'Already Redeemed (Yellow): Your account has already claimed this code before and cannot claim it again.',
+      statusFailed: 'Failed (Red): The code may have expired, be invalid, or your nickname was entered incorrectly.',
+      importantNote: 'Important Note',
+      localStorageNote: 'Redemption records are only stored in your current browser. If you use this on other devices or browsers, you will need to click the redeem buttons again to check the status.'
+    }
   },
   
   // News
