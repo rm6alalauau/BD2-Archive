@@ -11,6 +11,7 @@
         variant="text"
         color="primary"
         class="ml-2"
+        :aria-label="t('profile.helpDialog.title')"
         @click="showHelpDialog = true"
       >
         <v-icon size="18">mdi-help-circle-outline</v-icon>
