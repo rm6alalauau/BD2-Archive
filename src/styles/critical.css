@@ -1,7 +1,6 @@
 /* Critical CSS for better performance */
 
-/* Import Material Design Icons font via CSS to avoid preload warnings */
-@import '@mdi/font/css/materialdesignicons.css';
+/* Material Design Icons will be loaded through Vuetify instead of CSS import to avoid preload warnings */
 
 /* 行動裝置優化 */
 @media (max-width: 768px) {
@@ -39,9 +38,33 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Roboto', 'Noto Sans SC', 'Noto Sans TC', 'Noto Sans JP', 'Noto Sans KR', sans-serif;
   background-color: #0a0a0a;
   color: #e7e7e7;
+}
+
+/* 針對不同語言優化字體渲染 */
+[lang="zh-Hans-CN"], 
+[lang="zh-Hans-CN"] * {
+  font-family: 'Roboto', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-weight: 450 !important; /* 稍微增加簡體中文的字重 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[lang="zh-Hant-TW"], 
+[lang="zh-Hant-TW"] * {
+  font-family: 'Roboto', 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+}
+
+[lang="ja-JP"], 
+[lang="ja-JP"] * {
+  font-family: 'Roboto', 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+}
+
+[lang="ko-KR"], 
+[lang="ko-KR"] * {
+  font-family: 'Roboto', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
 }
 
 #app {

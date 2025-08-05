@@ -6,6 +6,8 @@
 
 // Styles
 import 'vuetify/styles'
+// Import MDI CSS after Vuetify styles to ensure proper loading order and avoid preload warnings
+import '@mdi/font/css/materialdesignicons.css'
 
 // Composables
 import { createVuetify } from 'vuetify'
