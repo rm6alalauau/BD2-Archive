@@ -14,8 +14,16 @@ import App from './App.vue'
 import { createApp } from 'vue'
 import { useSettingsStore } from './stores/settings'
 
+import { createRouter, createWebHistory } from 'vue-router'
+import { routes } from 'vue-router/auto/routes'
+
 // Import critical CSS first for better performance
 import './styles/critical.css'
+
+const router = createRouter({
+    history: createWebHistory('/ko-KR/'),
+    routes,
+  })
 
 const app = createApp(App)
 

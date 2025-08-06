@@ -131,15 +131,19 @@ export default defineConfig({
   },
   publicDir: 'public',
   build: {
-    chunkSizeWarningLimit: 800, // 降低警告閾值，針對行動裝置優化
+    chunkSizeWarningLimit: 800,
     rollupOptions: {
+      // --- START: 核心修正部分 ---
+      // 使用 resolve(__dirname, 'file.html') 來確保 Vite 能找到正確的檔案路徑
+      // 這會為每個 HTML 檔案建立一個獨立的入口點
       input: {
-        main: 'index.html',
-        'en': 'en.html',
-        'ja-JP': 'ja-JP.html',
-        'ko-KR': 'ko-KR.html',
-        'zh-CN': 'zh-CN.html'
+        main: resolve(__dirname, 'index.html'),
+        en: resolve(__dirname, 'en.html'),
+        'ja-JP': resolve(__dirname, 'ja-JP.html'),
+        'ko-KR': resolve(__dirname, 'ko-KR.html'),
+        'zh-CN': resolve(__dirname, 'zh-CN.html')
       },
+      // --- END: 核心修正部分 ---
       output: {
         manualChunks: {
           'vendor': ['vue', 'vue-router', 'pinia'],
@@ -154,7 +158,6 @@ export default defineConfig({
             name.slice(driveLetter.length).replace(INVALID_CHAR_REGEX, "")
           );
         },
-        // 確保CSS文件正確生成
         assetFileNames: (assetInfo) => {
           const info = assetInfo.name.split('.');
           const ext = info[info.length - 1];
