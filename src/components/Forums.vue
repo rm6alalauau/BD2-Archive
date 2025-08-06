@@ -45,7 +45,7 @@ export default {
   },
   data() {
     return {
-      selectedComponent: "Bahamut", // 預設顯示的組件
+      selectedComponent: "", // 將在 mounted 時根據用戶設定動態設定
       allComponents: [
         { text: "巴哈", value: "Bahamut" },
         { text: "NGA", value: "NGAList" },
@@ -126,6 +126,13 @@ export default {
     
     // 監聽設定變化
     window.addEventListener('storage', this.handleSettingsChange);
+    
+    // 設定預設選中的組件（用戶設定中的第一個論壇）
+    this.$nextTick(() => {
+      if (this.filteredComponents.length > 0 && !this.selectedComponent) {
+        this.selectedComponent = this.filteredComponents[0].value;
+      }
+    });
     
     // 如果沒有數據，立即開始獲取
     if (!this.hasAnyData) {

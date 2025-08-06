@@ -11,7 +11,7 @@ export const useSettingsStore = defineStore('settings', {
   state: () => ({
     fontScale: 1.0,
     showR18Content: false,
-    selectedForums: ['Bahamut', 'NGAList', 'PTTList', 'XPosts', 'RedditPosts'],
+    selectedForums: ['Bahamut', 'NGAList', 'PTTList', 'XPosts', 'RedditPosts'], // 預設值（繁體中文）
     // 語言設定
     selectedLanguage: 'zh-Hant-TW',
     // 新增：路由預設語言
@@ -92,6 +92,19 @@ export const useSettingsStore = defineStore('settings', {
       return 'zh-Hant-TW'
     },
 
+    // 根據語言獲取預設論壇選擇
+    getDefaultForumsByLanguage(languageCode) {
+      const forumDefaults = {
+        'en': ['RedditPosts', 'XPosts', 'Bahamut', 'NGAList', 'PTTList'], // 英文：Reddit 優先
+        'ja-JP': ['XPosts', 'RedditPosts', 'Bahamut', 'NGAList', 'PTTList'], // 日文：X(Twitter) 優先
+        'ko-KR': ['NaverPosts', 'XPosts', 'RedditPosts', 'Bahamut', 'NGAList'], // 韓文：Naver 優先
+        'zh-Hans-CN': ['Bahamut', 'NGAList', 'PTTList', 'XPosts', 'RedditPosts'], // 簡體中文：維持原預設
+        'zh-Hant-TW': ['Bahamut', 'NGAList', 'PTTList', 'XPosts', 'RedditPosts'] // 繁體中文：維持原預設
+      }
+      
+      return forumDefaults[languageCode] || forumDefaults['zh-Hant-TW']
+    },
+
     // 載入設定
     loadSettings() {
       try {
@@ -101,7 +114,17 @@ export const useSettingsStore = defineStore('settings', {
           
           this.fontScale = settings.fontScale || 1.0
           this.showR18Content = settings.showR18Content || false
-          this.selectedForums = settings.selectedForums || ['Bahamut', 'NGAList', 'PTTList', 'XPosts', 'RedditPosts']
+          
+          // 決定要使用的語言（用於判斷預設論壇）
+          let targetLanguage
+          if (this.routeDefaultLanguage) {
+            targetLanguage = settings.selectedLanguage || this.routeDefaultLanguage
+          } else {
+            targetLanguage = settings.selectedLanguage || this.detectBrowserLanguage()
+          }
+          
+          // 根據語言設定預設論壇，但如果用戶已有自定義設定則保留
+          this.selectedForums = settings.selectedForums || this.getDefaultForumsByLanguage(targetLanguage)
           
           // 語言優先級：路由預設語言 > 儲存的語言 > 瀏覽器語言
           if (this.routeDefaultLanguage) {
@@ -117,11 +140,18 @@ export const useSettingsStore = defineStore('settings', {
           this.applyFontScale()
         } else {
           // 如果沒有保存的設定，優先使用路由預設語言
+          let targetLanguage
           if (this.routeDefaultLanguage) {
             this.selectedLanguage = this.routeDefaultLanguage
+            targetLanguage = this.routeDefaultLanguage
           } else {
             this.selectedLanguage = this.detectBrowserLanguage()
+            targetLanguage = this.selectedLanguage
           }
+          
+          // 新用戶根據語言設定預設論壇
+          this.selectedForums = this.getDefaultForumsByLanguage(targetLanguage)
+          
           // 立即保存初始設定，確保下次不會再檢測
           this.saveSettings()
         }
