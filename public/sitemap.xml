@@ -5,17 +5,89 @@
       xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
             http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
+<!-- 繁體中文（預設） -->
 <url>
   <loc>https://thebd2pulse.com/</loc>
-  <lastmod>2025-07-15T09:09:57+00:00</lastmod>
+  <lastmod>2025-08-06T10:00:00+00:00</lastmod>
+  <priority>1.0</priority>
 </url>
 <url>
   <loc>https://thebd2pulse.com/setting</loc>
-  <lastmod>2025-07-15T09:09:57+00:00</lastmod>
+  <lastmod>2025-08-06T10:00:00+00:00</lastmod>
+  <priority>0.8</priority>
 </url>
 <url>
   <loc>https://thebd2pulse.com/feedback</loc>
-  <lastmod>2025-07-15T09:09:57+00:00</lastmod>
+  <lastmod>2025-08-06T10:00:00+00:00</lastmod>
+  <priority>0.8</priority>
+</url>
+
+<!-- 英文版 -->
+<url>
+  <loc>https://thebd2pulse.com/en</loc>
+  <lastmod>2025-08-06T10:00:00+00:00</lastmod>
+  <priority>0.9</priority>
+</url>
+<url>
+  <loc>https://thebd2pulse.com/en/setting</loc>
+  <lastmod>2025-08-06T10:00:00+00:00</lastmod>
+  <priority>0.7</priority>
+</url>
+<url>
+  <loc>https://thebd2pulse.com/en/feedback</loc>
+  <lastmod>2025-08-06T10:00:00+00:00</lastmod>
+  <priority>0.7</priority>
+</url>
+
+<!-- 日文版 -->
+<url>
+  <loc>https://thebd2pulse.com/ja-JP</loc>
+  <lastmod>2025-08-06T10:00:00+00:00</lastmod>
+  <priority>0.9</priority>
+</url>
+<url>
+  <loc>https://thebd2pulse.com/ja-JP/setting</loc>
+  <lastmod>2025-08-06T10:00:00+00:00</lastmod>
+  <priority>0.7</priority>
+</url>
+<url>
+  <loc>https://thebd2pulse.com/ja-JP/feedback</loc>
+  <lastmod>2025-08-06T10:00:00+00:00</lastmod>
+  <priority>0.7</priority>
+</url>
+
+<!-- 韓文版 -->
+<url>
+  <loc>https://thebd2pulse.com/ko-KR</loc>
+  <lastmod>2025-08-06T10:00:00+00:00</lastmod>
+  <priority>0.9</priority>
+</url>
+<url>
+  <loc>https://thebd2pulse.com/ko-KR/setting</loc>
+  <lastmod>2025-08-06T10:00:00+00:00</lastmod>
+  <priority>0.7</priority>
+</url>
+<url>
+  <loc>https://thebd2pulse.com/ko-KR/feedback</loc>
+  <lastmod>2025-08-06T10:00:00+00:00</lastmod>
+  <priority>0.7</priority>
+</url>
+
+<!-- 簡體中文版 -->
+<url>
+  <loc>https://thebd2pulse.com/zh-CN</loc>
+  <lastmod>2025-08-06T10:00:00+00:00</lastmod>
+  <priority>0.9</priority>
+</url>
+<url>
+  <loc>https://thebd2pulse.com/zh-CN/setting</loc>
+  <lastmod>2025-08-06T10:00:00+00:00</lastmod>
+  <priority>0.7</priority>
+</url>
+<url>
+  <loc>https://thebd2pulse.com/zh-CN/feedback</loc>
+  <lastmod>2025-08-06T10:00:00+00:00</lastmod>
+  <priority>0.7</priority>
 </url>
 
 </urlset>
