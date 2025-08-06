@@ -129,9 +129,17 @@ export default defineConfig({
 
     }
   },
+  publicDir: 'public',
   build: {
     chunkSizeWarningLimit: 800, // 降低警告閾值，針對行動裝置優化
     rollupOptions: {
+      input: {
+        main: 'index.html',
+        'en': 'en.html',
+        'ja-JP': 'ja-JP.html',
+        'ko-KR': 'ko-KR.html',
+        'zh-CN': 'zh-CN.html'
+      },
       output: {
         manualChunks: {
           'vendor': ['vue', 'vue-router', 'pinia'],
