@@ -21,6 +21,3 @@
 /zh-CN/* /zh-CN.html 200
 /zh-cn /zh-CN.html 200
 /zh-cn/* /zh-CN.html 200
-
-# 預設路由（必須放在最後）
-/* /index.html 200
