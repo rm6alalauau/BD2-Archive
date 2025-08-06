@@ -18,8 +18,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { setupLayouts } from 'virtual:generated-layouts'
 import { routes } from 'vue-router/auto-routes'
 
-// Import critical CSS first for better performance
-import './styles/critical.css'
+// Critical CSS is already loaded in HTML head for better performance
 
 const router = createRouter({
     history: createWebHistory('/zh-CN/'),
