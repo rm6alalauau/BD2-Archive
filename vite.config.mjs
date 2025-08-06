@@ -25,6 +25,10 @@ function removeMDIPreload() {
   };
 }
 import { fileURLToPath, URL } from "node:url";
+import { resolve } from "node:path";
+
+// ESM 模塊中需要手動定義 __dirname
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 const INVALID_CHAR_REGEX = /[\u0000-\u001F"#\$&*+,:;<=>?[\]^`{|}\u007F]/g;
 const DRIVE_LETTER_REGEX = /^[a-z]:/i;
