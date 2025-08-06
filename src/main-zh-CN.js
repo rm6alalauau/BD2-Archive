@@ -15,6 +15,7 @@ import { createApp } from 'vue'
 import { useSettingsStore } from './stores/settings'
 
 import { createRouter, createWebHistory } from 'vue-router'
+import { setupLayouts } from 'virtual:generated-layouts'
 import { routes } from 'vue-router/auto-routes'
 
 // Import critical CSS first for better performance
@@ -22,8 +23,8 @@ import './styles/critical.css'
 
 const router = createRouter({
     history: createWebHistory('/zh-CN/'),
-    routes,
-  })
+    routes: setupLayouts(routes),
+})
 
 const app = createApp(App)
 
