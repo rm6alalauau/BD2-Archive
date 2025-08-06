@@ -4,66 +4,183 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>404 - 頁面不存在 | The BD2 Pulse</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
+        /* 與專案一致的基礎樣式 */
         body {
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             margin: 0;
             padding: 0;
+            font-family: 'Roboto', 'Noto Sans SC', 'Noto Sans TC', 'Noto Sans JP', 'Noto Sans KR', sans-serif;
+            background-color: #0a0a0a;
+            color: #e7e7e7;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            color: white;
         }
+        
         .container {
             text-align: center;
             padding: 2rem;
+            max-width: 600px;
+            width: 100%;
         }
-        h1 {
-            font-size: 6rem;
+        
+        /* 與專案一致的卡片樣式 */
+        .error-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            padding: 3rem 2rem;
+            margin: 1rem;
+        }
+        
+        .error-number {
+            font-size: 8rem;
+            font-weight: 300;
             margin: 0;
+            color: #e72857;
+            text-shadow: 0 0 30px rgba(231, 40, 87, 0.3);
+            line-height: 1;
+        }
+        
+        .error-title {
+            font-size: 1.75rem;
+            font-weight: 500;
+            margin: 1.5rem 0 1rem 0;
+            color: #ffffff;
+        }
+        
+        .error-message {
+            font-size: 1rem;
+            margin: 1rem 0;
             opacity: 0.8;
+            line-height: 1.6;
         }
-        h2 {
-            font-size: 2rem;
-            margin: 1rem 0;
+        
+        .error-submessage {
+            font-size: 0.9rem;
+            margin: 0.5rem 0 2rem 0;
+            opacity: 0.6;
+            font-style: italic;
         }
-        p {
-            font-size: 1.1rem;
-            margin: 1rem 0;
-            opacity: 0.9;
+        
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-top: 2rem;
         }
+        
         .btn {
-            display: inline-block;
-            padding: 12px 24px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #e7e7e7;
             text-decoration: none;
-            border-radius: 8px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
             transition: all 0.3s ease;
-            margin: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
         }
+        
         .btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.25);
             transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-primary {
+            background: rgba(231, 40, 87, 0.2);
+            border-color: rgba(231, 40, 87, 0.3);
+            color: #ffffff;
+        }
+        
+        .btn-primary:hover {
+            background: rgba(231, 40, 87, 0.3);
+            border-color: rgba(231, 40, 87, 0.4);
+        }
+        
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .error-number {
+                font-size: 6rem;
+            }
+            
+            .error-title {
+                font-size: 1.5rem;
+            }
+            
+            .error-card {
+                padding: 2rem 1.5rem;
+                margin: 0.5rem;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 200px;
+                justify-content: center;
+            }
+        }
+        
+        /* 微妙的動畫效果 */
+        .error-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .error-number {
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 30px rgba(231, 40, 87, 0.3);
+            }
+            to {
+                text-shadow: 0 0 50px rgba(231, 40, 87, 0.5);
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>404</h1>
-        <h2>頁面不存在</h2>
-        <p>抱歉，您要找的頁面不存在。</p>
-        <p>Sorry, the page you're looking for doesn't exist.</p>
-        
-        <div>
-            <a href="/" class="btn">回到首頁 / Home</a>
-            <a href="/en" class="btn">English</a>
-            <a href="/ja-JP" class="btn">日本語</a>
-            <a href="/ko-KR" class="btn">한국어</a>
-            <a href="/zh-CN" class="btn">简体中文</a>
+        <div class="error-card">
+            <h1 class="error-number">404</h1>
+            <h2 class="error-title">頁面不存在</h2>
+            <p class="error-message">抱歉，您要找的頁面不存在或已被移除。</p>
+            <p class="error-submessage">Sorry, the page you're looking for doesn't exist or has been moved.</p>
+            
+            <div class="btn-group">
+                <a href="/" class="btn btn-primary">回到首頁 / Home</a>
+                <a href="/en" class="btn">English</a>
+                <a href="/ja-JP" class="btn">日本語</a>
+                <a href="/ko-KR" class="btn">한국어</a>
+                <a href="/zh-CN" class="btn">简体中文</a>
+            </div>
         </div>
     </div>
 </body>

@@ -88,15 +88,23 @@ export default {
       return ['Bahamut', 'NGAList', 'PTTList', 'XPosts', 'RedditPosts']; // 預設全選（不包含Naver）
     },
     
-    // 根據用戶設定過濾的組件列表
+    // 根據用戶設定過濾並排序的組件列表
     filteredComponents() {
       const selectedForums = this.userSelectedForums;
-      const filtered = this.allComponents.filter(component => 
-        selectedForums.includes(component.value)
-      );
+      
+      // 創建論壇名稱到組件的映射
+      const componentMap = {};
+      this.allComponents.forEach(component => {
+        componentMap[component.value] = component;
+      });
+      
+      // 按照用戶設定的順序創建組件列表
+      const orderedComponents = selectedForums
+        .map(forumValue => componentMap[forumValue])
+        .filter(component => component); // 過濾掉不存在的組件
       
       // 確保至少有一個組件
-      const result = filtered.length > 0 ? filtered : this.allComponents;
+      const result = orderedComponents.length > 0 ? orderedComponents : this.allComponents;
       return result;
     },
     
