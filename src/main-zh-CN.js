@@ -15,7 +15,7 @@ import { createApp } from 'vue'
 import { useSettingsStore } from './stores/settings'
 
 import { createRouter, createWebHistory } from 'vue-router'
-import { routes } from 'vue-router/auto/routes'
+import { routes } from 'vue-router/auto-routes'
 
 // Import critical CSS first for better performance
 import './styles/critical.css'
