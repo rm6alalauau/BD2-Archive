@@ -1,40 +1,25 @@
 /**
- * main-en.js
- *
- * English version entry point - bootstraps Vuetify and other plugins then mounts the App
+ * main-en.js - English entry point (optimized)
  */
 
-// Plugins
-import { registerPluginsWithoutRouter } from '@/plugins'
-
-// Components
-import App from './App.vue'
-
-// Composables
 import { createApp } from 'vue'
-import { useSettingsStore } from './stores/settings'
-
 import { createRouter, createWebHistory } from 'vue-router'
 import { setupLayouts } from 'virtual:generated-layouts'
 import { routes } from 'vue-router/auto-routes'
-
-// Import critical CSS first for better performance
-import './styles/critical.css'
+import { registerPluginsWithoutRouter } from '@/plugins'
+import { useSettingsStore } from './stores/settings'
+import App from './App.vue'
 
 const router = createRouter({
-    history: createWebHistory('/en/'),
-    routes: setupLayouts(routes),
+  history: createWebHistory('/en/'),
+  routes: setupLayouts(routes),
 })
 
 const app = createApp(App)
-
 app.use(router)
-
 registerPluginsWithoutRouter(app)
 
 const settingsStore = useSettingsStore()
-
-// 設定預設語言為英文，並標記這是從 /en 路由進入
 settingsStore.setDefaultLanguageFromRoute('en')
 settingsStore.loadSettings()
 
