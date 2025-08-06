@@ -178,3 +178,16 @@ export function registerPlugins(app) {
   // 將 logger 添加到全局屬性
   app.config.globalProperties.$logger = logger
 }
+
+// 專門用於多語言入口文件的插件註冊函數（不包含 router）
+export function registerPluginsWithoutRouter(app) {
+  app
+    .use(vuetify)
+    .use(pinia)
+  
+  // 註冊全局工具函數
+  registerGlobalUtils(app);
+  
+  // 將 logger 添加到全局屬性
+  app.config.globalProperties.$logger = logger
+}

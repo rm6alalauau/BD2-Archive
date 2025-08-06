@@ -5,7 +5,7 @@
  */
 
 // Plugins
-import { registerPlugins } from '@/plugins'
+import { registerPluginsWithoutRouter } from '@/plugins'
 
 // Components
 import App from './App.vue'
@@ -27,7 +27,9 @@ const router = createRouter({
 
 const app = createApp(App)
 
-registerPlugins(app)
+app.use(router)
+
+registerPluginsWithoutRouter(app)
 
 const settingsStore = useSettingsStore()
 

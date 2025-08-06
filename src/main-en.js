@@ -5,7 +5,7 @@
  */
 
 // Plugins
-import { registerPlugins } from '@/plugins'
+import { registerPluginsWithoutRouter } from '@/plugins'
 
 // Components
 import App from './App.vue'
@@ -14,12 +14,22 @@ import App from './App.vue'
 import { createApp } from 'vue'
 import { useSettingsStore } from './stores/settings'
 
+import { createRouter, createWebHistory } from 'vue-router'
+import { routes } from 'vue-router/auto-routes'
+
 // Import critical CSS first for better performance
 import './styles/critical.css'
 
+const router = createRouter({
+    history: createWebHistory('/en/'),
+    routes,
+})
+
 const app = createApp(App)
 
-registerPlugins(app)
+app.use(router)
+
+registerPluginsWithoutRouter(app)
 
 const settingsStore = useSettingsStore()
 
