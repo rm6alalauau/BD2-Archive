@@ -1,20 +1,22 @@
-# 英文路由重定向到英文版 HTML
+# Cloudflare Pages 重定向規則
+
+# 英文路由
 /en /en.html 200
 /en/* /en.html 200
 
-# 日文路由重定向到日文版 HTML
+# 日文路由
 /ja-JP /ja-JP.html 200
 /ja-JP/* /ja-JP.html 200
 /ja /ja-JP.html 200
 /ja/* /ja-JP.html 200
 
-# 韓文路由重定向到韓文版 HTML
+# 韓文路由
 /ko-KR /ko-KR.html 200
 /ko-KR/* /ko-KR.html 200
 /ko /ko-KR.html 200
 /ko/* /ko-KR.html 200
 
-# 簡體中文路由重定向到簡體中文版 HTML
+# 簡體中文路由
 /zh-CN /zh-CN.html 200
 /zh-CN/* /zh-CN.html 200
 /zh-cn /zh-CN.html 200

@@ -14,6 +14,8 @@ export const useSettingsStore = defineStore('settings', {
     selectedForums: ['Bahamut', 'NGAList', 'PTTList', 'XPosts', 'RedditPosts'],
     // 語言設定
     selectedLanguage: 'zh-Hant-TW',
+    // 新增：路由預設語言
+    routeDefaultLanguage: null,
     supportedLanguages: [
       { code: 'zh-Hant-TW', name: '繁體中文', flag: '🇹🇼' },
       { code: 'zh-Hans-CN', name: '简体中文', flag: '🇨🇳' },
@@ -100,14 +102,26 @@ export const useSettingsStore = defineStore('settings', {
           this.fontScale = settings.fontScale || 1.0
           this.showR18Content = settings.showR18Content || false
           this.selectedForums = settings.selectedForums || ['Bahamut', 'NGAList', 'PTTList', 'XPosts', 'RedditPosts']
-          this.selectedLanguage = settings.selectedLanguage || this.detectBrowserLanguage()
+          
+          // 語言優先級：路由預設語言 > 儲存的語言 > 瀏覽器語言
+          if (this.routeDefaultLanguage) {
+            // 如果是新用戶（沒有儲存的語言設定），使用路由預設語言
+            this.selectedLanguage = settings.selectedLanguage || this.routeDefaultLanguage
+          } else {
+            this.selectedLanguage = settings.selectedLanguage || this.detectBrowserLanguage()
+          }
+          
           // 載入 icon 設定
           this.selectedIcon = settings.selectedIcon || 'icon1'
           
           this.applyFontScale()
         } else {
-          // 如果沒有保存的設定，使用瀏覽器語言作為預設
-          this.selectedLanguage = this.detectBrowserLanguage()
+          // 如果沒有保存的設定，優先使用路由預設語言
+          if (this.routeDefaultLanguage) {
+            this.selectedLanguage = this.routeDefaultLanguage
+          } else {
+            this.selectedLanguage = this.detectBrowserLanguage()
+          }
           // 立即保存初始設定，確保下次不會再檢測
           this.saveSettings()
         }
@@ -116,8 +130,12 @@ export const useSettingsStore = defineStore('settings', {
         this.updateFavicon() // 載入時更新 favicon
       } catch (error) {
         console.error('載入設定時發生錯誤:', error)
-        // 即使出錯也嘗試設定瀏覽器語言
-        this.selectedLanguage = this.detectBrowserLanguage()
+        // 即使出錯也嘗試設定語言
+        if (this.routeDefaultLanguage) {
+          this.selectedLanguage = this.routeDefaultLanguage
+        } else {
+          this.selectedLanguage = this.detectBrowserLanguage()
+        }
         this.isLoaded = true // 即使出錯也標記為已載入，使用預設值
         this.updateFavicon()
       }
@@ -205,6 +223,24 @@ export const useSettingsStore = defineStore('settings', {
       appleLink.href = this.currentIconPath
       appleLink.sizes = '192x192'
       document.head.appendChild(appleLink)
+    },
+
+    // 設定路由預設語言（在載入設定前呼叫）
+    setDefaultLanguageFromRoute(languageCode) {
+      // 語言代碼對照表
+      const langMap = {
+        'en': 'en',
+        'zh': 'zh-Hant-TW',
+        'zh-tw': 'zh-Hant-TW',
+        'zh-cn': 'zh-Hans-CN',
+        'zh-hans-cn': 'zh-Hans-CN',
+        'ja': 'ja-JP',
+        'ja-jp': 'ja-JP',
+        'ko': 'ko-KR',
+        'ko-kr': 'ko-KR'
+      }
+      
+      this.routeDefaultLanguage = langMap[languageCode.toLowerCase()] || languageCode
     },
   }
 }) 
