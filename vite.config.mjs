@@ -24,8 +24,37 @@ function removeMDIPreload() {
     }
   };
 }
+
+// 靜態內容注入插件
+function staticContentInjection() {
+  return {
+    name: 'static-content-injection',
+    async buildStart() {
+      try {
+        console.log('執行靜態內容注入...');
+        const { stdout, stderr } = await execAsync('node scripts/inject-static-content.mjs');
+        
+        if (stdout) {
+          console.log(stdout);
+        }
+        if (stderr) {
+          console.warn(stderr);
+        }
+        
+        console.log('靜態內容注入完成');
+      } catch (error) {
+        console.warn(' 靜態內容注入失敗:', error.message);
+        console.warn(' 將繼續建置流程，但 SEO 優化可能受影響');
+      }
+    }
+  };
+}
 import { fileURLToPath, URL } from "node:url";
 import { resolve } from "node:path";
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
+
+const execAsync = promisify(exec);
 
 // ESM 模塊中需要手動定義 __dirname
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
@@ -37,6 +66,7 @@ const DRIVE_LETTER_REGEX = /^[a-z]:/i;
 export default defineConfig({
   base: "/",
   plugins: [
+    staticContentInjection(), // 靜態內容注入 - 在建置開始時執行
     VueRouter(),
     Layouts(),
     Vue({
