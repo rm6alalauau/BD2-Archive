@@ -115,7 +115,25 @@ export default {
       deleteTitle: '이 닉네임 삭제',
       nicknameHelpTitle: '게임 닉네임이란?',
       nicknameHelp: '게임 내 닉네임을 입력해 주세요(이미지 참고). 올바르게 보상을 받으려면 필요합니다.',
-      nicknameDialogTitle: '닉네임 선택',
+      nicknameDialogTitle: '닉네임 선택'
+    },
+    
+    // Help text
+    helpText: {
+      reloadHint: '쿠폰 코드가 올바르게 로딩되지 않은 경우, 여기를 클릭하여 다시 로딩하세요',
+      solutionTitle: '로딩 문제 해결 방법:',
+      solution1: 'API 로딩 중에 닉네임을 제출하면 쿠폰 코드가 올바르게 표시되지 않을 수 있습니다',
+      solution2: '위의 "쿠폰 코드 다시 로딩" 버튼을 클릭',
+      solution3: '또는 "종료"를 클릭하여 닉네임을 다시 입력'
+    },
+    
+    // Network status
+    network: {
+      checking: '쿠폰 서비스 연결 확인 중...',
+      slow: '쿠폰 서비스 응답이 느립니다. 잠시만 기다려 주세요',
+      unreachable: '쿠폰 서비스에 연결할 수 없습니다. 네트워크를 확인해 주세요',
+      corsError: 'iOS Safari 호환성 문제'
+    },
     
     // 쿠폰 코드 기능 설명
     helpDialog: {
@@ -132,24 +150,6 @@ export default {
       importantNote: '중요 안내',
       localStorageNote: '교환 기록은 현재 브라우저에만 저장됩니다. 다른 기기나 브라우저에서 사용하는 경우, 상태를 확인하기 위해 교환 버튼을 다시 클릭해야 합니다.'
     }
-  },
-  
-  // Help text
-  helpText: {
-    reloadHint: '쿠폰 코드가 올바르게 로딩되지 않은 경우, 여기를 클릭하여 다시 로딩하세요',
-    solutionTitle: '로딩 문제 해결 방법:',
-    solution1: 'API 로딩 중에 닉네임을 제출하면 쿠폰 코드가 올바르게 표시되지 않을 수 있습니다',
-    solution2: '위의 "쿠폰 코드 다시 로딩" 버튼을 클릭',
-    solution3: '또는 "종료"를 클릭하여 닉네임을 다시 입력'
-  },
-  
-  // Network status
-  network: {
-    checking: '쿠폰 서비스 연결 확인 중...',
-    slow: '쿠폰 서비스 응답이 느립니다. 잠시만 기다려 주세요',
-    unreachable: '쿠폰 서비스에 연결할 수 없습니다. 네트워크를 확인해 주세요',
-    corsError: 'iOS Safari 호환성 문제'
-  }
   },
   
   // News
