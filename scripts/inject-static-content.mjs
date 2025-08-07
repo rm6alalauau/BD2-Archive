@@ -51,8 +51,20 @@ const HTML_FILES = [
 // 獲取兌換碼數據
 async function fetchRedeemCodes() {
   try {
-    console.log('🔄 正在獲取兌換碼數據...');
-    const response = await fetch(REDEEM_API_URL);
+    console.log('正在獲取兌換碼數據...');
+    
+    // 從環境變數獲取 API 金鑰
+    const apiKey = process.env.VITE_API_KEY;
+    const headers = {};
+    
+    if (apiKey) {
+      headers['X-API-Key'] = apiKey;
+      console.log('使用 API 金鑰進行認證');
+    } else {
+      console.warn('未設定 VITE_API_KEY 環境變數，可能無法獲取數據');
+    }
+    
+    const response = await fetch(REDEEM_API_URL, { headers });
     
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -199,7 +211,7 @@ function generateStaticContent(redeemData, language) {
         color: #9e9e9e;
         text-align: center;
       ">
-        ⚡ 載入中... 完整功能即將啟用
+        載入中... 完整功能即將啟用
       </div>
     </div>`;
 }
@@ -236,7 +248,7 @@ async function injectStaticContent(htmlFile, staticContent) {
 
 // 主執行函數
 async function main() {
-  console.log('🚀 開始靜態內容注入流程...\n');
+  console.log('開始靜態內容注入流程...\n');
   
   // 獲取兌換碼數據
   const redeemData = await fetchRedeemCodes();
