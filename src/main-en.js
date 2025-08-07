@@ -9,6 +9,7 @@ import { routes } from 'vue-router/auto-routes'
 import { registerPluginsWithoutRouter } from '@/plugins'
 import { useSettingsStore } from './stores/settings'
 import App from './App.vue'
+import './styles/critical.css'
 
 const router = createRouter({
   history: createWebHistory('/en/'),
