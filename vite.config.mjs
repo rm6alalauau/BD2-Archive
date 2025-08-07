@@ -179,35 +179,10 @@ export default defineConfig({
       },
       // --- END: 核心修正部分 ---
       output: {
-        manualChunks: (id) => {
-          // 核心框架單獨打包
-          if (id.includes('node_modules/vue') && !id.includes('vue-router')) {
-            return 'vue'
-          }
-          if (id.includes('node_modules/vue-router')) {
-            return 'vue-router'
-          }
-          if (id.includes('node_modules/pinia')) {
-            return 'pinia'
-          }
-          if (id.includes('node_modules/vuetify')) {
-            return 'vuetify'
-          }
-          
-          // 多語言共用的佈局和路由
-          if (id.includes('virtual:generated-layouts') || id.includes('vue-router/auto-routes')) {
-            return 'routing'
-          }
-          
-          // 工具庫
-          if (id.includes('node_modules/js-cookie') || id.includes('src/utils/analytics.js')) {
-            return 'utils'
-          }
-          
-          // 其他第三方庫
-          if (id.includes('node_modules')) {
-            return 'vendor'
-          }
+        manualChunks: {
+          'vendor': ['vue', 'vue-router', 'pinia'],
+          'vuetify': ['vuetify'],
+          'utils': ['js-cookie']
         },
         sanitizeFileName(name) {
           const match = DRIVE_LETTER_REGEX.exec(name);
