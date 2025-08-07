@@ -4,6 +4,9 @@
  * Bootstraps Vuetify and other plugins then mounts the App`
  */
 
+// Import critical CSS first for better performance
+import './styles/critical.css'
+
 // Plugins
 import { registerPlugins } from '@/plugins'
 
@@ -13,9 +16,6 @@ import App from './App.vue'
 // Composables
 import { createApp } from 'vue'
 import { useSettingsStore } from './stores/settings'
-
-// Import critical CSS first for better performance
-import './styles/critical.css'
 
 const app = createApp(App)
 
