@@ -1,5 +1,5 @@
 <template>
-  <v-app :lang="settingsStore.selectedLanguage">
+  <v-app :lang="settingsStore.selectedLanguage" theme="bd2DarkTheme">
     <v-main>
       <router-view />
     </v-main>
