@@ -23,8 +23,8 @@ export const getApiUrl = (endpoint) => {
     if (endpoint.includes('bd2-official-proxy.zzz-archive-back-end.workers.dev')) {
       return endpoint.replace('https://bd2-official-proxy.zzz-archive-back-end.workers.dev', '/api/bd2-proxy');
     }
-    if (endpoint.includes('bd2redeem.zzz-archive-back-end.workers.dev')) {
-      return endpoint.replace('https://bd2redeem.zzz-archive-back-end.workers.dev', '/api/redeem');
+    if (endpoint.includes('api.thebd2pulse.com/redeem')) {
+      return endpoint.replace('https://api.thebd2pulse.com/redeem', '/api/redeem');
     }
   }
   
