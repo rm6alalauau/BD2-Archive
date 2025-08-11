@@ -11,6 +11,7 @@ export const useSettingsStore = defineStore('settings', {
   state: () => ({
     fontScale: 1.0,
     showR18Content: false,
+    showAIContent: true, // AI 內容預設開啟
     selectedForums: ['Bahamut', 'NGAList', 'PTTList', 'XPosts', 'RedditPosts'], // 預設值（繁體中文）
     // 語言設定
     selectedLanguage: 'zh-Hant-TW',
@@ -199,6 +200,12 @@ export const useSettingsStore = defineStore('settings', {
     // 更新 R18 設定
     updateR18Setting(show) {
       this.showR18Content = show
+      this.saveSettings()
+    },
+
+    // 更新 AI 內容設定
+    updateAISetting(show) {
+      this.showAIContent = show
       this.saveSettings()
     },
 

@@ -114,11 +114,18 @@ export default {
   computed: {
     showR18Content() {
       return this.settingsStore.showR18Content
+    },
+    showAIContent() {
+      return this.settingsStore.showAIContent
     }
   },
   watch: {
     // 監聽 R18 設定變化，清除緩存
     showR18Content() {
+      this.clearCache();
+    },
+    // 監聽 AI 設定變化，清除緩存
+    showAIContent() {
       this.clearCache();
     }
   },
@@ -171,7 +178,7 @@ export default {
     
     async fetchPixivPage() {
       const now = Date.now();
-      const cacheKey = `pixiv_${this.showR18Content}`;
+      const cacheKey = `pixiv_${this.showR18Content}_${this.showAIContent}`;
       
       // 檢查緩存是否有效（5分鐘內）
       const cacheValid = this.lastFetchTime && 
@@ -199,7 +206,17 @@ export default {
         
         // 處理新的 API 格式
         const processedData = data
-          .filter(item => item && item.id && item.sanity_level <= maxSanityLevel)
+          .filter(item => {
+            // 基本檢查
+            if (!item || !item.id || item.sanity_level > maxSanityLevel) {
+              return false;
+            }
+            // AI 內容過濾
+            if (!this.showAIContent && item.is_ai === true) {
+              return false;
+            }
+            return true;
+          })
           .map(item => ({
             // 這些是 template 需要的欄位
             id: item.id,

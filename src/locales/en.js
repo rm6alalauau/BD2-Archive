@@ -229,7 +229,9 @@ export default {
     contentSettings: {
       title: 'Content Settings',
       r18Content: 'Pixiv R18 Content',
-      r18Description: 'Whether to show adult content (18+ required)'
+      r18Description: 'Whether to show adult content (18+ required)',
+      aiContent: 'Pixiv AI Generated Content',
+      aiDescription: 'Whether to show AI-generated artworks'
     },
     
     // Forum settings

@@ -118,6 +118,19 @@
               ></v-switch>
             </div>
 
+            <!-- AI 內容顯示 -->
+            <div class="setting-item mt-6">
+              <div class="setting-info">
+                <div class="setting-label">{{ t('settings.contentSettings.aiContent') }}</div>
+                <div class="setting-description">{{ t('settings.contentSettings.aiDescription') }}</div>
+              </div>
+              <v-switch
+                v-model="showAIContent"
+                color="primary"
+                hide-details
+              ></v-switch>
+            </div>
+
             <!-- 贊助支持（開啟 R18 時顯示） -->
             <div v-if="showR18Content" class="mt-4">
               <v-divider class="mb-4"></v-divider>
@@ -388,6 +401,10 @@ export default {
     showR18Content: {
       get() { return this.settingsStore.showR18Content },
       set(value) { this.settingsStore.updateR18Setting(value) }
+    },
+    showAIContent: {
+      get() { return this.settingsStore.showAIContent },
+      set(value) { this.settingsStore.updateAISetting(value) }
     },
     selectedForums: {
       get() { return this.settingsStore.selectedForums },

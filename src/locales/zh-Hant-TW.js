@@ -233,7 +233,9 @@ export default {
     contentSettings: {
       title: '內容設定',
       r18Content: 'Pixiv R18 內容',
-      r18Description: '是否顯示成人內容（需滿 18 歲）'
+      r18Description: '是否顯示成人內容（需滿 18 歲）',
+      aiContent: 'Pixiv AI 生成內容',
+      aiDescription: '是否顯示 AI 生成的作品'
     },
     
     // 論壇設定
