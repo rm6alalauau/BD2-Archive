@@ -156,9 +156,9 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api\/db2pulse/, ''),
       },
       '/api/redeem': {
-        target: 'https://api.thebd2pulse.com',
+        target: 'https://bd2redeem.zzz-archive-back-end.workers.dev',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/redeem/, '/redeem'),
+        rewrite: (path) => path.replace(/^\/api\/redeem/, ''),
       },
 
     }
