@@ -11,7 +11,7 @@
         <!-- 主要表單卡片 -->
         <v-card rounded="xl" class="feedback-card">
           <v-card-title class="feedback-card-title">
-            <v-icon class="mr-3" color="primary" size="24">mdi-message-heart-outline</v-icon>
+            <v-icon class="mr-3" color="primary" size="24">mdi-share</v-icon>
             {{ t('feedback.cardTitle') }}
           </v-card-title>
           
