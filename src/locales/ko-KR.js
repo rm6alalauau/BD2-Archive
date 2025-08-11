@@ -229,7 +229,9 @@ export default {
     contentSettings: {
       title: '콘텐츠 설정',
       r18Content: 'Pixiv R18 콘텐츠',
-      r18Description: '성인 콘텐츠 표시 여부 (18세 이상 필요)'
+      r18Description: '성인 콘텐츠 표시 여부 (18세 이상 필요)',
+      aiContent: 'Pixiv AI 생성 콘텐츠',
+      aiDescription: 'AI로 생성된 작품 표시 여부'
     },
     
     // Forum settings

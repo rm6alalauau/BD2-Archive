@@ -229,7 +229,9 @@ export default {
     contentSettings: {
       title: 'コンテンツ設定',
       r18Content: 'Pixiv R18コンテンツ',
-      r18Description: '成人向けコンテンツを表示するか（18歳以上必須）'
+      r18Description: '成人向けコンテンツを表示するか（18歳以上必須）',
+      aiContent: 'Pixiv AI生成コンテンツ',
+      aiDescription: 'AI生成作品を表示するか'
     },
     
     // Forum settings
