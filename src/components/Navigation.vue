@@ -24,7 +24,6 @@
               v-bind="props"
               icon
               class="mr-2"
-              size="large"
               :aria-label="t('nav.switchLanguage')"
             >
               <v-icon>mdi-web</v-icon>
@@ -53,23 +52,21 @@
         <v-btn
           icon
           class="mr-2"
-          @click="$router.push('/setting')"
+          @click="goToSettings"
           :aria-label="t('nav.settings')"
         >
-          <v-icon>mdi-cog</v-icon>
+          <v-icon>mdi-cog-outline</v-icon>
           <v-tooltip activator="parent" location="bottom" :aria-label="t('nav.settings')">{{ t('nav.settings') }}</v-tooltip>
         </v-btn>
 
         <!-- 意見回饋按鈕 -->
         <v-btn
-          @click="openFeedback"
           icon
-          variant="text"
-          class="nav-action-btn"
-          size="large"
+          class="mr-2"
+          @click="openFeedback"
           :aria-label="t('nav.feedback')"
         >
-          <v-icon size="20">mdi-comment-question-outline</v-icon>
+          <v-icon>mdi-comment-question-outline</v-icon>
           <v-tooltip activator="parent" location="bottom" :aria-label="t('nav.feedback')">{{ t('nav.feedback') }}</v-tooltip>
         </v-btn>
       </div>
@@ -79,7 +76,7 @@
         @click="toggleMobileMenu"
         icon
         variant="text"
-        class="nav-action-btn d-sm-none"
+        class="d-sm-none"
         size="large"
         :aria-label="mobileMenu ? t('nav.closeMenu') : t('nav.openMenu')"
       >
@@ -97,7 +94,6 @@
             @click="goHome"
             variant="text"
             class="mobile-nav-item"
-            :class="{ 'mobile-nav-item-active': $route.path === '/' }"
             block
           >
             <v-icon size="20" class="mr-3">mdi-home</v-icon>
@@ -105,10 +101,9 @@
           </v-btn>
           
           <v-btn
-            @click="$router.push('/setting')"
+            @click="goToSettings"
             variant="text"
             class="mobile-nav-item"
-            :class="{ 'mobile-nav-item-active': $route.path === '/setting' }"
             block
           >
             <v-icon size="20" class="mr-3">mdi-cog</v-icon>
@@ -262,22 +257,6 @@ export default {
 /* 桌面版操作按鈕組 */
 .nav-actions {
   gap: 4px;
-}
-
-.nav-action-btn {
-  color: rgba(255, 255, 255, 0.7) !important;
-  border-radius: 12px;
-  transition: all 0.2s ease-in-out;
-}
-
-.nav-action-btn:hover {
-  color: rgba(255, 255, 255, 0.9) !important;
-  background: rgba(255, 255, 255, 0.1);
-  transform: scale(1.05);
-}
-
-.nav-action-btn:active {
-  transform: scale(0.95);
 }
 
 /* 語言選擇器 */
