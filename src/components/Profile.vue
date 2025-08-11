@@ -910,7 +910,7 @@ const claimCoupon = async (userId = "", code = "") => {
   const maxRetries = 3;
   const baseDelay = 1000;
   let lastError;
-  const apiEndpoint = "https://api.thebd2pulse.com/redeem";
+  const apiEndpoint = "https://bd2redeem.zzz-archive-back-end.workers.dev/";
   const appId = "bd2-live";
 
   // 檢測 iOS 設備
