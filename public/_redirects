@@ -16,6 +16,16 @@
 # ---------------------------------------------------
 # 核心規則：處理 SPA 的子路徑
 # ---------------------------------------------------
+/setting        /index.html   200
+/feedback       /index.html   200
+/en/setting     /en.html      200
+/en/feedback    /en.html      200
+/ja-JP/setting  /ja-JP.html   200
+/ja-JP/feedback /ja-JP.html   200
+/ko-KR/setting  /ko-KR.html   200
+/ko-KR/feedback /ko-KR.html   200
+/zh-CN/setting  /zh-CN.html   200
+/zh-CN/feedback /zh-CN.html   200
 /en/*    /en.html      200
 /ja/*    /ja-JP.html   200
 /ja-JP/* /ja-JP.html   200
