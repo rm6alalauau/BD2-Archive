@@ -1,20 +1,17 @@
 # ---------------------------------------------------
-# [新增] 處理功能性頁面的尾隨斜線問題
-# 將帶斜線的錯誤版本，永久重定向到不帶斜線的正確版本
+# 處理尾隨斜線問題：將帶斜線的版本重定向到不帶斜線的版本
+# 這些規則必須在 SPA 路由規則之前，避免被攔截
 # ---------------------------------------------------
-/setting/    /setting    301
-/feedback/   /feedback   301
-
-# 處理多語系下的同樣問題
-/en/setting/       /en/setting       301
-/en/feedback/      /en/feedback      301
-/ja-JP/setting/    /ja-JP/setting    301
-/ja-JP/feedback/   /ja-JP/feedback   301
-/ko-KR/setting/    /ko-KR/setting    301
-/ko-KR/feedback/   /ko-KR/feedback   301
-/zh-CN/setting/    /zh-CN/setting    301
-/zh-CN/feedback/   /zh-CN/feedback   301
-
+/setting/           /setting           301
+/feedback/          /feedback          301
+/en/setting/        /en/setting        301
+/en/feedback/       /en/feedback       301
+/ja-JP/setting/     /ja-JP/setting     301
+/ja-JP/feedback/    /ja-JP/feedback    301
+/ko-KR/setting/     /ko-KR/setting     301
+/ko-KR/feedback/    /ko-KR/feedback    301
+/zh-CN/setting/     /zh-CN/setting     301
+/zh-CN/feedback/    /zh-CN/feedback    301
 
 # ---------------------------------------------------
 # 核心規則：處理 SPA 的子路徑
@@ -26,7 +23,6 @@
 /ko-KR/* /ko-KR.html   200
 /zh-cn/* /zh-CN.html   200
 /zh-CN/* /zh-CN.html   200
-
 
 # ---------------------------------------------------
 # 備援規則：處理所有其他情況 (必須放在最後)
