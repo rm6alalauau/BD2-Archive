@@ -79,29 +79,36 @@ export default {
       const ctx = canvas.getContext("2d");
       ctx.fillStyle = "#ccc";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+
       ctx.fillStyle = "#000";
-      ctx.font = "20px Arial";
+      ctx.font = "16px Arial";
       ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      this.wrapText(ctx, text, canvas.width / 2, canvas.height / 2, 150, 22);
-      return canvas.toDataURL();
-    },
-    wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+
+      // 將字串分行
+      const maxWidth = 140; // 字串顯示的最大寬度
+      const lineHeight = 18; // 行高
       const words = text.split(" ");
       let line = "";
-      for (let n = 0; n < words.length; n++) {
-        const testLine = line + words[n] + " ";
-        const metrics = ctx.measureText(testLine);
-        const testWidth = metrics.width;
-        if (testWidth > maxWidth && n > 0) {
-          ctx.fillText(line, x, y);
-          line = words[n] + " ";
-          y += lineHeight;
+      const lines = [];
+      words.forEach((word) => {
+        const testLine = line + word + " ";
+        const testWidth = ctx.measureText(testLine).width;
+        if (testWidth > maxWidth) {
+          lines.push(line);
+          line = word + " ";
         } else {
           line = testLine;
         }
-      }
-      ctx.fillText(line, x, y);
+      });
+      lines.push(line);
+
+      // 將每行字串繪製到 canvas 中
+      const yOffset = (canvas.height - lines.length * lineHeight) / 2;
+      lines.forEach((line, index) => {
+        ctx.fillText(line, canvas.width / 2, yOffset + index * lineHeight);
+      });
+
+      return canvas.toDataURL();
     },
     scrollLeft() {
       const container = this.$refs.scrollContainer;
