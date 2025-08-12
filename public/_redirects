@@ -1,40 +1,19 @@
-# ---------------------------------------------------
-# 處理尾隨斜線問題：將帶斜線的版本重定向到不帶斜線的版本
-# 這些規則必須在 SPA 路由規則之前，避免被攔截
-# ---------------------------------------------------
-/setting/           /setting           301
-/feedback/          /feedback          301
-/en/setting/        /en/setting        301
-/en/feedback/       /en/feedback       301
-/ja-JP/setting/     /ja-JP/setting     301
-/ja-JP/feedback/    /ja-JP/feedback    301
-/ko-KR/setting/     /ko-KR/setting     301
-/ko-KR/feedback/    /ko-KR/feedback    301
-/zh-CN/setting/     /zh-CN/setting     301
-/zh-CN/feedback/    /zh-CN/feedback    301
+# Cloudflare Pages 重定向規則
 
-# ---------------------------------------------------
-# 核心規則：處理 SPA 的子路徑
-# ---------------------------------------------------
-/setting        /index.html   200
-/feedback       /index.html   200
-/en/setting     /en.html      200
-/en/feedback    /en.html      200
-/ja-JP/setting  /ja-JP.html   200
-/ja-JP/feedback /ja-JP.html   200
-/ko-KR/setting  /ko-KR.html   200
-/ko-KR/feedback /ko-KR.html   200
-/zh-CN/setting  /zh-CN.html   200
-/zh-CN/feedback /zh-CN.html   200
-/en/*    /en.html      200
-/ja/*    /ja-JP.html   200
-/ja-JP/* /ja-JP.html   200
-/ko/*    /ko-KR.html   200
-/ko-KR/* /ko-KR.html   200
-/zh-cn/* /zh-CN.html   200
-/zh-CN/* /zh-CN.html   200
+# 英文路由
+/en/*  /en.html  200
 
-# ---------------------------------------------------
-# 備援規則：處理所有其他情況 (必須放在最後)
-# ---------------------------------------------------
-/*       /index.html   200
+# 日文路由
+/ja/*  /ja-JP.html  200
+/ja-JP/* /ja-JP.html  200
+
+# 韓文路由
+/ko/*  /ko-KR.html  200
+/ko-KR/* /ko-KR.html  200
+
+# 簡體中文路由
+/zh-cn/* /zh-CN.html 200
+/zh-CN/* /zh-CN.html 200
+
+# 根目錄 SPA 備援
+/*     /index.html   200
