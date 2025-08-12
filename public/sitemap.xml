@@ -1,81 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
-  <!-- 
-    ===================================================
-    The BD2 Pulse - Sitemap
-    Final Optimized Version
-    ===================================================
-    - Uses canonical URLs with trailing slashes.
-    - Focuses only on indexable content pages.
-    - Manages hreflang annotations directly.
-    ===================================================
-  -->
+<!-- 繁體中文（預設） -->
+<url>
+  <loc>https://thebd2pulse.com/</loc>
+  <lastmod>2025-08-12T10:00:00+00:00</lastmod>
+  <priority>1.0</priority>
+</url>
 
-  <!-- Page 1: 繁體中文 (預設語言) -->
-  <url>
-    <loc>https://thebd2pulse.com/</loc>
-    <lastmod>2025-08-11T00:00:00+00:00</lastmod> <!-- 請更新為您部署的日期 -->
-    <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="zh-Hant" href="https://thebd2pulse.com/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://thebd2pulse.com/en/" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://thebd2pulse.com/ja-JP/" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://thebd2pulse.com/ko-KR/" />
-    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://thebd2pulse.com/zh-CN/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://thebd2pulse.com/" />
-  </url>
 
-  <!-- Page 2: 英文版 -->
-  <url>
-    <loc>https://thebd2pulse.com/en/</loc>
-    <lastmod>2025-08-11T00:00:00+00:00</lastmod>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="zh-Hant" href="https://thebd2pulse.com/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://thebd2pulse.com/en/" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://thebd2pulse.com/ja-JP/" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://thebd2pulse.com/ko-KR/" />
-    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://thebd2pulse.com/zh-CN/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://thebd2pulse.com/" />
-  </url>
+<!-- 英文版 -->
+<url>
+  <loc>https://thebd2pulse.com/en</loc>
+  <lastmod>2025-08-12T10:00:00+00:00</lastmod>
+  <priority>0.9</priority>
+</url>
 
-  <!-- Page 3: 日文版 -->
-  <url>
-    <loc>https://thebd2pulse.com/ja-JP/</loc>
-    <lastmod>2025-08-11T00:00:00+00:00</lastmod>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="zh-Hant" href="https://thebd2pulse.com/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://thebd2pulse.com/en/" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://thebd2pulse.com/ja-JP/" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://thebd2pulse.com/ko-KR/" />
-    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://thebd2pulse.com/zh-CN/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://thebd2pulse.com/" />
-  </url>
 
-  <!-- Page 4: 韓文版 -->
-  <url>
-    <loc>https://thebd2pulse.com/ko-KR/</loc>
-    <lastmod>2025-08-11T00:00:00+00:00</lastmod>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="zh-Hant" href="https://thebd2pulse.com/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://thebd2pulse.com/en/" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://thebd2pulse.com/ja-JP/" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://thebd2pulse.com/ko-KR/" />
-    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://thebd2pulse.com/zh-CN/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://thebd2pulse.com/" />
-  </url>
+<!-- 日文版 -->
+<url>
+  <loc>https://thebd2pulse.com/ja-JP</loc>
+  <lastmod>2025-08-12T10:00:00+00:00</lastmod>
+  <priority>0.9</priority>
+</url>
 
-  <!-- Page 5: 簡體中文版 -->
-  <url>
-    <loc>https://thebd2pulse.com/zh-CN/</loc>
-    <lastmod>2025-08-11T00:00:00+00:00</lastmod>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="zh-Hant" href="https://thebd2pulse.com/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://thebd2pulse.com/en/" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://thebd2pulse.com/ja-JP/" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://thebd2pulse.com/ko-KR/" />
-    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://thebd2pulse.com/zh-CN/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://thebd2pulse.com/" />
-  </url>
+
+<!-- 韓文版 -->
+<url>
+  <loc>https://thebd2pulse.com/ko-KR</loc>
+  <lastmod>2025-08-12T10:00:00+00:00</lastmod>
+  <priority>0.9</priority>
+</url>
+
+
+<!-- 簡體中文版 -->
+<url>
+  <loc>https://thebd2pulse.com/zh-CN</loc>
+  <lastmod>2025-08-12T10:00:00+00:00</lastmod>
+  <priority>0.9</priority>
+</url>
+
 
 </urlset>
