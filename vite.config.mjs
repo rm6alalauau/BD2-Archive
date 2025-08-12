@@ -214,15 +214,5 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['vue', 'vue-router', 'pinia', 'vuetify'],
-  },
-  // 禁用字型預載入
-  experimental: {
-    renderBuiltUrl(filename, { hostType }) {
-      if (hostType === 'js') {
-        return { relative: true }
-      } else {
-        return { relative: true }
-      }
-    }
   }
 });
