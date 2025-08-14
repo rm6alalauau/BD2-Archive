@@ -438,6 +438,21 @@ export default {
     downloaded: '已下载'
   },
   
+  // 周期性活动提醒
+  weeklyReminder: {
+    title: '每周签到提醒',
+    description: '别忘了前往网络商店领取本周的免费抽奖券',
+    currentWeek: '第 {week} 周',
+    timeRemaining: '剩余时间',
+    timeExpired: '本周已结束',
+    timeRemainingDays: '{days} 天 {hours} 小时',
+    timeRemainingHours: '{hours} 小时',
+    timeRemainingMinutes: '{minutes} 分钟',
+    goToWebshop: '前往网络商店',
+    completed: '已完成',
+    remindLater: '稍后提醒'
+  },
+  
   // 免责声明
   disclaimer: {
     title: '免责声明与版权信息',

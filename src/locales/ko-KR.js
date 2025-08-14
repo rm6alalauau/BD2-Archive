@@ -438,6 +438,21 @@ The BD2 Pulse를 이용해주시는 모든 유저분들께 감사드립니다! �
     downloaded: '다운로드됨'
   },
   
+  // 주간 활동 알림
+  weeklyReminder: {
+    title: '주간 출석 알림',
+    description: '웹샵에서 이번 주 무료 추첨권을 받는 것을 잊지 마세요',
+    currentWeek: '제{week}주',
+    timeRemaining: '남은 시간',
+    timeExpired: '이번 주가 종료되었습니다',
+    timeRemainingDays: '{days}일 {hours}시간',
+    timeRemainingHours: '{hours}시간',
+    timeRemainingMinutes: '{minutes}분',
+    goToWebshop: '웹샵으로 이동',
+    completed: '완료',
+    remindLater: '나중에 알림'
+  },
+  
   // 면책 조항
   disclaimer: {
     title: '면책 조항 및 저작권 정보',

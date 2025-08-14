@@ -1,4 +1,6 @@
 <template>
+  <!-- 週期性活動提醒 -->
+  <WeeklyEventReminder />
 
   <v-container>
     <v-row class="ga">
@@ -102,8 +104,13 @@
 <script>
 import { useAppStore } from '@/stores/app'
 import { useSettingsStore } from '@/stores/settings'
+import WeeklyEventReminder from '@/components/WeeklyEventReminder.vue'
 
 export default {
+  components: {
+    WeeklyEventReminder
+  },
+  
   data() {
     return {
       warningVisible: false,

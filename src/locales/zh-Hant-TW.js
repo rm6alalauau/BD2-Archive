@@ -442,6 +442,21 @@ export default {
     downloaded: '已下載'
   },
   
+  // 週期性活動提醒
+  weeklyReminder: {
+    title: '每週簽到提醒',
+    description: '別忘了前往網路商店領取本週的免費抽抽樂券',
+    currentWeek: '第 {week} 週',
+    timeRemaining: '剩餘時間',
+    timeExpired: '本週已結束',
+    timeRemainingDays: '{days} 天 {hours} 小時',
+    timeRemainingHours: '{hours} 小時',
+    timeRemainingMinutes: '{minutes} 分鐘',
+    goToWebshop: '前往網路商店',
+    completed: '已完成',
+    remindLater: '稍後提醒'
+  },
+
   // 免責聲明
   disclaimer: {
     title: '免責聲明與版權資訊',
