@@ -438,6 +438,21 @@ Thank you again for all your support!`,
     downloaded: 'Downloaded'
   },
   
+  // Weekly Event Reminder
+  weeklyReminder: {
+    title: 'Weekly Check-in Reminder',
+    description: 'Don\'t forget to visit the webshop to claim this week\'s free lottery tickets',
+    currentWeek: 'Week {week}',
+    timeRemaining: 'Time Remaining',
+    timeExpired: 'This week has ended',
+    timeRemainingDays: '{days} days {hours} hours',
+    timeRemainingHours: '{hours} hours',
+    timeRemainingMinutes: '{minutes} minutes',
+    goToWebshop: 'Go to Webshop',
+    completed: 'Completed',
+    remindLater: 'Remind Later'
+  },
+  
   // Disclaimer
   disclaimer: {
     title: 'Disclaimer & Copyright Information',

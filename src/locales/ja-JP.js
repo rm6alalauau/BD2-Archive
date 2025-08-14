@@ -438,6 +438,21 @@ export default {
     downloaded: 'ダウンロード済み'
   },
   
+  // 週次活動提醒
+  weeklyReminder: {
+    title: '週次サインイン提醒',
+    description: 'ウェブショップで今週の無料抽選券を忘れずに受け取りましょう',
+    currentWeek: '第{week}週',
+    timeRemaining: '残り時間',
+    timeExpired: '今週は終了しました',
+    timeRemainingDays: '{days}日{hours}時間',
+    timeRemainingHours: '{hours}時間',
+    timeRemainingMinutes: '{minutes}分',
+    goToWebshop: 'ウェブショップへ',
+    completed: '完了',
+    remindLater: '後で提醒'
+  },
+  
   // 免責事項
   disclaimer: {
     title: '免責事項・著作権情報',

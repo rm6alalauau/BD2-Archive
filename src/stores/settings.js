@@ -17,6 +17,8 @@ export const useSettingsStore = defineStore('settings', {
     selectedLanguage: 'zh-Hant-TW',
     // 新增：路由預設語言
     routeDefaultLanguage: null,
+    // 週期性活動提醒狀態
+    weeklyEventReminder: {},
     supportedLanguages: [
       { code: 'zh-Hant-TW', name: '繁體中文', flag: '🇹🇼' },
       { code: 'zh-Hans-CN', name: '简体中文', flag: '🇨🇳' },
@@ -138,6 +140,9 @@ export const useSettingsStore = defineStore('settings', {
           // 載入 icon 設定
           this.selectedIcon = settings.selectedIcon || 'icon1'
           
+          // 載入週期性活動提醒設定
+          this.weeklyEventReminder = settings.weeklyEventReminder || {}
+          
           this.applyFontScale()
         } else {
           // 如果沒有保存的設定，優先使用路由預設語言
@@ -180,6 +185,7 @@ export const useSettingsStore = defineStore('settings', {
         selectedForums: this.selectedForums,
         selectedLanguage: this.selectedLanguage,
         selectedIcon: this.selectedIcon,
+        weeklyEventReminder: this.weeklyEventReminder,
       }
       
       localStorage.setItem('bd2_settings', JSON.stringify(settings))
@@ -278,6 +284,12 @@ export const useSettingsStore = defineStore('settings', {
       }
       
       this.routeDefaultLanguage = langMap[languageCode.toLowerCase()] || languageCode
+    },
+
+    // 更新週期性活動提醒狀態
+    updateWeeklyEventReminder(reminderData) {
+      this.weeklyEventReminder = { ...reminderData }
+      this.saveSettings()
     },
   }
 }) 
