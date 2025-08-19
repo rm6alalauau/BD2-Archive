@@ -1,6 +1,9 @@
 <template>
   <!-- 週期性活動提醒 -->
   <WeeklyEventReminder />
+  
+  <!-- 每日簽到提醒 -->
+  <DailyCheckinReminder />
 
   <v-container>
     <v-row class="ga">
@@ -105,10 +108,12 @@
 import { useAppStore } from '@/stores/app'
 import { useSettingsStore } from '@/stores/settings'
 import WeeklyEventReminder from '@/components/WeeklyEventReminder.vue'
+import DailyCheckinReminder from '@/components/DailyCheckinReminder.vue'
 
 export default {
   components: {
-    WeeklyEventReminder
+    WeeklyEventReminder,
+    DailyCheckinReminder
   },
   
   data() {

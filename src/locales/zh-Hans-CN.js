@@ -231,7 +231,9 @@ export default {
       r18Content: 'Pixiv R18 内容',
       r18Description: '是否显示成人内容（需满 18 岁）',
       aiContent: 'Pixiv AI 生成内容',
-      aiDescription: '是否显示 AI 生成的作品'
+      aiDescription: '是否显示 AI 生成的作品',
+      dailyCheckinReminder: '每日签到提醒',
+      dailyCheckinReminderDescription: '提醒您前往网络商店领取每日钻石'
     },
     
     // 论坛设置
@@ -451,6 +453,20 @@ export default {
     goToWebshop: '前往网络商店',
     completed: '已完成',
     remindLater: '稍后提醒'
+  },
+
+  // 每日签到提醒
+  dailyCheckin: {
+    title: '每日签到提醒',
+    currentDate: '{date}',
+    description: '别忘了前往网络商店领取今日的钻石！',
+    timeRemaining: '剩余时间',
+    timeExpired: '今日已结束',
+    timeRemainingHours: '还剩 {hours} 小时 {minutes} 分钟',
+    timeRemainingMinutes: '还剩 {minutes} 分钟',
+    remindLater: '稍后提醒',
+    completed: '已完成',
+    goToWebshop: '前往网络商店'
   },
   
   // 免责声明

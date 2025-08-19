@@ -19,6 +19,10 @@ export const useSettingsStore = defineStore('settings', {
     routeDefaultLanguage: null,
     // 週期性活動提醒狀態
     weeklyEventReminder: {},
+    // 每日簽到提醒設定
+    dailyCheckinReminderEnabled: false,
+    // 每日簽到狀態記錄
+    dailyCheckinStatus: {},
     supportedLanguages: [
       { code: 'zh-Hant-TW', name: '繁體中文', flag: '🇹🇼' },
       { code: 'zh-Hans-CN', name: '简体中文', flag: '🇨🇳' },
@@ -117,7 +121,7 @@ export const useSettingsStore = defineStore('settings', {
           
           this.fontScale = settings.fontScale || 1.0
           this.showR18Content = settings.showR18Content || false
-          
+          this.showAIContent = settings.showAIContent !== undefined ? settings.showAIContent : true
           // 決定要使用的語言（用於判斷預設論壇）
           let targetLanguage
           if (this.routeDefaultLanguage) {
@@ -142,6 +146,10 @@ export const useSettingsStore = defineStore('settings', {
           
           // 載入週期性活動提醒設定
           this.weeklyEventReminder = settings.weeklyEventReminder || {}
+          
+          // 載入每日簽到提醒設定
+          this.dailyCheckinReminderEnabled = settings.dailyCheckinReminderEnabled || false
+          this.dailyCheckinStatus = settings.dailyCheckinStatus || {}
           
           this.applyFontScale()
         } else {
@@ -182,10 +190,13 @@ export const useSettingsStore = defineStore('settings', {
       const settings = {
         fontScale: this.fontScale,
         showR18Content: this.showR18Content,
+        showAIContent: this.showAIContent,
         selectedForums: this.selectedForums,
         selectedLanguage: this.selectedLanguage,
         selectedIcon: this.selectedIcon,
         weeklyEventReminder: this.weeklyEventReminder,
+        dailyCheckinReminderEnabled: this.dailyCheckinReminderEnabled,
+        dailyCheckinStatus: this.dailyCheckinStatus,
       }
       
       localStorage.setItem('bd2_settings', JSON.stringify(settings))
@@ -236,6 +247,8 @@ export const useSettingsStore = defineStore('settings', {
       this.selectedForums = ['Bahamut', 'NGAList', 'PTTList', 'XPosts', 'RedditPosts']
       this.selectedLanguage = 'zh-Hant-TW'
       this.selectedIcon = 'icon1'
+      this.dailyCheckinReminderEnabled = false
+      this.dailyCheckinStatus = {}
       
       this.applyFontScale()
       this.saveSettings()
@@ -289,6 +302,18 @@ export const useSettingsStore = defineStore('settings', {
     // 更新週期性活動提醒狀態
     updateWeeklyEventReminder(reminderData) {
       this.weeklyEventReminder = { ...reminderData }
+      this.saveSettings()
+    },
+
+    // 更新每日簽到提醒設定
+    updateDailyCheckinReminder(enabled) {
+      this.dailyCheckinReminderEnabled = enabled
+      this.saveSettings()
+    },
+
+    // 更新每日簽到狀態
+    updateDailyCheckinStatus(statusData) {
+      this.dailyCheckinStatus = { ...statusData }
       this.saveSettings()
     },
   }
