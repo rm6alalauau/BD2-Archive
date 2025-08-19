@@ -231,7 +231,9 @@ export default {
       r18Content: 'Pixiv R18 콘텐츠',
       r18Description: '성인 콘텐츠 표시 여부 (18세 이상 필요)',
       aiContent: 'Pixiv AI 생성 콘텐츠',
-      aiDescription: 'AI로 생성된 작품 표시 여부'
+      aiDescription: 'AI로 생성된 작품 표시 여부',
+      dailyCheckinReminder: '데일리 체크인 알림',
+      dailyCheckinReminderDescription: '웹샵에서 데일리 다이아몬드를 받도록 알림'
     },
     
     // Forum settings
@@ -451,6 +453,20 @@ The BD2 Pulse를 이용해주시는 모든 유저분들께 감사드립니다! �
     goToWebshop: '웹샵으로 이동',
     completed: '완료',
     remindLater: '나중에 알림'
+  },
+
+  // 데일리 체크인 알림
+  dailyCheckin: {
+    title: '데일리 체크인 알림',
+    currentDate: '{date}',
+    description: '웹샵에서 오늘의 다이아를 받는 것을 잊지 마세요!',
+    timeRemaining: '남은 시간',
+    timeExpired: '오늘이 종료되었습니다',
+    timeRemainingHours: '남은 {hours}시간 {minutes}분',
+    timeRemainingMinutes: '남은 {minutes}분',
+    remindLater: '나중에 알림',
+    completed: '완료',
+    goToWebshop: '웹샵으로 이동'
   },
   
   // 면책 조항

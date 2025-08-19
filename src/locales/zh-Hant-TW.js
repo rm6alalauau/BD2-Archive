@@ -235,7 +235,9 @@ export default {
       r18Content: 'Pixiv R18 內容',
       r18Description: '是否顯示成人內容（需滿 18 歲）',
       aiContent: 'Pixiv AI 生成內容',
-      aiDescription: '是否顯示 AI 生成的作品'
+      aiDescription: '是否顯示 AI 生成的作品',
+      dailyCheckinReminder: '每日簽到提醒',
+      dailyCheckinReminderDescription: '提醒您前往網路商店領取每日鑽石'
     },
     
     // 論壇設定
@@ -455,6 +457,20 @@ export default {
     goToWebshop: '前往網路商店',
     completed: '已完成',
     remindLater: '稍後提醒'
+  },
+
+  // 每日簽到提醒
+  dailyCheckin: {
+    title: '每日簽到提醒',
+    currentDate: '{date}',
+    description: '別忘了前往網路商店領取本日的鑽石！',
+    timeRemaining: '剩餘時間',
+    timeExpired: '今日已結束',
+    timeRemainingHours: '還剩 {hours} 小時 {minutes} 分鐘',
+    timeRemainingMinutes: '還剩 {minutes} 分鐘',
+    remindLater: '稍後提醒',
+    completed: '已完成',
+    goToWebshop: '前往網路商店'
   },
 
   // 免責聲明

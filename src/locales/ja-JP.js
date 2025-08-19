@@ -231,7 +231,9 @@ export default {
       r18Content: 'Pixiv R18コンテンツ',
       r18Description: '成人向けコンテンツを表示するか（18歳以上必須）',
       aiContent: 'Pixiv AI生成コンテンツ',
-      aiDescription: 'AI生成作品を表示するか'
+      aiDescription: 'AI生成作品を表示するか',
+      dailyCheckinReminder: 'デイリーチェックインリマインダー',
+      dailyCheckinReminderDescription: 'ウェブショップでデイリーダイヤモンドを取得するようリマインド'
     },
     
     // Forum settings
@@ -451,6 +453,20 @@ export default {
     goToWebshop: 'ウェブショップへ',
     completed: '完了',
     remindLater: '後で提醒'
+  },
+
+  // デイリーチェックイン提醒
+  dailyCheckin: {
+    title: 'デイリーチェックイン提醒',
+    currentDate: '{date}',
+    description: 'ウェブショップで今日のダイヤを忘れずに受け取りましょう！',
+    timeRemaining: '残り時間',
+    timeExpired: '今日は終了しました',
+    timeRemainingHours: '残り{hours}時間{minutes}分',
+    timeRemainingMinutes: '残り{minutes}分',
+    remindLater: '後で提醒',
+    completed: '完了',
+    goToWebshop: 'ウェブショップへ'
   },
   
   // 免責事項

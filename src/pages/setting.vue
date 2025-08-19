@@ -131,6 +131,19 @@
               ></v-switch>
             </div>
 
+            <!-- 每日簽到提醒 -->
+            <div class="setting-item mt-6">
+              <div class="setting-info">
+                <div class="setting-label">{{ t('settings.contentSettings.dailyCheckinReminder') }}</div>
+                <div class="setting-description">{{ t('settings.contentSettings.dailyCheckinReminderDescription') }}</div>
+              </div>
+              <v-switch
+                v-model="dailyCheckinReminder"
+                color="primary"
+                hide-details
+              ></v-switch>
+            </div>
+
             <!-- 贊助支持（開啟 R18 時顯示） -->
             <div v-if="showR18Content" class="mt-4">
               <v-divider class="mb-4"></v-divider>
@@ -409,6 +422,10 @@ export default {
     selectedForums: {
       get() { return this.settingsStore.selectedForums },
       set(value) { this.settingsStore.updateForumSelection(value) }
+    },
+    dailyCheckinReminder: {
+      get() { return this.settingsStore.dailyCheckinReminderEnabled },
+      set(value) { this.settingsStore.updateDailyCheckinReminder(value) }
     },
 
     forumOptions() {

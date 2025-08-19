@@ -231,7 +231,9 @@ export default {
       r18Content: 'Pixiv R18 Content',
       r18Description: 'Whether to show adult content (18+ required)',
       aiContent: 'Pixiv AI Generated Content',
-      aiDescription: 'Whether to show AI-generated artworks'
+      aiDescription: 'Whether to show AI-generated artworks',
+      dailyCheckinReminder: 'Daily Check-in Reminder',
+      dailyCheckinReminderDescription: 'Remind you to visit the webshop for daily diamonds'
     },
     
     // Forum settings
@@ -451,6 +453,20 @@ Thank you again for all your support!`,
     goToWebshop: 'Go to Webshop',
     completed: 'Completed',
     remindLater: 'Remind Later'
+  },
+
+  // Daily Check-in Reminder
+  dailyCheckin: {
+    title: 'Daily Check-in Reminder',
+    currentDate: '{date}',
+    description: 'Don\'t forget to visit the webshop to claim today\'s Dia!',
+    timeRemaining: 'Time Remaining',
+    timeExpired: 'Today has ended',
+    timeRemainingHours: '{hours} hours {minutes} minutes remaining',
+    timeRemainingMinutes: '{minutes} minutes remaining',
+    remindLater: 'Remind Later',
+    completed: 'Completed',
+    goToWebshop: 'Go to Webshop'
   },
   
   // Disclaimer
