@@ -135,7 +135,7 @@ export default defineConfig({
     },
     proxy: {
       '/api/bd2-proxy': {
-        target: 'https://bd2-official-proxy.zzz-archive-back-end.workers.dev',
+        target: 'https://api.thebd2pulse.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/bd2-proxy/, ''),
         configure: (proxy, options) => {
@@ -152,11 +152,12 @@ export default defineConfig({
       },
       '/api/db2pulse': {
         target: 'https://api.thebd2pulse.com',
+        
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/db2pulse/, ''),
       },
       '/api/redeem': {
-        target: 'https://bd2redeem.zzz-archive-back-end.workers.dev',
+        target: 'https://api.thebd2pulse.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/redeem/, ''),
       },

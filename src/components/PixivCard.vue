@@ -221,12 +221,12 @@ export default {
             // 這些是 template 需要的欄位
             id: item.id,
             userId: item.user.id,
-            imageUrl: `https://bd2pixiv.zzz-archive-back-end.workers.dev/${item.image_urls.square_medium.replace("https://i.pximg.net/", "")}`,
+            imageUrl: `https://api.thebd2pulse.com/pixiv/${item.image_urls.square_medium.replace("https://i.pximg.net/", "")}`,
             title: item.title,
             authorName: item.user.name,
             authorAvatar: item.user.profile_image_urls.medium.includes("https://s.pximg.net/common/images/no_profile.png")
               ? item.user.profile_image_urls.medium
-              : `https://bd2pixiv.zzz-archive-back-end.workers.dev/${item.user.profile_image_urls.medium.replace("https://i.pximg.net/", "")}`,
+              : `https://api.thebd2pulse.com/pixiv/${item.user.profile_image_urls.medium.replace("https://i.pximg.net/", "")}`,
             
             // 這是篩選邏輯需要的欄位
             total_bookmarks: item.total_bookmarks,
@@ -283,7 +283,9 @@ export default {
     handleImageError(event) {
       // 圖片載入失敗時的處理
       // 可以設置一個錯誤佔位符或隱藏圖片
-      event.target.style.display = 'none';
+      if (event && event.target) {
+        event.target.style.display = 'none';
+      }
     },
     
     clearCache() {

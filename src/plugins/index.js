@@ -20,11 +20,15 @@ export const getApiUrl = (endpoint) => {
     if (endpoint.includes('api.thebd2pulse.com')) {
       return endpoint.replace('https://api.thebd2pulse.com', '/api/db2pulse');
     }
+    // 其他舊的 API 端點也代理到測試 Worker（如果有需要的話）
     if (endpoint.includes('bd2-official-proxy.zzz-archive-back-end.workers.dev')) {
       return endpoint.replace('https://bd2-official-proxy.zzz-archive-back-end.workers.dev', '/api/bd2-proxy');
     }
-    if (endpoint.includes('api.thebd2pulse.com/redeem')) {
-      return endpoint.replace('https://api.thebd2pulse.com/redeem', '/api/redeem');
+    if (endpoint.includes('bd2redeem.zzz-archive-back-end.workers.dev')) {
+      return endpoint.replace('https://bd2redeem.zzz-archive-back-end.workers.dev', '/api/redeem');
+    }
+    if (endpoint.includes('naver-lounge-proxy.zzz-archive-back-end.workers.dev')) {
+      return endpoint.replace('https://naver-lounge-proxy.zzz-archive-back-end.workers.dev', '/api/bd2-proxy');
     }
   }
   

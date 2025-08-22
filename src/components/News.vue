@@ -269,10 +269,10 @@ export default {
         
         // 根據語言選擇對應的API endpoint
         const languageEndpoint = this.getApiEndpoint(selectedLanguage);
-        const originalUrl = `https://bd2-official-proxy.zzz-archive-back-end.workers.dev/news/${languageEndpoint}?v=${timestamp}`;
+        const originalUrl = `https://api.thebd2pulse.com/news/${languageEndpoint}?v=${timestamp}`;
         const apiUrl = this.$getApiUrl ? this.$getApiUrl(originalUrl) : originalUrl;
         
-        const response = await fetch(apiUrl);
+        const response = await this.$customFetch(apiUrl);
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
