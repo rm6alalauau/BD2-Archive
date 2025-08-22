@@ -130,7 +130,7 @@ const FORUM_API_CONFIG = {
 };
 
 // Naver 使用獨立的 API 端點
-const NAVER_API_ENDPOINT = 'https://naver-lounge-proxy.zzz-archive-back-end.workers.dev';
+const NAVER_API_ENDPOINT = 'https://api.thebd2pulse.com/naver';
 
 // 新的統一論壇 API 端點
 const FORUMS_API_ENDPOINT = 'https://api.thebd2pulse.com/forums';

@@ -136,12 +136,12 @@ export default {
       this.error = null;
       try {
         // 使用代理 URL，根據環境自動選擇
-        const originalUrl = 'https://bd2-official-proxy.zzz-archive-back-end.workers.dev/media';
+        const originalUrl = 'https://api.thebd2pulse.com/media';
         const proxyApiUrl = this.$getApiUrl ? this.$getApiUrl(originalUrl) : originalUrl;
         
         // 獲取媒體資料
         
-        const response = await fetch(proxyApiUrl);
+        const response = await this.$customFetch(proxyApiUrl);
         
         if (!response.ok) {
           throw new Error(`${this.t('common.error')}: ${response.status}`);
