@@ -140,7 +140,20 @@
 
               <div class="coupon-code-section">
                 <div class="coupon-code-row">
-                  <span class="coupon-code">{{ coupon.code }}</span>
+                  <div class="coupon-code-left">
+                    <span class="coupon-code">{{ coupon.code }}</span>
+                    <!-- 圖片預覽圖示 -->
+                    <v-btn
+                      v-if="coupon.image_url"
+                      icon
+                      size="x-small"
+                      variant="text"
+                      class="coupon-image-btn"
+                      @click="showImagePreview(coupon)"
+                    >
+                      <v-icon size="16" color="primary">mdi-image-outline</v-icon>
+                    </v-btn>
+                  </div>
                   <v-chip
                     v-if="coupon.status"
                     size="x-small"
@@ -237,6 +250,52 @@
       @new="enterNewNickname"
     />
     
+    <!-- 圖片預覽對話框 -->
+    <v-dialog
+      v-model="imagePreviewDialog"
+      max-width="600"
+      @click:outside="closeImagePreview"
+    >
+      <v-card v-if="selectedCouponImage">
+        <v-card-title class="d-flex align-center justify-space-between">
+          <span>{{ selectedCouponImage.code }}</span>
+          <v-btn
+            icon
+            size="small"
+            variant="text"
+            @click="closeImagePreview"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        
+        <v-card-text class="pa-0">
+          <v-img
+            :src="selectedCouponImage.image_url"
+            :alt="`${selectedCouponImage.code} 兌換碼圖片`"
+            contain
+            max-height="400"
+            @error="handleImageLoadError"
+          >
+            <template v-slot:placeholder>
+              <div class="d-flex align-center justify-center fill-height">
+                <v-progress-circular indeterminate color="primary"></v-progress-circular>
+              </div>
+            </template>
+          </v-img>
+        </v-card-text>
+        
+        <v-card-actions class="justify-center">
+          <v-btn
+            variant="text"
+            @click="closeImagePreview"
+          >
+            關閉
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    
     <!-- 兌換碼功能說明對話框 -->
     <v-dialog v-model="showHelpDialog" max-width="600">
       <v-card>
@@ -324,6 +383,9 @@ const loading = ref(false);
 const redeemCodes = ref([]);
 const showNicknameSuggestions = ref(false);
 const nicknameInputFocused = ref(false);
+// 圖片預覽相關
+const imagePreviewDialog = ref(false);
+const selectedCouponImage = ref(null);
 
 // --- Computed ---
 const t = computed(() => settingsStore.t);
@@ -766,6 +828,21 @@ const waitForApiAndLoadData = async () => {
   });
 };
 
+// 圖片預覽相關方法
+const showImagePreview = (coupon) => {
+  selectedCouponImage.value = coupon;
+  imagePreviewDialog.value = true;
+};
+
+const closeImagePreview = () => {
+  imagePreviewDialog.value = false;
+  selectedCouponImage.value = null;
+};
+
+const handleImageLoadError = () => {
+  console.warn('兌換碼圖片載入失敗');
+};
+
 // 獲取本地化的獎勵文字
 const getLocalizedReward = (reward) => {
   if (!reward) return null;
@@ -851,6 +928,7 @@ const loadCouponCodesFromStore = () => {
         description: getLocalizedReward(item.reward) || "未知獎勵", // 保留作為備用
         status: item.status || "未知狀態",
         expiry_date: item.expiry_date || null, // 添加過期日期
+        image_url: item.image_url || null, // 添加圖片 URL
         claimed: false,
         claiming: false,
         statusMessage: null,
@@ -1242,8 +1320,14 @@ watch(
 .coupon-code-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
   margin-bottom: 2px;
+}
+
+.coupon-code-left {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .coupon-code {
@@ -1254,6 +1338,15 @@ watch(
 
 .coupon-status-chip {
   flex-shrink: 0;
+}
+
+.coupon-image-btn {
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.coupon-image-btn:hover {
+  opacity: 1;
 }
 
 /* 今天是最後一天的特殊樣式 */
