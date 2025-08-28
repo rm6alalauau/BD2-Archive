@@ -87,13 +87,15 @@
               </div>
 
               <!-- 圖標網格 -->
-              <v-row class="icon-grid">
+              <v-row class="icon-grid" :class="{ 'single-row': isSingleRow }">
                 <v-col 
                   v-for="icon in currentPageIcons" 
                   :key="icon.id" 
                   cols="4" 
-                  sm="3" 
+                  sm="4" 
                   md="2"
+                  lg="2"
+                  xl="2"
                 >
                   <v-card
                     @click="onSelectIcon(icon.id)"
@@ -133,7 +135,7 @@
               </v-row>
 
               <!-- 頁面指示點 -->
-              <div class="icon-page-dots">
+              <div class="icon-page-dots" :class="{ 'single-row': isSingleRow }">
                 <v-btn
                   v-for="(page, index) in totalIconPages"
                   :key="index"
@@ -455,7 +457,7 @@ export default {
       
       // 圖標分頁控制
       currentIconPage: 0,
-      iconsPerPage: 6, // 每頁顯示的圖標數量
+      iconsPerPage: 6, // 每頁顯示的圖標數量：PC上一行6個，手機上兩行3個
       newIconCount: 3, // 最新的幾個圖標會顯示 NEW 標籤
     };
   },
@@ -515,6 +517,15 @@ export default {
     // 用於初始化頁面的原始順序圖標陣列
     originalOrderIcons() {
       return availableIcons;
+    },
+    
+    // 判斷是否只顯示一行圖標
+    isSingleRow() {
+      // 根據螢幕寬度和圖標數量判斷
+      if (window.innerWidth >= 769) { // PC版
+        return this.currentPageIcons.length <= 6; // 6個圖標在PC上會顯示為一行
+      }
+      return false; // 手機版保持原間距
     }
   },
   methods: {
@@ -680,6 +691,12 @@ export default {
         this.currentIconPage = targetPage;
       }
     },
+    
+    // 處理視窗大小變化
+    handleResize() {
+      // 強制重新計算響應式屬性
+      this.$forceUpdate();
+    },
   },
   
   watch: {
@@ -714,12 +731,16 @@ export default {
     // 添加滾動監聽
     window.addEventListener('scroll', this.handleScroll);
     window.addEventListener('resize', this.handleScroll);
+    
+    // 添加視窗大小變化監聽，用於圖標佈局調整
+    window.addEventListener('resize', this.handleResize);
   },
   
   beforeUnmount() {
     // 移除事件監聽
     window.removeEventListener('scroll', this.handleScroll);
     window.removeEventListener('resize', this.handleScroll);
+    window.removeEventListener('resize', this.handleResize);
   },
 };
 </script>
@@ -856,6 +877,45 @@ export default {
   margin-bottom: 16px;
 }
 
+/* PC 版調整：當只顯示一行圖標時減少底部間距 */
+@media (min-width: 769px) {
+  .icon-grid {
+    margin-bottom: 8px; /* PC 版減少底部間距 */
+  }
+  
+  .icon-page-dots {
+    margin-top: 4px; /* PC 版減少頂部間距 */
+  }
+}
+
+/* 單行圖標的特殊樣式 */
+.icon-grid.single-row {
+  margin-bottom: 8px; /* 單行時減少底部間距 */
+}
+
+.icon-page-dots.single-row {
+  margin-top: 4px; /* 單行時減少頂部間距 */
+}
+
+/* 響應式間距調整 */
+@media (min-width: 769px) {
+  .icon-grid.single-row {
+    margin-bottom: 6px; /* PC版單行時進一步減少間距 */
+  }
+  
+  .icon-page-dots.single-row {
+    margin-top: 2px; /* PC版單行時進一步減少間距 */
+  }
+}
+
+/* 強制佈局一致性，避免中間斷點的不平衡佈局 */
+@media (min-width: 600px) and (max-width: 768px) {
+  .icon-grid .v-col {
+    flex-basis: 33.333333% !important;
+    max-width: 33.333333% !important;
+  }
+}
+
 /* 頁面指示點 */
 .icon-page-dots {
   display: flex;
@@ -962,14 +1022,7 @@ export default {
   border-radius: 8px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   box-shadow: 0 2px 4px rgba(231, 40, 87, 0.3);
-  animation: newBadgePulse 2s ease-in-out infinite;
   z-index: 2;
-}
-
-/* NEW 標籤動畫 */
-@keyframes newBadgePulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.05); opacity: 0.9; }
 }
 
 /* 導航按鈕 */
