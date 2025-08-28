@@ -222,7 +222,8 @@ export default {
       r18Content: 'R18 内容',
       r18Description: '显示 R18 相关内容',
       websiteIcon: '网站图标',
-      websiteIconDescription: '选择你喜欢的网站图标'
+      websiteIconDescription: '选择你喜欢的网站图标',
+      iconPage: '页面'
     },
     
     // 内容设置

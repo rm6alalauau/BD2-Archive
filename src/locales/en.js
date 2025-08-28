@@ -222,7 +222,8 @@ export default {
       r18Content: 'R18 Content',
       r18Description: 'Show R18 related content',
       websiteIcon: 'Website Icon',
-      websiteIconDescription: 'Choose your favorite website icon'
+      websiteIconDescription: 'Choose your favorite website icon',
+      iconPage: 'Page'
     },
     
     // Content settings

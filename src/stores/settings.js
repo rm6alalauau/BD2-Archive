@@ -2,10 +2,31 @@ import { defineStore } from 'pinia'
 import { getTranslation } from '@/locales'
 
 // 1. 新增可選 icon 陣列
-export const availableIcons = Array.from({ length: 12 }, (_, i) => ({
-  id: `icon${i + 1}`,
-  path: `/favicon${String(i + 1).padStart(2, '0')}.png`
-}))
+// 當前圖標總數
+const TOTAL_ICONS = 15;
+
+// 生成圖標陣列，採用混合排序邏輯
+export const availableIcons = Array.from({ length: TOTAL_ICONS }, (_, i) => {
+  const iconNumber = i + 1;
+  
+  // 計算 order 值：
+  // - favicon01.png 到 favicon12.png：從新到舊排列
+  // - favicon13.png 以後：越大越新
+  let order;
+  if (iconNumber <= 12) {
+    // 1~12：favicon01是最新(12)，favicon12是最舊(1)
+    order = 12 - (iconNumber - 1); // favicon01=12, favicon02=11, ..., favicon12=1
+  } else {
+    // 13+：直接使用數字，比12更大所以更新
+    order = iconNumber; // favicon13=13, favicon14=14, ...
+  }
+  
+  return {
+    id: `icon${iconNumber}`,
+    path: `/favicon${String(iconNumber).padStart(2, '0')}.png`,
+    order: order
+  };
+}).sort((a, b) => b.order - a.order); // 按 order 降序排列，最新的在前面
 
 export const useSettingsStore = defineStore('settings', {
   state: () => ({
