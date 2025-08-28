@@ -53,46 +53,100 @@
                 <div class="setting-description">{{ t('settings.display.websiteIconDescription') }}</div>
               </div>
               
-              <!-- MD3 風格的 icon 選擇器 -->
-              <div class="icon-selector">
-                <v-row>
-                  <v-col 
-                    v-for="icon in availableIcons" 
-                    :key="icon.id" 
-                    cols="6" 
-                    sm="4" 
-                    md="3" 
-                    lg="2"
+                          <!-- MD3 風格的 icon 選擇器 - 分頁版本 -->
+            <div class="icon-selector">
+              <!-- 分頁指示器 -->
+              <div class="icon-pagination-header">
+                <div class="pagination-info">
+                  <span class="text-caption text-medium-emphasis">
+                    {{ t('settings.display.iconPage') }} {{ currentIconPage + 1 }} / {{ totalIconPages }}
+                  </span>
+                </div>
+                <div class="pagination-controls">
+                  <v-btn
+                    @click="previousIconPage"
+                    :disabled="currentIconPage === 0"
+                    icon
+                    size="small"
+                    variant="text"
+                    class="pagination-btn"
                   >
-                    <v-card
-                      @click="onSelectIcon(icon.id)"
-                      :class="['icon-card', { 'icon-card--selected': settingsStore.selectedIcon === icon.id }]"
-                      variant="outlined"
-                      rounded="lg"
-                      elevation="0"
-                      hover
-                    >
-                      <v-card-text class="pa-3 text-center">
-                        <div class="icon-preview">
-                          <img 
-                            :src="icon.path" 
-                            :alt="`Icon ${icon.id}`"
-                            class="icon-image"
-                          />
-                        </div>
-                      </v-card-text>
-                      
-                      <!-- 選中狀態指示器 -->
-                      <div 
-                        v-if="settingsStore.selectedIcon === icon.id"
-                        class="icon-selected-indicator"
-                      >
-                        <v-icon color="primary" size="small">mdi-check-circle</v-icon>
-                      </div>
-                    </v-card>
-                  </v-col>
-                </v-row>
+                    <v-icon>mdi-chevron-left</v-icon>
+                  </v-btn>
+                  <v-btn
+                    @click="nextIconPage"
+                    :disabled="currentIconPage === totalIconPages - 1"
+                    icon
+                    size="small"
+                    variant="text"
+                    class="pagination-btn"
+                  >
+                    <v-icon>mdi-chevron-right</v-icon>
+                  </v-btn>
+                </div>
               </div>
+
+              <!-- 圖標網格 -->
+              <v-row class="icon-grid">
+                <v-col 
+                  v-for="icon in currentPageIcons" 
+                  :key="icon.id" 
+                  cols="4" 
+                  sm="3" 
+                  md="2"
+                >
+                  <v-card
+                    @click="onSelectIcon(icon.id)"
+                    :class="['icon-card', { 'icon-card--selected': settingsStore.selectedIcon === icon.id }]"
+                    variant="outlined"
+                    rounded="lg"
+                    elevation="0"
+                    hover
+                  >
+                    <v-card-text class="pa-3 text-center">
+                      <div class="icon-preview">
+                        <img 
+                          :src="icon.path" 
+                          :alt="`Icon ${icon.id}`"
+                          class="icon-image"
+                        />
+                      </div>
+                    </v-card-text>
+                    
+                    <!-- 選中狀態指示器 -->
+                    <div 
+                      v-if="settingsStore.selectedIcon === icon.id"
+                      class="icon-selected-indicator"
+                    >
+                      <v-icon color="primary" size="small">mdi-check-circle</v-icon>
+                    </div>
+                    
+                    <!-- NEW 標籤 -->
+                    <div 
+                      v-if="isNewIcon(icon.id) && settingsStore.selectedIcon !== icon.id"
+                      class="icon-new-badge"
+                    >
+                      NEW
+                    </div>
+                  </v-card>
+                </v-col>
+              </v-row>
+
+              <!-- 頁面指示點 -->
+              <div class="icon-page-dots">
+                <v-btn
+                  v-for="(page, index) in totalIconPages"
+                  :key="index"
+                  @click="goToIconPage(index)"
+                  :class="['page-dot', { 'page-dot--active': currentIconPage === index }]"
+                  icon
+                  size="x-small"
+                  variant="text"
+                >
+                  <div class="dot"></div>
+                </v-btn>
+              </div>
+            </div>
             </div>
 
           </v-card-text>
@@ -398,6 +452,11 @@ export default {
       // 浮動按鈕控制
       showFloatingButton: false,
       fabBottom: 24,
+      
+      // 圖標分頁控制
+      currentIconPage: 0,
+      iconsPerPage: 6, // 每頁顯示的圖標數量
+      newIconCount: 3, // 最新的幾個圖標會顯示 NEW 標籤
     };
   },
   computed: {
@@ -440,9 +499,38 @@ export default {
     },
     supportContentLines() {
       return this.t('settings.supportContent').split('\n');
+    },
+
+    // 圖標分頁相關計算屬性
+    totalIconPages() {
+      return Math.ceil(availableIcons.length / this.iconsPerPage);
+    },
+    currentPageIcons() {
+      const startIndex = this.currentIconPage * this.iconsPerPage;
+      const endIndex = startIndex + this.iconsPerPage;
+      // 保持原順序，因為 availableIcons 已經是從新到舊排列
+      return availableIcons.slice(startIndex, endIndex);
+    },
+    
+    // 用於初始化頁面的原始順序圖標陣列
+    originalOrderIcons() {
+      return availableIcons;
     }
   },
   methods: {
+    // 判斷是否為新圖標
+    isNewIcon(iconId) {
+      // 找到圖標對象
+      const icon = availableIcons.find(icon => icon.id === iconId);
+      if (!icon) return false;
+      
+      // 根據 order 值判斷，order 值最大的幾個是最新的
+      const allOrders = availableIcons.map(icon => icon.order).sort((a, b) => b - a);
+      const minOrderForNew = allOrders[this.newIconCount - 1] || 0;
+      
+      return icon.order >= minOrderForNew;
+    },
+
     // 字體縮放控制
     increaseFontScale() {
       if (this.fontScale < 1.3) {
@@ -565,6 +653,33 @@ export default {
         this.showSuccess(this.t('settings.success.iconChanged'))
       }
     },
+
+    // 圖標分頁控制方法
+    nextIconPage() {
+      if (this.currentIconPage < this.totalIconPages - 1) {
+        this.currentIconPage++;
+      }
+    },
+    previousIconPage() {
+      if (this.currentIconPage > 0) {
+        this.currentIconPage--;
+      }
+    },
+    goToIconPage(pageIndex) {
+      if (pageIndex >= 0 && pageIndex < this.totalIconPages) {
+        this.currentIconPage = pageIndex;
+      }
+    },
+
+    // 初始化圖標頁面，確保選中的圖標在當前頁面
+    initializeIconPage() {
+      // availableIcons 已經按 order 排序，直接查找索引即可
+      const selectedIconIndex = availableIcons.findIndex(icon => icon.id === this.settingsStore.selectedIcon);
+      if (selectedIconIndex !== -1) {
+        const targetPage = Math.floor(selectedIconIndex / this.iconsPerPage);
+        this.currentIconPage = targetPage;
+      }
+    },
   },
   
   watch: {
@@ -592,6 +707,9 @@ export default {
   
   mounted() {
     this.settingsStore.loadSettings();
+    
+    // 初始化圖標分頁，確保選中的圖標在當前頁面
+    this.initializeIconPage();
     
     // 添加滾動監聽
     window.addEventListener('scroll', this.handleScroll);
@@ -701,6 +819,74 @@ export default {
   margin-top: 16px;
 }
 
+/* 分頁控制 */
+.icon-pagination-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 0 8px;
+}
+
+.pagination-info {
+  flex: 1;
+}
+
+.pagination-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.pagination-btn {
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  opacity: 1;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.3;
+}
+
+/* 圖標網格 */
+.icon-grid {
+  min-height: 140px; /* 固定高度，避免分頁切換時跳動 */
+  margin-bottom: 16px;
+}
+
+/* 頁面指示點 */
+.icon-page-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.page-dot {
+  width: 24px !important;
+  height: 24px !important;
+  min-width: unset !important;
+}
+
+.page-dot .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.3);
+  transition: all 0.2s ease;
+}
+
+.page-dot--active .dot {
+  background-color: #e72857; /* 使用主題色 */
+  transform: scale(1.2);
+}
+
+.page-dot:hover .dot {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
 .icon-card {
   position: relative;
   cursor: pointer;
@@ -761,6 +947,29 @@ export default {
   align-items: center;
   justify-content: center;
   backdrop-filter: blur(4px);
+}
+
+/* NEW 標籤樣式 */
+.icon-new-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: linear-gradient(135deg, #e72857, #ff4081);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 8px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 4px rgba(231, 40, 87, 0.3);
+  animation: newBadgePulse 2s ease-in-out infinite;
+  z-index: 2;
+}
+
+/* NEW 標籤動畫 */
+@keyframes newBadgePulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.9; }
 }
 
 /* 導航按鈕 */

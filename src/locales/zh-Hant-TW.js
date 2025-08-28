@@ -226,7 +226,8 @@ export default {
       r18Content: 'R18 內容',
       r18Description: '顯示 R18 相關內容',
       websiteIcon: '網站圖示',
-      websiteIconDescription: '選擇你喜歡的網站圖示'
+      websiteIconDescription: '選擇你喜歡的網站圖示',
+      iconPage: '頁面'
     },
     
     // 內容設定

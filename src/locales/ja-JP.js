@@ -222,7 +222,8 @@ export default {
       r18Content: 'R18コンテンツ',
       r18Description: 'R18関連コンテンツを表示',
       websiteIcon: 'ウェブサイトアイコン',
-      websiteIconDescription: 'お好みのウェブサイトアイコンを選択'
+      websiteIconDescription: 'お好みのウェブサイトアイコンを選択',
+      iconPage: 'ページ'
     },
     
     // Content settings

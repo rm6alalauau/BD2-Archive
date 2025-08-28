@@ -222,7 +222,8 @@ export default {
       r18Content: 'R18 콘텐츠',
       r18Description: 'R18 관련 콘텐츠 표시',
       websiteIcon: '웹사이트 아이콘',
-      websiteIconDescription: '마음에 드는 웹사이트 아이콘을 선택하세요'
+      websiteIconDescription: '마음에 드는 웹사이트 아이콘을 선택하세요',
+      iconPage: '페이지'
     },
     
     // Content settings
