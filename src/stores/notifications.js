@@ -31,7 +31,12 @@ export const useNotificationsStore = defineStore('notifications', {
     error: null,
     // iOS 相關狀態
     isIOS: typeof window !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent),
-    isPWA: typeof window !== 'undefined' && (window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches),
+    isPWA: typeof window !== 'undefined' && (
+      window.navigator.standalone === true || 
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.matchMedia('(display-mode: fullscreen)').matches ||
+      window.matchMedia('(display-mode: minimal-ui)').matches
+    ),
   }),
 
   getters: {
