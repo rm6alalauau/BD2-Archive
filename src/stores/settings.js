@@ -258,6 +258,40 @@ export const useSettingsStore = defineStore('settings', {
       if (this.supportedLanguages.some(lang => lang.code === languageCode)) {
         this.selectedLanguage = languageCode
         this.saveSettings()
+        // 通知 Service Worker 更新語言偏好
+        this.updateServiceWorkerLanguage()
+      }
+    },
+
+    // 更新 Service Worker 的語言偏好
+    updateServiceWorkerLanguage() {
+      if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(registration => {
+          if (registration.active) {
+            // 取得 notifications store 來獲取 favicon 路徑
+            const notificationsStore = this.getNotificationsStore()
+            registration.active.postMessage({
+              type: 'SET_USER_PREFERENCES',
+              preferences: {
+                language: this.selectedLanguage,
+                icon: notificationsStore ? notificationsStore.getFaviconPath(this.selectedIcon) : `/favicon${String(this.selectedIcon.replace('icon', '')).padStart(2, '0')}.png`
+              }
+            })
+          }
+        }).catch(err => {
+          console.log('Service Worker not ready:', err)
+        })
+      }
+    },
+
+    // 獲取 notifications store 的輔助方法
+    getNotificationsStore() {
+      try {
+        // 動態導入 notifications store 以避免循環依賴
+        const { useNotificationsStore } = require('@/stores/notifications')
+        return useNotificationsStore()
+      } catch (err) {
+        return null
       }
     },
 
@@ -281,6 +315,28 @@ export const useSettingsStore = defineStore('settings', {
       this.selectedIcon = iconId
       this.saveSettings()
       this.updateFavicon()
+      // 通知 Service Worker 更新 icon 偏好
+      this.updateServiceWorkerIcon()
+    },
+
+    // 更新 Service Worker 的 icon 偏好
+    updateServiceWorkerIcon() {
+      if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(registration => {
+          if (registration.active) {
+            const notificationsStore = this.getNotificationsStore()
+            registration.active.postMessage({
+              type: 'SET_USER_PREFERENCES',
+              preferences: {
+                language: this.selectedLanguage,
+                icon: notificationsStore ? notificationsStore.getFaviconPath(this.selectedIcon) : `/favicon${String(this.selectedIcon.replace('icon', '')).padStart(2, '0')}.png`
+              }
+            })
+          }
+        }).catch(err => {
+          console.log('Service Worker not ready:', err)
+        })
+      }
     },
 
     // 5. 新增 updateFavicon
