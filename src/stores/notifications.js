@@ -32,6 +32,16 @@ export const useNotificationsStore = defineStore('notifications', {
   }),
 
   actions: {
+    // 根據使用者選擇的 icon 回傳對應的 favicon 路徑
+    getFaviconPath(selectedIcon) {
+      if (!selectedIcon || selectedIcon === 'favicon.ico') {
+        return '/favicon.ico'
+      }
+      // 假設使用者選擇的 icon 格式為 'favicon01', 'favicon02' 等
+      const iconNumber = selectedIcon.replace('favicon', '').padStart(2, '0')
+      return `/favicon${iconNumber}.png`
+    },
+
     async initialize() {
       try {
         if (!this.isSupported) return
@@ -45,6 +55,18 @@ export const useNotificationsStore = defineStore('notifications', {
         if (existing) {
           this.subscription = existing
           this.isSubscribed = true
+          
+          // 如果已有訂閱，也要更新 Service Worker 的使用者偏好
+          const settings = useSettingsStore()
+          if (reg.active) {
+            reg.active.postMessage({
+              type: 'SET_USER_PREFERENCES',
+              preferences: {
+                language: settings.selectedLanguage,
+                icon: this.getFaviconPath(settings.selectedIcon)
+              }
+            })
+          }
         }
         this.permissionState = typeof Notification !== 'undefined' ? Notification.permission : 'default'
       } catch (err) {
@@ -87,6 +109,18 @@ export const useNotificationsStore = defineStore('notifications', {
 
         // 取用目前語系等使用者偏好
         const settings = useSettingsStore()
+        
+        // 將使用者偏好傳送給 Service Worker
+        if (reg.active) {
+          reg.active.postMessage({
+            type: 'SET_USER_PREFERENCES',
+            preferences: {
+              language: settings.selectedLanguage,
+              icon: this.getFaviconPath(settings.selectedIcon)
+            }
+          })
+        }
+
         // 後端期望的結構：subscription 包裝 endpoint 與 keys
         const { endpoint, keys } = subscription.toJSON()
         const payload = {

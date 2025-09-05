@@ -724,6 +724,9 @@ export default {
       if (this.settingsStore.selectedIcon !== iconId) {
         this.settingsStore.setIcon(iconId)
         this.showSuccess(this.t('settings.success.iconChanged'))
+        
+        // 如果已訂閱推播，更新 Service Worker 的 icon 偏好
+        this.updateServiceWorkerPreferences()
       }
     },
 
@@ -786,6 +789,19 @@ export default {
         this.showSuccess(e?.message || '操作失敗')
       } finally {
         this.isTogglingSubscription = false
+      }
+    },
+
+    // 更新 Service Worker 的使用者偏好
+    updateServiceWorkerPreferences() {
+      if (this.notificationsStore.isSubscribed && this.notificationsStore.registration?.active) {
+        this.notificationsStore.registration.active.postMessage({
+          type: 'SET_USER_PREFERENCES',
+          preferences: {
+            language: this.settingsStore.selectedLanguage,
+            icon: this.notificationsStore.getFaviconPath(this.settingsStore.selectedIcon)
+          }
+        })
       }
     },
 
