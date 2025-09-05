@@ -1,54 +1,30 @@
-/*
-  Minimal Service Worker for Web Push notifications
-  - Handles 'push' to display notifications
-  - Handles 'notificationclick' to focus/open a URL
-*/
-
+// 监听 'install' 事件，确保 SW 立即激活
 self.addEventListener('install', () => {
   self.skipWaiting();
 });
 
+// 监听 'activate' 事件
 self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim());
 });
 
+// 监听核心的 'push' 事件
 self.addEventListener('push', (event) => {
-  try {
-    const data = event.data ? event.data.json() : {};
-    const title = data.title || 'The BD2 Pulse';
-    const options = {
-      body: data.body || '有新的兌換碼或更新！',
-      icon: data.icon || '/favicon.png',
-      badge: data.badge || '/favicon.png',
-      data: {
-        url: data.url || '/',
-      },
-      vibrate: [100, 50, 100],
-      renotify: true,
-      tag: data.tag || 'bd2-updates',
-    };
-    event.waitUntil(self.registration.showNotification(title, options));
-  } catch (e) {
-    // Fallback if payload is not JSON
-    event.waitUntil(self.registration.showNotification('The BD2 Pulse', {
-      body: '有新的通知',
-    }));
-  }
+  console.log('[Service Worker] Push Received.');
+  console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
+
+  const title = '测试通知'; // 写死一个最简单的标题
+  const options = {
+    body: '如果看到这条消息，代表 Service Worker 成功了！', // 写死一个最简单的内容
+    icon: '/favicon.ico', // 使用一个最简单的图示
+  };
+
+  // 直接显示通知，不进行任何复杂的解析或操作
+  event.waitUntil(self.registration.showNotification(title, options));
 });
 
+// 暂时移除 'notificationclick' 的监听，先确保显示功能正常
 self.addEventListener('notificationclick', (event) => {
+  console.log('[Service Worker] Notification click Received.');
   event.notification.close();
-  const url = (event.notification && event.notification.data && event.notification.data.url) || '/';
-  event.waitUntil(
-    (async () => {
-      const allClients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
-      let client = allClients.find((c) => c.url.includes(url));
-      if (client) {
-        await client.focus();
-      } else {
-        await self.clients.openWindow(url);
-      }
-    })()
-  );
 });
-
