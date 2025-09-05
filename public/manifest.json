@@ -1,7 +1,7 @@
 {
   "name": "The BD2 Pulse",
-  "short_name": "BD2 Pulse",
-  "description": "Blue Archive 兌換碼推播通知工具",
+  "short_name": "The BD2 Pulse",
+  "description": "A gaming information aggregation platform for Brown Dust 2 players.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1976d2",
