@@ -588,22 +588,30 @@ export default {
       return false; // 手機版保持原間距
     },
 
-    // 推播相關文字與支援狀態
-    notificationsSupported() {
-      return this.notificationsStore.isSupported
-    },
-    requestPermissionText() {
-      return this.t('settings.contentSettings.enablePush') || '啟用通知'
-    },
-    unsupportedText() {
-      return this.t('settings.contentSettings.pushUnsupported') || '瀏覽器不支援'
-    },
-              pushDescription() {
-            return this.t('settings.contentSettings.pushDescription') || '啟用後將於有新的兌換碼時通知你'
-          },
-          testNotificationText() {
-            return this.t('settings.contentSettings.testNotification') || '測試通知'
-          },
+            // 推播相關文字與支援狀態
+        notificationsSupported() {
+          return this.notificationsStore.isNotificationSupported
+        },
+        requestPermissionText() {
+          return this.t('settings.contentSettings.enablePush') || '啟用通知'
+        },
+        unsupportedText() {
+          const message = this.notificationsStore.supportMessage
+          if (message === 'ios_need_pwa') {
+            return this.t('settings.contentSettings.iosNeedPWA') || 'iOS 需要先加到桌面'
+          }
+          return this.t('settings.contentSettings.pushUnsupported') || '瀏覽器不支援'
+        },
+        pushDescription() {
+          const message = this.notificationsStore.supportMessage
+          if (message === 'ios_need_pwa') {
+            return this.t('settings.contentSettings.iosInstallGuide') || '在 iOS 上需要先將網站「加入主畫面」才能使用推播通知'
+          }
+          return this.t('settings.contentSettings.pushDescription') || '啟用後將於有新的兌換碼時通知你'
+        },
+        testNotificationText() {
+          return this.t('settings.contentSettings.testNotification') || '測試通知'
+        },
   },
   methods: {
     // 判斷是否為新圖標

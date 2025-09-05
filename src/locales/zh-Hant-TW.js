@@ -243,7 +243,9 @@ export default {
       enablePush: '啟用通知',
       pushUnsupported: '瀏覽器不支援',
       pushDescription: '啟用後有新的兌換碼時會通知您',
-      testNotification: '測試通知'
+      testNotification: '測試通知',
+      iosNeedPWA: 'iOS 需要先加到桌面',
+      iosInstallGuide: '在 iOS 上需要先點擊 Safari 分享按鈕，選擇「加入主畫面」，然後在主畫面開啟網站才能使用推播通知'
     },
     notifications: {
       title: '通知設定'

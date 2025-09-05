@@ -239,7 +239,9 @@ export default {
       enablePush: '알림 활성화',
       pushUnsupported: '브라우저 미지원',
       pushDescription: '새 쿠폰 코드가 있을 때 알림 받기',
-      testNotification: '테스트 알림'
+      testNotification: '테스트 알림',
+      iosNeedPWA: 'iOS는 홈 화면에 추가 필요',
+      iosInstallGuide: 'iOS에서는 Safari 공유 버튼을 탭하고 "홈 화면에 추가"를 선택한 후, 홈 화면에서 사이트를 열어야 푸시 알림을 사용할 수 있습니다'
     },
     notifications: {
       title: '알림 설정'
