@@ -1,7 +1,7 @@
 // 儲存使用者偏好設定
 let userPreferences = {
   language: 'zh-Hant-TW',
-  icon: '/favicon.ico'
+  icon: '/favicon01.png'
 };
 
 // 多語系預設訊息
