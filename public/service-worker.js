@@ -6,33 +6,36 @@ self.addEventListener('activate', event => event.waitUntil(self.clients.claim())
 self.addEventListener('push', (event) => {
   console.log('[Service Worker] Push Received.');
 
-  let payload = {};
-  // --- ✨ 關鍵修正：使用 try...catch 安全地解析 JSON ---
-  try {
-    if (event.data) {
-      payload = event.data.json();
-      console.log('[Service Worker] Push payload parsed:', payload);
-    } else {
-      console.log('[Service Worker] Push event but no data');
-    }
-  } catch (e) {
-    console.error('[Service Worker] Failed to parse push payload as JSON:', e);
-    // 如果解析失敗，payload 仍然會是一個空物件 {}
-  }
-
-  // --- 使用解析後的 payload，並為每個屬性提供安全的預設值 ---
-  const title = payload.title || 'The BD2 Pulse';
-  const options = {
-    body: payload.body || '有新的兌換碼或更新！',
-    icon: payload.icon || '/favicon.ico', // 建議使用 ICO 或 PNG
-    badge: payload.badge || '/favicon.ico', // 用於 Android 狀態列的小圖示
-    data: {
-      url: payload.url || '/', // 點擊通知後要前往的 URL
-    },
-    // 為了最大相容性，可以暫時先移除 vibrate, renotify, tag 等選項，或確保它們的值是正確的
-    // vibrate: [100, 50, 100], 
-    tag: 'bd2-update', // 使用一個固定的 tag 可以讓新通知覆蓋舊通知
+  let title = 'The BD2 Pulse';
+  let options = {
+    body: '有新的兌換碼或更新！',
+    icon: '/favicon.ico',
+    badge: '/favicon.ico',
+    data: { url: '/' },
+    tag: 'bd2-update',
   };
+
+  if (event.data) {
+    try {
+      // 嘗試解析 JSON
+      const payload = event.data.json();
+      console.log('[Service Worker] Payload parsed as JSON:', payload);
+      
+      // 使用 JSON 中的內容來覆蓋預設值
+      title = payload.title || title;
+      options.body = payload.body || options.body;
+      options.icon = payload.icon || options.icon;
+      options.badge = payload.badge || options.badge;
+      options.data.url = payload.url || options.data.url;
+
+    } catch (e) {
+      // 如果解析 JSON 失敗，就將整個 payload 當作純文字 body
+      console.log('[Service Worker] Payload is not JSON, treating as text.');
+      options.body = event.data.text();
+    }
+  } else {
+    console.log('[Service Worker] Push event but no data');
+  }
 
   event.waitUntil(self.registration.showNotification(title, options));
 });
