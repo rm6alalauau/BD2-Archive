@@ -238,7 +238,14 @@ export default {
       aiContent: 'Pixiv AI 生成內容',
       aiDescription: '是否顯示 AI 生成的作品',
       dailyCheckinReminder: '每日簽到提醒',
-      dailyCheckinReminderDescription: '提醒您前往網路商店領取每日鑽石'
+      dailyCheckinReminderDescription: '提醒您前往網路商店領取每日鑽石',
+      pushNotifications: '兌換碼推播通知',
+      enablePush: '啟用通知',
+      pushUnsupported: '瀏覽器不支援',
+      pushDescription: '啟用後有新的兌換碼時會通知您'
+    },
+    notifications: {
+      title: '通知設定'
     },
     
     // 論壇設定
@@ -296,7 +303,8 @@ export default {
       reset: '設定已重置',
       saved: '設定已儲存',
       iconChanged: '網站圖示已切換！',
-      forumsUpdated: '論壇設定已更新，正在重新載入數據...'
+      forumsUpdated: '論壇設定已更新，正在重新載入數據...',
+      enabled: '已啟用通知'
     },
     supportTitle: '支持 The BD2 Pulse 持續運行',
     supportContent: `大家好，我是本站的開發者。

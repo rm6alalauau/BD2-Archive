@@ -161,6 +161,12 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/redeem/, ''),
       },
+      // 本地開發代理推播服務，避免 CORS
+      '/api/push': {
+        target: 'https://push.thebd2pulse.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/push/, ''),
+      },
 
     }
   },
