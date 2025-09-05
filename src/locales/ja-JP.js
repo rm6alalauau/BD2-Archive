@@ -239,7 +239,9 @@ export default {
       enablePush: '通知を有効にする',
       pushUnsupported: 'ブラウザ非対応',
       pushDescription: '新しいクーポンコードが利用可能になったら通知を受け取る',
-      testNotification: 'テスト通知'
+      testNotification: 'テスト通知',
+      iosNeedPWA: 'iOSはホーム画面に追加が必要',
+      iosInstallGuide: 'iOSではSafariの共有ボタンをタップし、「ホーム画面に追加」を選択し、ホーム画面からサイトを開くとプッシュ通知が使用できます'
     },
     notifications: {
       title: '通知設定'

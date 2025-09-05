@@ -239,7 +239,9 @@ export default {
       enablePush: '启用通知',
       pushUnsupported: '浏览器不支持',
       pushDescription: '启用后有新的兑换码时会通知您',
-      testNotification: '测试通知'
+      testNotification: '测试通知',
+      iosNeedPWA: 'iOS 需要先添加到桌面',
+      iosInstallGuide: '在 iOS 上需要先点击 Safari 分享按钮，选择“添加到主屏幕”，然后在主屏幕打开网站才能使用推送通知'
     },
     notifications: {
       title: '通知设置'

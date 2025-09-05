@@ -29,7 +29,26 @@ export const useNotificationsStore = defineStore('notifications', {
     registration: null,
     subscription: null,
     error: null,
+    // iOS 相關狀態
+    isIOS: typeof window !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent),
+    isPWA: typeof window !== 'undefined' && (window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches),
   }),
+
+  getters: {
+    // iOS 需要加到桌面才能使用通知
+    isNotificationSupported() {
+      if (!this.isSupported) return false
+      if (this.isIOS && !this.isPWA) return false // iOS 需要是 PWA 模式
+      return true
+    },
+    
+    // 取得適當的錯誤訊息
+    supportMessage() {
+      if (!this.isSupported) return 'browser_not_supported'
+      if (this.isIOS && !this.isPWA) return 'ios_need_pwa'
+      return 'supported'
+    }
+  },
 
   actions: {
     // 根據使用者選擇的 icon 回傳對應的 favicon 路徑

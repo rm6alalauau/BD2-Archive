@@ -239,7 +239,9 @@ export default {
       enablePush: 'Enable Notifications',
       pushUnsupported: 'Browser not supported',
       pushDescription: 'Get notified when new coupon codes are available',
-      testNotification: 'Test Notification'
+      testNotification: 'Test Notification',
+      iosNeedPWA: 'iOS needs to be added to Home Screen',
+      iosInstallGuide: 'On iOS, tap the Safari share button, select "Add to Home Screen", then open the site from Home Screen to enable push notifications'
     },
     notifications: {
       title: 'Notification Settings'
