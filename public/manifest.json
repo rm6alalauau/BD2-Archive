@@ -1,0 +1,38 @@
+{
+  "name": "The BD2 Pulse",
+  "short_name": "BD2 Pulse",
+  "description": "Blue Archive 兌換碼推播通知工具",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1976d2",
+  "theme_color": "#1976d2",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "zh-TW",
+  "categories": ["games", "utilities"],
+  "icons": [
+    {
+      "src": "/favicon01.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon02.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon03.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16 32x32 48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}
