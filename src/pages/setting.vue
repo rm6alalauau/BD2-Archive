@@ -184,14 +184,24 @@
                 >
                   {{ requestPermissionText }}
                 </v-btn>
-                <v-switch
-                  v-else
-                  :model-value="notificationsStore.isSubscribed"
-                  :loading="isTogglingSubscription"
-                  color="primary"
-                  hide-details
-                  @update:model-value="handleSubscriptionToggle"
-                ></v-switch>
+                <div v-else class="d-flex align-center gap-3">
+                  <v-switch
+                    :model-value="notificationsStore.isSubscribed"
+                    :loading="isTogglingSubscription"
+                    color="primary"
+                    hide-details
+                    @update:model-value="handleSubscriptionToggle"
+                  ></v-switch>
+                  <v-btn
+                    v-if="notificationsStore.isSubscribed"
+                    variant="outlined"
+                    size="small"
+                    :loading="isTestingNotification"
+                    @click="testNotification"
+                  >
+                    {{ testNotificationText }}
+                  </v-btn>
+                </div>
               </div>
             </div>
           </v-card-text>
@@ -507,6 +517,7 @@ export default {
       // 推播狀態
       permissionState: 'default',
       isTogglingSubscription: false, // 控制開關 loading 狀態
+      isTestingNotification: false, // 控制測試按鈕 loading 狀態
     };
   },
   computed: {
@@ -586,9 +597,12 @@ export default {
     unsupportedText() {
       return this.t('settings.contentSettings.pushUnsupported') || '瀏覽器不支援'
     },
-    pushDescription() {
-      return this.t('settings.contentSettings.pushDescription') || '啟用後將於有新的兌換碼時通知你'
-    },
+              pushDescription() {
+            return this.t('settings.contentSettings.pushDescription') || '啟用後將於有新的兌換碼時通知你'
+          },
+          testNotificationText() {
+            return this.t('settings.contentSettings.testNotification') || '測試通知'
+          },
   },
   methods: {
     // 判斷是否為新圖標
@@ -802,6 +816,19 @@ export default {
             icon: this.notificationsStore.getFaviconPath(this.settingsStore.selectedIcon)
           }
         })
+      }
+    },
+
+    // 測試通知
+    async testNotification() {
+      this.isTestingNotification = true
+      try {
+        await this.notificationsStore.sendTestNotification()
+        this.showSuccess(this.t('settings.success.testNotification') || '測試通知已發送')
+      } catch (e) {
+        this.showSuccess(e?.message || '發送測試通知失敗')
+      } finally {
+        this.isTestingNotification = false
       }
     },
 

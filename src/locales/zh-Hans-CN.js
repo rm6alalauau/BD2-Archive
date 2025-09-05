@@ -238,7 +238,8 @@ export default {
       pushNotifications: '兑换码推送通知',
       enablePush: '启用通知',
       pushUnsupported: '浏览器不支持',
-      pushDescription: '启用后有新的兑换码时会通知您'
+      pushDescription: '启用后有新的兑换码时会通知您',
+      testNotification: '测试通知'
     },
     notifications: {
       title: '通知设置'
@@ -300,7 +301,8 @@ export default {
       saved: '设置已保存',
       iconChanged: '网站图标已切换！',
       forumsUpdated: '论坛设置已更新，正在重新加载数据...',
-      enabled: '已启用通知'
+      enabled: '已启用通知',
+      testNotification: '测试通知已发送'
     },
     supportTitle: '支持 The BD2 Pulse 持续运行',
     supportContent: `大家好，我是本站的开发者。

@@ -238,7 +238,8 @@ export default {
       pushNotifications: '쿠폰 푸시 알림',
       enablePush: '알림 활성화',
       pushUnsupported: '브라우저 미지원',
-      pushDescription: '새 쿠폰 코드가 있을 때 알림 받기'
+      pushDescription: '새 쿠폰 코드가 있을 때 알림 받기',
+      testNotification: '테스트 알림'
     },
     notifications: {
       title: '알림 설정'
@@ -300,7 +301,8 @@ export default {
       saved: '설정이 저장되었습니다',
       iconChanged: '웹사이트 아이콘이 변경되었습니다!',
       forumsUpdated: '포럼 설정이 업데이트되어 데이터를 다시 로드 중...',
-      enabled: '알림이 활성화되었습니다'
+      enabled: '알림이 활성화되었습니다',
+      testNotification: '테스트 알림을 전송했습니다'
     },
     supportTitle: 'The BD2 Pulse 운영 지원하기',
     supportContent: `안녕하세요, 이 사이트의 개발자입니다.

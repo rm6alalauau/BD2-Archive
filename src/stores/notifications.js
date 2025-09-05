@@ -182,6 +182,60 @@ export const useNotificationsStore = defineStore('notifications', {
     async syncPermission() {
       this.permissionState = typeof Notification !== 'undefined' ? Notification.permission : 'default'
     },
+
+    // 測試通知功能
+    async sendTestNotification() {
+      if (!this.isSupported || !this.isSubscribed || !this.registration) {
+        throw new Error('通知功能不可用')
+      }
+
+      try {
+        const settings = useSettingsStore()
+        
+        // 多語系測試訊息
+        const testMessages = {
+          'zh-Hant-TW': {
+            title: 'The BD2 Pulse',
+            body: '🎉 測試通知成功！推播功能正常運作。'
+          },
+          'zh-Hans-CN': {
+            title: 'The BD2 Pulse',
+            body: '🎉 测试通知成功！推播功能正常运作。'
+          },
+          'en': {
+            title: 'The BD2 Pulse',
+            body: '🎉 Test notification successful! Push notifications are working.'
+          },
+          'ja-JP': {
+            title: 'The BD2 Pulse',
+            body: '🎉 テスト通知成功！プッシュ通知が正常に動作しています。'
+          },
+          'ko-KR': {
+            title: 'The BD2 Pulse',
+            body: '🎉 테스트 알림 성공! 푸시 알림이 정상적으로 작동합니다.'
+          }
+        }
+
+        const message = testMessages[settings.selectedLanguage] || testMessages['zh-Hant-TW']
+        
+        // 直接通過 Service Worker 顯示測試通知
+        if (this.registration.active) {
+          this.registration.active.postMessage({
+            type: 'SHOW_TEST_NOTIFICATION',
+            notification: {
+              title: message.title,
+              body: message.body,
+              icon: this.getFaviconPath(settings.selectedIcon),
+              badge: this.getFaviconPath(settings.selectedIcon),
+              data: { url: '/', test: true }
+            }
+          })
+        }
+      } catch (err) {
+        this.error = err?.message || String(err)
+        throw err
+      }
+    },
   },
 })
 

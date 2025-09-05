@@ -242,7 +242,8 @@ export default {
       pushNotifications: '兌換碼推播通知',
       enablePush: '啟用通知',
       pushUnsupported: '瀏覽器不支援',
-      pushDescription: '啟用後有新的兌換碼時會通知您'
+      pushDescription: '啟用後有新的兌換碼時會通知您',
+      testNotification: '測試通知'
     },
     notifications: {
       title: '通知設定'
@@ -304,7 +305,8 @@ export default {
       saved: '設定已儲存',
       iconChanged: '網站圖示已切換！',
       forumsUpdated: '論壇設定已更新，正在重新載入數據...',
-      enabled: '已啟用通知'
+      enabled: '已啟用通知',
+      testNotification: '測試通知已發送'
     },
     supportTitle: '支持 The BD2 Pulse 持續運行',
     supportContent: `大家好，我是本站的開發者。
