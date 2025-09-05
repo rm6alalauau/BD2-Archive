@@ -7,24 +7,24 @@ let userPreferences = {
 // 多語系預設訊息
 const defaultMessages = {
   'zh-Hant-TW': {
-    title: 'The BD2 Pulse',
-    body: '有新的兌換碼可用了！'
+    title: '🎉 新兌換碼已發布！',
+    body: 'The BD2 Pulse - 立即查看最新的遊戲兌換碼'
   },
   'zh-Hans-CN': {
-    title: 'The BD2 Pulse',
-    body: '有新的兑换码可用了！'
+    title: '🎉 新兑换码已发布！',
+    body: 'The BD2 Pulse - 立即查看最新的游戏兑换码'
   },
   'en': {
-    title: 'The BD2 Pulse',
-    body: 'New redeem codes available!'
+    title: '🎉 New Redeem Codes Available!',
+    body: 'The BD2 Pulse - Check out the latest game codes now'
   },
   'ja-JP': {
-    title: 'The BD2 Pulse',
-    body: '新しい交換コードが利用可能です！'
+    title: '🎉 新しい交換コードが公開！',
+    body: 'The BD2 Pulse - 最新のゲーム交換コードをチェック'
   },
   'ko-KR': {
-    title: 'The BD2 Pulse',
-    body: '새로운 교환 코드가 사용 가능합니다!'
+    title: '🎉 새로운 교환 코드 공개！',
+    body: 'The BD2 Pulse - 최신 게임 교환 코드를 확인하세요'
   }
 };
 
