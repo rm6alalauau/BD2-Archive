@@ -58,15 +58,21 @@ export const useNotificationsStore = defineStore('notifications', {
           
           // 如果已有訂閱，也要更新 Service Worker 的使用者偏好
           const settings = useSettingsStore()
-          if (reg.active) {
-            reg.active.postMessage({
-              type: 'SET_USER_PREFERENCES',
-              preferences: {
+          setTimeout(() => {
+            if (reg.active) {
+              reg.active.postMessage({
+                type: 'SET_USER_PREFERENCES',
+                preferences: {
+                  language: settings.selectedLanguage,
+                  icon: this.getFaviconPath(settings.selectedIcon)
+                }
+              })
+              console.log('[Notifications] User preferences synced to SW on init:', {
                 language: settings.selectedLanguage,
                 icon: this.getFaviconPath(settings.selectedIcon)
-              }
-            })
-          }
+              })
+            }
+          }, 50)
         }
         this.permissionState = typeof Notification !== 'undefined' ? Notification.permission : 'default'
       } catch (err) {
@@ -110,16 +116,22 @@ export const useNotificationsStore = defineStore('notifications', {
         // 取用目前語系等使用者偏好
         const settings = useSettingsStore()
         
-        // 將使用者偏好傳送給 Service Worker
-        if (reg.active) {
-          reg.active.postMessage({
-            type: 'SET_USER_PREFERENCES',
-            preferences: {
+        // 將使用者偏好傳送給 Service Worker (延遲確保 SW 準備就緒)
+        setTimeout(() => {
+          if (reg.active) {
+            reg.active.postMessage({
+              type: 'SET_USER_PREFERENCES',
+              preferences: {
+                language: settings.selectedLanguage,
+                icon: this.getFaviconPath(settings.selectedIcon)
+              }
+            })
+            console.log('[Notifications] User preferences sent to SW:', {
               language: settings.selectedLanguage,
               icon: this.getFaviconPath(settings.selectedIcon)
-            }
-          })
-        }
+            })
+          }
+        }, 100)
 
         // 後端期望的結構：subscription 包裝 endpoint 與 keys
         const { endpoint, keys } = subscription.toJSON()
@@ -195,24 +207,24 @@ export const useNotificationsStore = defineStore('notifications', {
         // 多語系測試訊息
         const testMessages = {
           'zh-Hant-TW': {
-            title: 'The BD2 Pulse',
-            body: '🎉 測試通知成功！推播功能正常運作。'
+            title: '✅ 測試通知成功！',
+            body: 'The BD2 Pulse - 推播功能正常運作'
           },
           'zh-Hans-CN': {
-            title: 'The BD2 Pulse',
-            body: '🎉 测试通知成功！推播功能正常运作。'
+            title: '✅ 测试通知成功！',
+            body: 'The BD2 Pulse - 推播功能正常运作'
           },
           'en': {
-            title: 'The BD2 Pulse',
-            body: '🎉 Test notification successful! Push notifications are working.'
+            title: '✅ Test Notification Successful!',
+            body: 'The BD2 Pulse - Push notifications are working'
           },
           'ja-JP': {
-            title: 'The BD2 Pulse',
-            body: '🎉 テスト通知成功！プッシュ通知が正常に動作しています。'
+            title: '✅ テスト通知成功！',
+            body: 'The BD2 Pulse - プッシュ通知が正常に動作中'
           },
           'ko-KR': {
-            title: 'The BD2 Pulse',
-            body: '🎉 테스트 알림 성공! 푸시 알림이 정상적으로 작동합니다.'
+            title: '✅ 테스트 알림 성공！',
+            body: 'The BD2 Pulse - 푸시 알림이 정상 작동'
           }
         }
 

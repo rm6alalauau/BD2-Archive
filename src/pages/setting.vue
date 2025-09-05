@@ -184,7 +184,7 @@
                 >
                   {{ requestPermissionText }}
                 </v-btn>
-                <div v-else class="d-flex align-center gap-3">
+                <div v-else class="d-flex align-center" style="gap: 16px;">
                   <v-switch
                     :model-value="notificationsStore.isSubscribed"
                     :loading="isTogglingSubscription"
@@ -198,6 +198,7 @@
                     size="small"
                     :loading="isTestingNotification"
                     @click="testNotification"
+                    class="ml-2"
                   >
                     {{ testNotificationText }}
                   </v-btn>
