@@ -8,18 +8,24 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim());
 });
 
-// 监听核心的 'push' 事件
 self.addEventListener('push', (event) => {
   console.log('[Service Worker] Push Received.');
-  console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
 
-  const title = '测试通知'; // 写死一个最简单的标题
+  let notificationText = '收到了無酬載的推送！';
+  // 檢查 event.data 是否存在
+  if (event.data) {
+    console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
+    notificationText = event.data.text();
+  } else {
+    console.log('[Service Worker] Push had no data.');
+  }
+
+  const title = '最終測試';
   const options = {
-    body: '如果看到这条消息，代表 Service Worker 成功了！', // 写死一个最简单的内容
-    icon: '/favicon.ico', // 使用一个最简单的图示
+    body: notificationText,
+    icon: '/favicon.ico',
   };
 
-  // 直接显示通知，不进行任何复杂的解析或操作
   event.waitUntil(self.registration.showNotification(title, options));
 });
 
