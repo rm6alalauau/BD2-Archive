@@ -238,7 +238,8 @@ export default {
       pushNotifications: 'Coupon Push Notifications',
       enablePush: 'Enable Notifications',
       pushUnsupported: 'Browser not supported',
-      pushDescription: 'Get notified when new coupon codes are available'
+      pushDescription: 'Get notified when new coupon codes are available',
+      testNotification: 'Test Notification'
     },
     notifications: {
       title: 'Notification Settings'
@@ -300,7 +301,8 @@ export default {
       saved: 'Settings saved',
       iconChanged: 'Website icon changed!',
       forumsUpdated: 'Forum settings updated, reloading data...',
-      enabled: 'Notifications enabled'
+      enabled: 'Notifications enabled',
+      testNotification: 'Test notification sent'
     },
     supportTitle: 'Support The BD2 Pulse',
     supportContent: `Hello everyone, I'm the developer of this site.

@@ -41,6 +41,20 @@ self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SET_USER_PREFERENCES') {
     userPreferences = event.data.preferences;
     console.log('[Service Worker] User preferences updated:', userPreferences);
+  } else if (event.data && event.data.type === 'SHOW_TEST_NOTIFICATION') {
+    // 處理測試通知
+    const { notification } = event.data;
+    console.log('[Service Worker] Showing test notification:', notification);
+    
+    self.registration.showNotification(notification.title, {
+      body: notification.body,
+      icon: notification.icon,
+      badge: notification.badge,
+      data: notification.data,
+      requireInteraction: false,
+      silent: false,
+      tag: 'bd2-test-notification' // 測試通知使用不同標籤
+    });
   }
 });
 
@@ -99,13 +113,10 @@ self.addEventListener('push', (event) => {
       icon: notificationData.icon,
       badge: notificationData.badge,
       data: notificationData.data,
-      actions: [
-        {
-          action: 'view',
-          title: '查看',
-          icon: notificationData.icon
-        }
-      ]
+      // 移除 actions，符合 MD3 簡潔設計
+      requireInteraction: false, // 自動消失
+      silent: false, // 允許聲音
+      tag: 'bd2-redeem-code' // 相同標籤的通知會替換舊的
     })
   );
 });

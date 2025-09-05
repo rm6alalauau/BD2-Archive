@@ -238,7 +238,8 @@ export default {
       pushNotifications: 'クーポン通知',
       enablePush: '通知を有効にする',
       pushUnsupported: 'ブラウザ非対応',
-      pushDescription: '新しいクーポンコードが利用可能になったら通知を受け取る'
+      pushDescription: '新しいクーポンコードが利用可能になったら通知を受け取る',
+      testNotification: 'テスト通知'
     },
     notifications: {
       title: '通知設定'
@@ -300,7 +301,8 @@ export default {
       saved: '設定が保存されました',
       iconChanged: 'ウェブサイトアイコンが変更されました！',
       forumsUpdated: 'フォーラム設定が更新され、データを再読み込み中...',
-      enabled: '通知を有効にしました'
+      enabled: '通知を有効にしました',
+      testNotification: 'テスト通知を送信しました'
     },
     supportTitle: 'The BD2 Pulse の運営を支援する',
     supportContent: `皆さん、こんにちは。このサイトの開発者です。
