@@ -234,7 +234,14 @@ export default {
       aiContent: 'Pixiv AI生成コンテンツ',
       aiDescription: 'AI生成作品を表示するか',
       dailyCheckinReminder: 'デイリーチェックインリマインダー',
-      dailyCheckinReminderDescription: 'ウェブショップでデイリーダイヤモンドを取得するようリマインド'
+      dailyCheckinReminderDescription: 'ウェブショップでデイリーダイヤモンドを取得するようリマインド',
+      pushNotifications: 'クーポン通知',
+      enablePush: '通知を有効にする',
+      pushUnsupported: 'ブラウザ非対応',
+      pushDescription: '新しいクーポンコードが利用可能になったら通知を受け取る'
+    },
+    notifications: {
+      title: '通知設定'
     },
     
     // Forum settings
@@ -292,7 +299,8 @@ export default {
       reset: '設定がリセットされました',
       saved: '設定が保存されました',
       iconChanged: 'ウェブサイトアイコンが変更されました！',
-      forumsUpdated: 'フォーラム設定が更新され、データを再読み込み中...'
+      forumsUpdated: 'フォーラム設定が更新され、データを再読み込み中...',
+      enabled: '通知を有効にしました'
     },
     supportTitle: 'The BD2 Pulse の運営を支援する',
     supportContent: `皆さん、こんにちは。このサイトの開発者です。

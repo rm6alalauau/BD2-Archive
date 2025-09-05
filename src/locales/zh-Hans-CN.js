@@ -234,7 +234,14 @@ export default {
       aiContent: 'Pixiv AI 生成内容',
       aiDescription: '是否显示 AI 生成的作品',
       dailyCheckinReminder: '每日签到提醒',
-      dailyCheckinReminderDescription: '提醒您前往网络商店领取每日钻石'
+      dailyCheckinReminderDescription: '提醒您前往网络商店领取每日钻石',
+      pushNotifications: '兑换码推送通知',
+      enablePush: '启用通知',
+      pushUnsupported: '浏览器不支持',
+      pushDescription: '启用后有新的兑换码时会通知您'
+    },
+    notifications: {
+      title: '通知设置'
     },
     
     // 论坛设置
@@ -292,7 +299,8 @@ export default {
       reset: '设置已重置',
       saved: '设置已保存',
       iconChanged: '网站图标已切换！',
-      forumsUpdated: '论坛设置已更新，正在重新加载数据...'
+      forumsUpdated: '论坛设置已更新，正在重新加载数据...',
+      enabled: '已启用通知'
     },
     supportTitle: '支持 The BD2 Pulse 持续运行',
     supportContent: `大家好，我是本站的开发者。

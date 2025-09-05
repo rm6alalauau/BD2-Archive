@@ -32,6 +32,12 @@ export default {
     this.settingsStore.loadSettings()
     // 確保HTML lang屬性正確設定
     document.documentElement.setAttribute('lang', this.settingsStore.selectedLanguage)
+
+    // 註冊 Service Worker（Web Push）
+    if ('serviceWorker' in navigator) {
+      // 僅在生產或本機開發皆可註冊
+      navigator.serviceWorker.register('/service-worker.js').catch(() => {})
+    }
   },
   methods: {
     hideStaticFallbackContent() {

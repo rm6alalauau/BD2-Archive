@@ -154,6 +154,49 @@
           </v-card-text>
         </v-card>
 
+        <!-- 通知設定 -->
+        <v-card rounded="xl" class="settings-card mb-4">
+          <v-card-title class="settings-section-title">
+            <v-icon class="mr-3" color="primary">mdi-bell-outline</v-icon>
+            {{ t('settings.notifications.title') }}
+          </v-card-title>
+          <v-card-text>
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-label">{{ t('settings.contentSettings.pushNotifications') }}</div>
+                <div class="setting-description">{{ pushDescription }}</div>
+              </div>
+              <div>
+                <v-btn
+                  v-if="!notificationsSupported"
+                  disabled
+                  variant="outlined"
+                  size="small"
+                >
+                  {{ unsupportedText }}
+                </v-btn>
+                <v-btn
+                  v-else-if="permissionState !== 'granted'"
+                  color="primary"
+                  variant="flat"
+                  size="small"
+                  @click="enableNotifications"
+                >
+                  {{ requestPermissionText }}
+                </v-btn>
+                <v-switch
+                  v-else
+                  :model-value="notificationsStore.isSubscribed"
+                  :loading="isTogglingSubscription"
+                  color="primary"
+                  hide-details
+                  @update:model-value="handleSubscriptionToggle"
+                ></v-switch>
+              </div>
+            </div>
+          </v-card-text>
+        </v-card>
+
         <!-- 內容設定 -->
         <v-card rounded="xl" class="settings-card mb-4">
           <v-card-title class="settings-section-title">
@@ -434,12 +477,14 @@
 
 <script>
 import { useSettingsStore, availableIcons } from '@/stores/settings'
+import { useNotificationsStore } from '@/stores/notifications'
 
 export default {
   name: "SettingsPage",
   setup() {
     const settingsStore = useSettingsStore()
-    return { settingsStore, availableIcons }
+    const notificationsStore = useNotificationsStore()
+    return { settingsStore, availableIcons, notificationsStore }
   },
   data() {
     return {
@@ -459,6 +504,9 @@ export default {
       currentIconPage: 0,
       iconsPerPage: 6, // 每頁顯示的圖標數量：PC上一行6個，手機上兩行3個
       newIconCount: 3, // 最新的幾個圖標會顯示 NEW 標籤
+      // 推播狀態
+      permissionState: 'default',
+      isTogglingSubscription: false, // 控制開關 loading 狀態
     };
   },
   computed: {
@@ -526,7 +574,21 @@ export default {
         return this.currentPageIcons.length <= 6; // 6個圖標在PC上會顯示為一行
       }
       return false; // 手機版保持原間距
-    }
+    },
+
+    // 推播相關文字與支援狀態
+    notificationsSupported() {
+      return this.notificationsStore.isSupported
+    },
+    requestPermissionText() {
+      return this.t('settings.contentSettings.enablePush') || '啟用通知'
+    },
+    unsupportedText() {
+      return this.t('settings.contentSettings.pushUnsupported') || '瀏覽器不支援'
+    },
+    pushDescription() {
+      return this.t('settings.contentSettings.pushDescription') || '啟用後將於有新的兌換碼時通知你'
+    },
   },
   methods: {
     // 判斷是否為新圖標
@@ -692,6 +754,41 @@ export default {
       }
     },
     
+    // 推播：初始化與狀態同步
+    async initNotifications() {
+      try {
+        await this.notificationsStore.initialize()
+        this.permissionState = this.notificationsStore.permissionState
+      } catch (e) {
+        // ignore
+      }
+    },
+    async enableNotifications() {
+      try {
+        await this.notificationsStore.requestPermissionAndSubscribe()
+        this.permissionState = this.notificationsStore.permissionState
+        this.showSuccess(this.t('settings.success.enabled') || '已啟用通知')
+      } catch (e) {
+        this.showSuccess(e?.message || '啟用通知失敗')
+      }
+    },
+    async handleSubscriptionToggle(val) {
+      this.isTogglingSubscription = true
+      try {
+        if (val) {
+          await this.notificationsStore.requestPermissionAndSubscribe()
+        } else {
+          await this.notificationsStore.unsubscribe()
+        }
+        this.permissionState = this.notificationsStore.permissionState
+      } catch (e) {
+        // 錯誤時顯示訊息
+        this.showSuccess(e?.message || '操作失敗')
+      } finally {
+        this.isTogglingSubscription = false
+      }
+    },
+
     // 處理視窗大小變化
     handleResize() {
       // 強制重新計算響應式屬性
@@ -719,7 +816,7 @@ export default {
         }
       },
       deep: true
-    }
+    },
   },
   
   mounted() {
@@ -734,6 +831,9 @@ export default {
     
     // 添加視窗大小變化監聽，用於圖標佈局調整
     window.addEventListener('resize', this.handleResize);
+
+    // 推播初始化
+    this.initNotifications();
   },
   
   beforeUnmount() {

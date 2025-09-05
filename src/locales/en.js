@@ -234,7 +234,14 @@ export default {
       aiContent: 'Pixiv AI Generated Content',
       aiDescription: 'Whether to show AI-generated artworks',
       dailyCheckinReminder: 'Daily Check-in Reminder',
-      dailyCheckinReminderDescription: 'Remind you to visit the webshop for daily diamonds'
+      dailyCheckinReminderDescription: 'Remind you to visit the webshop for daily diamonds',
+      pushNotifications: 'Coupon Push Notifications',
+      enablePush: 'Enable Notifications',
+      pushUnsupported: 'Browser not supported',
+      pushDescription: 'Get notified when new coupon codes are available'
+    },
+    notifications: {
+      title: 'Notification Settings'
     },
     
     // Forum settings
@@ -292,7 +299,8 @@ export default {
       reset: 'Settings reset',
       saved: 'Settings saved',
       iconChanged: 'Website icon changed!',
-      forumsUpdated: 'Forum settings updated, reloading data...'
+      forumsUpdated: 'Forum settings updated, reloading data...',
+      enabled: 'Notifications enabled'
     },
     supportTitle: 'Support The BD2 Pulse',
     supportContent: `Hello everyone, I'm the developer of this site.

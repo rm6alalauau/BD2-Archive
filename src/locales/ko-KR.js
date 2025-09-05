@@ -234,7 +234,14 @@ export default {
       aiContent: 'Pixiv AI 생성 콘텐츠',
       aiDescription: 'AI로 생성된 작품 표시 여부',
       dailyCheckinReminder: '데일리 체크인 알림',
-      dailyCheckinReminderDescription: '웹샵에서 데일리 다이아몬드를 받도록 알림'
+      dailyCheckinReminderDescription: '웹샵에서 데일리 다이아몬드를 받도록 알림',
+      pushNotifications: '쿠폰 푸시 알림',
+      enablePush: '알림 활성화',
+      pushUnsupported: '브라우저 미지원',
+      pushDescription: '새 쿠폰 코드가 있을 때 알림 받기'
+    },
+    notifications: {
+      title: '알림 설정'
     },
     
     // Forum settings
@@ -292,7 +299,8 @@ export default {
       reset: '설정이 초기화되었습니다',
       saved: '설정이 저장되었습니다',
       iconChanged: '웹사이트 아이콘이 변경되었습니다!',
-      forumsUpdated: '포럼 설정이 업데이트되어 데이터를 다시 로드 중...'
+      forumsUpdated: '포럼 설정이 업데이트되어 데이터를 다시 로드 중...',
+      enabled: '알림이 활성화되었습니다'
     },
     supportTitle: 'The BD2 Pulse 운영 지원하기',
     supportContent: `안녕하세요, 이 사이트의 개발자입니다.
