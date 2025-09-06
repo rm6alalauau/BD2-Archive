@@ -18,14 +18,8 @@
       "purpose": "any maskable"
     },
     {
-      "src": "/favicon02.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/favicon03.png",
-      "sizes": "512x512",
+      "src": "/favicon01.png",
+      "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
