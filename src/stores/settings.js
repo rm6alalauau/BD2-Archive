@@ -193,6 +193,7 @@ export const useSettingsStore = defineStore('settings', {
         
         this.isLoaded = true
         this.updateFavicon() // 載入時更新 favicon
+        this.updatePWAIcon() // 載入時更新 PWA manifest
       } catch (error) {
         console.error('載入設定時發生錯誤:', error)
         // 即使出錯也嘗試設定語言
@@ -203,6 +204,7 @@ export const useSettingsStore = defineStore('settings', {
         }
         this.isLoaded = true // 即使出錯也標記為已載入，使用預設值
         this.updateFavicon()
+        this.updatePWAIcon()
       }
     },
 
@@ -317,6 +319,69 @@ export const useSettingsStore = defineStore('settings', {
       this.updateFavicon()
       // 通知 Service Worker 更新 icon 偏好
       this.updateServiceWorkerIcon()
+      // 更新 PWA manifest 圖標
+      this.updatePWAIcon()
+    },
+
+    // 更新 PWA manifest 圖標
+    updatePWAIcon() {
+      if (typeof window !== 'undefined') {
+        try {
+          // 移除舊的 manifest link
+          const existingManifest = document.querySelector('link[rel="manifest"]')
+          if (existingManifest) {
+            existingManifest.remove()
+          }
+
+          // 創建動態 manifest
+          const iconPath = this.currentIconPath
+          const manifest = {
+            name: "The BD2 Pulse",
+            short_name: "The BD2 Pulse",
+            description: "A gaming information aggregation platform for Brown Dust 2 players.",
+            start_url: "/",
+            display: "standalone",
+            background_color: "#0a0a0a",
+            theme_color: "#e72857",
+            orientation: "portrait-primary",
+            scope: "/",
+            lang: "zh-TW",
+            categories: ["games", "utilities"],
+            icons: [
+              {
+                src: iconPath,
+                sizes: "512x512",
+                type: "image/png",
+                purpose: "any maskable"
+              },
+              {
+                src: iconPath,
+                sizes: "192x192",
+                type: "image/png",
+                purpose: "any"
+              },
+              {
+                src: "/favicon.ico",
+                sizes: "16x16 32x32 48x48",
+                type: "image/x-icon"
+              }
+            ]
+          }
+
+          // 創建 blob URL 並設定新的 manifest
+          const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' })
+          const manifestURL = URL.createObjectURL(manifestBlob)
+          
+          const newManifest = document.createElement('link')
+          newManifest.rel = 'manifest'
+          newManifest.href = manifestURL
+          document.head.appendChild(newManifest)
+
+          console.log('[Settings] PWA manifest updated with icon:', iconPath)
+        } catch (error) {
+          console.warn('[Settings] Failed to update PWA manifest:', error)
+        }
+      }
     },
 
     // 更新 Service Worker 的 icon 偏好
