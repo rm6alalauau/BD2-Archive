@@ -82,6 +82,11 @@ export default {
       claim: 'Claim',
       claimed: 'Claimed'
     },
+
+    // Coupon link
+    couponLink: {
+      tooltip: 'Click to open official redemption page and copy coupon code: {code}'
+    },
     
     // Error messages
     errors: {
