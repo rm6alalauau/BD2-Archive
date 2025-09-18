@@ -141,7 +141,14 @@
               <div class="coupon-code-section">
                 <div class="coupon-code-row">
                   <div class="coupon-code-left">
-                    <span class="coupon-code">{{ coupon.code }}</span>
+                    <a
+                      href="#"
+                      class="coupon-code coupon-code-link"
+                      @click.prevent="openOfficialRedeemPage(coupon.code)"
+                      :title="`點擊開啟官方兌換頁面並複製兌換碼: ${coupon.code}`"
+                    >
+                      {{ coupon.code }}
+                    </a>
                     <!-- 圖片預覽圖示 -->
                     <v-btn
                       v-if="coupon.image_url"
@@ -843,6 +850,49 @@ const handleImageLoadError = () => {
   console.warn('兌換碼圖片載入失敗');
 };
 
+// 開啟官方兌換頁面並複製兌換碼
+const openOfficialRedeemPage = async (code) => {
+  try {
+    // 複製兌換碼到剪貼板
+    await copyToClipboard(code);
+    
+    // 構建官方兌換頁面URL
+    const officialUrl = `https://redeem.bd2.pmang.cloud/bd2/index.html?lang=zh-TW&userId=${encodeURIComponent(currentNickname.value)}`;
+    
+    // 在新分頁開啟官方兌換頁面
+    window.open(officialUrl, '_blank');
+    
+    console.log(`已開啟官方兌換頁面並複製兌換碼: ${code}`);
+  } catch (error) {
+    console.error('開啟官方兌換頁面時發生錯誤:', error);
+  }
+};
+
+// 複製文字到剪貼板
+const copyToClipboard = async (text) => {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      // 使用現代 Clipboard API
+      await navigator.clipboard.writeText(text);
+    } else {
+      // 降級方案：使用傳統方法
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'absolute';
+      textArea.style.left = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    }
+    console.log(`已複製到剪貼板: ${text}`);
+  } catch (error) {
+    console.error('複製到剪貼板失敗:', error);
+    throw error;
+  }
+};
+
 // 獲取本地化的獎勵文字
 const getLocalizedReward = (reward) => {
   if (!reward) return null;
@@ -1334,6 +1384,26 @@ watch(
   font-weight: 600;
   font-size: 1rem;
   color: #e72857;
+}
+
+.coupon-code-link {
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+  border-radius: 6px;
+  padding: 2px 6px;
+  margin: -2px -6px;
+  position: relative;
+}
+
+.coupon-code-link:hover {
+  color: #ffffff;
+  background-color: rgba(231, 40, 87, 0.2);
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.coupon-code-link:active {
+  transform: translateY(0);
 }
 
 .coupon-status-chip {
