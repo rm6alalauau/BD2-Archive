@@ -86,6 +86,11 @@ export default {
       claim: '兌換',
       claimed: '已兌換'
     },
+
+    // 兌換碼連結
+    couponLink: {
+      tooltip: '點擊開啟官方兌換頁面並複製兌換碼: {code}'
+    },
     
     // 錯誤訊息
     errors: {

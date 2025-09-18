@@ -82,6 +82,11 @@ export default {
       claim: '引き換え',
       claimed: '引き換え済み'
     },
+
+    // クーポンリンク
+    couponLink: {
+      tooltip: 'クリックして公式引き換えページを開き、クーポンコードをコピー: {code}'
+    },
     
     // Error messages
     errors: {

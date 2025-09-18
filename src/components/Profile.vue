@@ -145,7 +145,7 @@
                       href="#"
                       class="coupon-code coupon-code-link"
                       @click.prevent="openOfficialRedeemPage(coupon.code)"
-                      :title="`點擊開啟官方兌換頁面並複製兌換碼: ${coupon.code}`"
+                      :title="t('profile.couponLink.tooltip', null, { code: coupon.code })"
                     >
                       {{ coupon.code }}
                     </a>
@@ -862,7 +862,8 @@ const openOfficialRedeemPage = async (code) => {
     // 在新分頁開啟官方兌換頁面
     window.open(officialUrl, '_blank');
     
-    console.log(`已開啟官方兌換頁面並複製兌換碼: ${code}`);
+    // 標記為已兌換並保存到 localStorage（等同於點擊兌換按鈕的操作）
+    markCouponAsClaimed(code);
   } catch (error) {
     console.error('開啟官方兌換頁面時發生錯誤:', error);
   }
@@ -886,10 +887,28 @@ const copyToClipboard = async (text) => {
       document.execCommand('copy');
       document.body.removeChild(textArea);
     }
-    console.log(`已複製到剪貼板: ${text}`);
   } catch (error) {
     console.error('複製到剪貼板失敗:', error);
     throw error;
+  }
+};
+
+// 標記兌換碼為已兌換
+const markCouponAsClaimed = (code) => {
+  try {
+    // 找到對應的兌換碼項目並更新狀態
+    const couponIndex = redeemCodes.value.findIndex(coupon => coupon.code === code);
+    if (couponIndex !== -1) {
+      redeemCodes.value[couponIndex].claimed = true;
+      redeemCodes.value[couponIndex].statusMessage = t.value("profile.errors.claimSuccess");
+      redeemCodes.value[couponIndex].messageType = "success";
+      redeemCodes.value[couponIndex].errorMessage = null;
+      
+      // 保存兌換狀態到 localStorage
+      saveClaimedStatus();
+    }
+  } catch (error) {
+    console.error('標記兌換碼為已兌換時發生錯誤:', error);
   }
 };
 

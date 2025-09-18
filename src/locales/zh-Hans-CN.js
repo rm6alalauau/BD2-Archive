@@ -82,6 +82,11 @@ export default {
       claim: '兑换',
       claimed: '已兑换'
     },
+
+    // 兑换码链接
+    couponLink: {
+      tooltip: '点击打开官方兑换页面并复制兑换码: {code}'
+    },
     
     // 错误消息
     errors: {

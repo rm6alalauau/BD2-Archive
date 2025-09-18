@@ -82,6 +82,11 @@ export default {
       claim: '교환',
       claimed: '교환 완료'
     },
+
+    // 쿠폰 링크
+    couponLink: {
+      tooltip: '클릭하여 공식 교환 페이지를 열고 쿠폰 코드 복사: {code}'
+    },
     
     // Error messages
     errors: {
