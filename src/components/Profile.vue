@@ -856,8 +856,11 @@ const openOfficialRedeemPage = async (code) => {
     // 複製兌換碼到剪貼板
     await copyToClipboard(code);
     
+    // 根據當前語言設置獲取對應的語言參數
+    const langParam = getOfficialPageLangParam();
+    
     // 構建官方兌換頁面URL
-    const officialUrl = `https://redeem.bd2.pmang.cloud/bd2/index.html?lang=zh-TW&userId=${encodeURIComponent(currentNickname.value)}`;
+    const officialUrl = `https://redeem.bd2.pmang.cloud/bd2/index.html?lang=${langParam}&userId=${encodeURIComponent(currentNickname.value)}`;
     
     // 在新分頁開啟官方兌換頁面
     window.open(officialUrl, '_blank');
@@ -891,6 +894,23 @@ const copyToClipboard = async (text) => {
     console.error('複製到剪貼板失敗:', error);
     throw error;
   }
+};
+
+// 獲取官方兌換頁面的語言參數
+const getOfficialPageLangParam = () => {
+  const currentLanguage = settingsStore.selectedLanguage;
+  
+  // 語言映射表：應用語言 -> 官方頁面語言參數
+  const langMapping = {
+    'zh-Hant-TW': 'zh-TW',  // 繁體中文
+    'zh-Hans-CN': 'zh-CN',  // 簡體中文
+    'en': 'en-US',          // 英文
+    'ja-JP': 'ja-JP',       // 日文
+    'ko-KR': 'ko-KR'        // 韓文
+  };
+  
+  // 返回對應的語言參數，如果沒有匹配則默認使用繁體中文
+  return langMapping[currentLanguage] || 'zh-TW';
 };
 
 // 標記兌換碼為已兌換
