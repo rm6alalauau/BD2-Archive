@@ -58,15 +58,39 @@ const settingsStore = useSettingsStore();
 const t = computed(() => settingsStore.t);
 
 // --- Data ---
-const availableAvatars = [
-  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
-  25, 26, 27, 28, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45,
-  46, 47, 48,
-];
+const availableAvatars = computed(() => {
+  // 彩蛋模式：使用 Yuri 角色範圍 (1-20)
+  if (settingsStore.activeEasterEggMode === 'walker_mode') {
+    return Array.from({ length: 20 }, (_, i) => i + 1);
+  }
+  
+  // 正常模式：使用原本的 Brown Dust 頭像範圍
+  return [
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+    25, 26, 27, 28, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45,
+    46, 47, 48,
+  ];
+});
+
 const jpgAvatars = [39, 40, 41, 42, 43, 44, 45, 46, 47, 48];
 
 // --- Methods ---
 const getAvatarUrl = (avatarId) => {
+  // 彩蛋模式：使用 Yuri 角色圖片
+  if (settingsStore.activeEasterEggMode === 'walker_mode') {
+    const yuriAvatars = [
+      'icon1.gif', 'icon2.gif', 'icon3.png', 'icon4.png', 'icon5.gif',
+      'icon6.gif', 'icon7.gif', 'icon8.gif', 'icon9.gif', 'icon10.gif',
+      'icon11.gif', 'icon12.gif', 'icon13.gif', 'icon14.gif', 'icon15.png',
+      'icon16.gif', 'icon17.webp', 'icon18.png', 'icon19.gif', 'icon20.gif'
+    ];
+    
+    // 確保 avatarId 值在有效範圍內
+    const avatarIndex = (avatarId - 1) % yuriAvatars.length;
+    return `/yuri/role/${yuriAvatars[avatarIndex]}`;
+  }
+  
+  // 正常模式：使用原本的 Brown Dust 頭像
   const formattedId = String(avatarId).padStart(2, "0");
   const extension = jpgAvatars.includes(avatarId) ? "jpg" : "png";
   return `https://www.browndust2.com/img/designKit/snsIcon/social-icon-${formattedId}.${extension}`;
