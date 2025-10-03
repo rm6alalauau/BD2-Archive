@@ -1,5 +1,5 @@
 <template>
-  <v-card rounded="xl" class="d-flex flex-column profile-card">
+  <v-card ref="profileCardRef" rounded="xl" class="d-flex flex-column profile-card">
     <v-card-title
       class="headline d-flex align-center"
       style="font-size: 1rem; font-weight: bold; color: #e72857"
@@ -249,7 +249,7 @@
       :style="{
         left: redeemAnimation.position.x,
         top: redeemAnimation.position.y,
-        transform: redeemAnimation.position.x.includes('%') ? 'translate(-50%, -50%)' : 'translate(-50%, -50%)'
+        transform: 'translate(-50%, -50%)'
       }"
     >
       <img 
@@ -413,6 +413,7 @@ const selectedCouponImage = ref(null);
 // 兌換動畫相關
 const redeemAnimation = ref(null);
 const claimCount = ref(0);
+const profileCardRef = ref(null);
 
 // --- Computed ---
 const t = computed(() => settingsStore.t);
@@ -661,17 +662,45 @@ const showRedeemAnimation = (buttonElement = null) => {
     : '/yuri/effects/redeem2.gif';
   
   // 計算動畫位置
-  let position = { x: '50%', y: '50%' };
+  let position = { x: '50%', y: '50%', relativeTo: 'profile' };
   
   if (buttonElement) {
     try {
       const rect = buttonElement.getBoundingClientRect();
       position = {
         x: `${rect.left + rect.width / 2}px`,
-        y: `${rect.top - 100}px` // 按鈕上方100px
+        y: `${rect.top - 100}px`, // 按鈕上方100px
+        relativeTo: 'button'
       };
     } catch (error) {
       console.warn('無法獲取按鈕位置，使用預設位置', error);
+      // 如果按鈕定位失敗，嘗試使用 Profile 組件中心
+      if (profileCardRef.value) {
+        try {
+          const profileRect = profileCardRef.value.getBoundingClientRect();
+          position = {
+            x: `${profileRect.left + profileRect.width / 2}px`,
+            y: `${profileRect.top + profileRect.height / 2}px`,
+            relativeTo: 'profile'
+          };
+        } catch (profileError) {
+          console.warn('無法獲取Profile組件位置，使用畫面中心', profileError);
+        }
+      }
+    }
+  } else {
+    // 沒有按鈕元素時，使用 Profile 組件中心
+    if (profileCardRef.value) {
+      try {
+        const profileRect = profileCardRef.value.getBoundingClientRect();
+        position = {
+          x: `${profileRect.left + profileRect.width / 2}px`,
+          y: `${profileRect.top + profileRect.height / 2}px`,
+          relativeTo: 'profile'
+        };
+      } catch (profileError) {
+        console.warn('無法獲取Profile組件位置，使用畫面中心', profileError);
+      }
     }
   }
   
