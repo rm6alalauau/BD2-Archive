@@ -15,8 +15,25 @@
             {{ t('settings.display.title') }}
           </v-card-title>
           <v-card-text>
-            <!-- 字體縮放 -->
+            <!-- 尤里模式 -->
             <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-label">{{ t('settings.display.yuriMode') }}</div>
+                <div class="setting-description">{{ t('settings.display.yuriModeDescription') }}</div>
+              </div>
+              <div class="d-flex align-center">
+                <v-switch
+                  v-model="isWalkerModeEnabled"
+                  @change="toggleWalkerMode"
+                  color="primary"
+                  hide-details
+                  :aria-label="isWalkerModeEnabled ? '關閉尤里模式' : '開啟尤里模式'"
+                ></v-switch>
+              </div>
+            </div>
+            
+            <!-- 字體縮放 -->
+            <div class="setting-item mt-6">
               <div class="setting-info">
                 <div class="setting-label">{{ t('settings.display.fontSize') }}</div>
                 <div class="setting-description">{{ t('settings.display.fontSizeDescription') }}</div>
@@ -391,30 +408,6 @@
           </v-card-text>
         </v-card>
 
-        <!-- ++ 新增彩蛋模式設定 ++ -->
-        <v-card rounded="xl" class="settings-card mb-6">
-          <v-card-title class="settings-section-title">
-            <v-icon class="mr-3" color="primary">mdi-emoticon-excited-outline</v-icon>
-            彩蛋模式
-          </v-card-title>
-          <v-card-text>
-            <div class="setting-item">
-              <div class="setting-info">
-                <div class="setting-label">走路角色動畫</div>
-                <div class="setting-description">在導覽列顯示可愛的走路角色動畫</div>
-              </div>
-              <div class="d-flex align-center">
-                <v-switch
-                  v-model="isWalkerModeEnabled"
-                  @change="toggleWalkerMode"
-                  color="primary"
-                  hide-details
-                  :aria-label="isWalkerModeEnabled ? '關閉走路角色動畫' : '開啟走路角色動畫'"
-                ></v-switch>
-              </div>
-            </div>
-          </v-card-text>
-        </v-card>
 
         <!-- 導航按鈕 -->
         <div class="navigation-buttons">
@@ -512,7 +505,7 @@
 </template>
 
 <script>
-import { useSettingsStore, availableIcons } from '@/stores/settings'
+import { useSettingsStore, availableIcons, getAvailableIcons } from '@/stores/settings'
 import { useNotificationsStore } from '@/stores/notifications'
 
 export default {
@@ -520,7 +513,7 @@ export default {
   setup() {
     const settingsStore = useSettingsStore()
     const notificationsStore = useNotificationsStore()
-    return { settingsStore, availableIcons, notificationsStore }
+    return { settingsStore, availableIcons, getAvailableIcons, notificationsStore }
   },
   data() {
     return {
@@ -574,7 +567,7 @@ export default {
       set(value) { this.settingsStore.updateDailyCheckinReminder(value) }
     },
 
-    // ++ 新增彩蛋模式計算屬性 ++
+    // ++ 新增尤里模式計算屬性 ++
     isWalkerModeEnabled: {
       get() { return this.settingsStore.activeEasterEggMode === 'walker_mode' },
       set(value) { 
@@ -598,18 +591,20 @@ export default {
 
     // 圖標分頁相關計算屬性
     totalIconPages() {
-      return Math.ceil(availableIcons.length / this.iconsPerPage);
+      const icons = this.getAvailableIcons(this.settingsStore.activeEasterEggMode);
+      return Math.ceil(icons.length / this.iconsPerPage);
     },
     currentPageIcons() {
+      const icons = this.getAvailableIcons(this.settingsStore.activeEasterEggMode);
       const startIndex = this.currentIconPage * this.iconsPerPage;
       const endIndex = startIndex + this.iconsPerPage;
       // 保持原順序，因為 availableIcons 已經是從新到舊排列
-      return availableIcons.slice(startIndex, endIndex);
+      return icons.slice(startIndex, endIndex);
     },
     
     // 用於初始化頁面的原始順序圖標陣列
     originalOrderIcons() {
-      return availableIcons;
+      return this.getAvailableIcons(this.settingsStore.activeEasterEggMode);
     },
     
     // 判斷是否只顯示一行圖標
@@ -649,12 +644,18 @@ export default {
   methods: {
     // 判斷是否為新圖標
     isNewIcon(iconId) {
+      const icons = this.getAvailableIcons(this.settingsStore.activeEasterEggMode);
       // 找到圖標對象
-      const icon = availableIcons.find(icon => icon.id === iconId);
+      const icon = icons.find(icon => icon.id === iconId);
       if (!icon) return false;
       
-      // 根據 order 值判斷，order 值最大的幾個是最新的
-      const allOrders = availableIcons.map(icon => icon.order).sort((a, b) => b - a);
+      // 彩蛋模式下，所有 Yuri favicon 都顯示為 NEW
+      if (this.settingsStore.activeEasterEggMode === 'walker_mode') {
+        return icon.id.startsWith('yuri-favicon-');
+      }
+      
+      // 正常模式：根據 order 值判斷，order 值最大的幾個是最新的
+      const allOrders = icons.map(icon => icon.order).sort((a, b) => b - a);
       const minOrderForNew = allOrders[this.newIconCount - 1] || 0;
       
       return icon.order >= minOrderForNew;
@@ -675,12 +676,100 @@ export default {
       }
     },
     
-    // ++ 新增彩蛋模式切換方法 ++
+    // ++ 新增尤里模式切換方法 ++
     toggleWalkerMode() {
-      // 這個方法會在 v-switch 的 @change 事件中被調用
-      // 但由於我們已經在 computed 的 setter 中處理了邏輯，這裡可以留空
-      // 或者添加一些額外的 UI 反饋
-      console.log('Walker mode toggled:', this.isWalkerModeEnabled);
+      // 使用 isWalkerModeEnabled 的值來判斷，因為 v-switch 已經更新了這個值
+      if (this.isWalkerModeEnabled) {
+        // 開啟尤里模式，顯示 load.gif
+        this.showYuriBootAnimation('load.gif');
+        
+        // 延遲設置圖標，等待動畫開始
+        setTimeout(() => {
+          this.settingsStore.setIcon('yuri-favicon-1');
+          // 重新初始化圖標頁面
+          this.$nextTick(() => {
+            this.initializeIconPage();
+          });
+        }, 500);
+      } else {
+        // 關閉尤里模式，顯示 close.gif
+        this.showYuriBootAnimation('close.gif');
+      }
+      
+      console.log('Yuri mode toggled:', this.isWalkerModeEnabled);
+    },
+
+    // 顯示尤里啟動/關閉動畫
+    showYuriBootAnimation(gifFileName) {
+      // 創建全屏覆蓋層
+      const overlay = document.createElement('div');
+      overlay.id = 'yuri-boot-overlay';
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+      `;
+
+      // 創建圖片元素
+      const img = document.createElement('img');
+      img.src = `/yuri/effects/${gifFileName}`;
+      img.alt = gifFileName === 'load.gif' ? 'Yuri Loading' : 'Yuri Closing';
+      
+      // 根據不同的 GIF 設置不同的尺寸
+      const isLoadGif = gifFileName === 'load.gif';
+      const isMobile = window.innerWidth <= 768;
+      
+      img.style.cssText = `
+        ${isLoadGif ? `
+          ${isMobile ? `
+            width: 95vw;
+            height: auto;
+            max-height: 80vh;
+          ` : `
+            width: 80vw;
+            height: 80vh;
+          `}
+          object-fit: contain;
+        ` : `
+          width: 100vw;
+          height: 100vh;
+          object-fit: cover;
+        `}
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+        filter: drop-shadow(0 0 20px rgba(231, 40, 87, 0.3));
+      `;
+
+      overlay.appendChild(img);
+      document.body.appendChild(overlay);
+
+      // 淡入效果
+      requestAnimationFrame(() => {
+        overlay.style.opacity = '1';
+        setTimeout(() => {
+          img.style.opacity = '1';
+        }, 200);
+      });
+
+      // 3秒後淡出
+      setTimeout(() => {
+        overlay.style.opacity = '0';
+        img.style.opacity = '0';
+        setTimeout(() => {
+          if (document.getElementById('yuri-boot-overlay')) {
+            document.body.removeChild(overlay);
+          }
+        }, 500);
+      }, 3000);
     },
 
     // 導航功能
@@ -813,8 +902,9 @@ export default {
 
     // 初始化圖標頁面，確保選中的圖標在當前頁面
     initializeIconPage() {
+      const icons = this.getAvailableIcons(this.settingsStore.activeEasterEggMode);
       // availableIcons 已經按 order 排序，直接查找索引即可
-      const selectedIconIndex = availableIcons.findIndex(icon => icon.id === this.settingsStore.selectedIcon);
+      const selectedIconIndex = icons.findIndex(icon => icon.id === this.settingsStore.selectedIcon);
       if (selectedIconIndex !== -1) {
         const targetPage = Math.floor(selectedIconIndex / this.iconsPerPage);
         this.currentIconPage = targetPage;

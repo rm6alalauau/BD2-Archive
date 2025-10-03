@@ -222,6 +222,8 @@ export default {
     // Display settings
     display: {
       title: '표시 설정',
+      yuriMode: '유리 모드',
+      yuriModeDescription: '한번 켜보세요... 페이지에 유리의 신비로운 축복이 내려온다는 소문이 있던데요...?',
       fontSize: '글꼴 크기',
       fontSizeDescription: '인터페이스 글꼴 표시 크기 조정',
       r18Content: 'R18 콘텐츠',
