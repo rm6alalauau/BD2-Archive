@@ -684,12 +684,31 @@ const showRedeemAnimation = (buttonElement = null) => {
             relativeTo: 'profile'
           };
         } catch (profileError) {
-          console.warn('無法獲取Profile組件位置，使用畫面中心', profileError);
+          console.warn('無法獲取Profile組件位置，使用計算偏移', profileError);
+          // 使用計算偏移：PC版兩個等寬組件，Profile在左邊，偏移25%到左邊
+          const screenWidth = window.innerWidth;
+          const isDesktop = screenWidth > 768; // 桌面版判斷
+          const offsetX = isDesktop ? '25%' : '50%'; // 桌面版偏移25%，手機版保持50%
+          position = {
+            x: offsetX,
+            y: '50%',
+            relativeTo: 'calculated'
+          };
         }
+      } else {
+        // 無法獲取組件時，使用計算偏移
+        const screenWidth = window.innerWidth;
+        const isDesktop = screenWidth > 768; // 桌面版判斷
+        const offsetX = isDesktop ? '25%' : '50%'; // 桌面版偏移25%，手機版保持50%
+        position = {
+          x: offsetX,
+          y: '50%',
+          relativeTo: 'calculated'
+        };
       }
     }
   } else {
-    // 沒有按鈕元素時，使用 Profile 組件中心
+    // 沒有按鈕元素時，計算偏移到Profile組件中心
     if (profileCardRef.value) {
       try {
         const profileRect = profileCardRef.value.getBoundingClientRect();
@@ -699,8 +718,27 @@ const showRedeemAnimation = (buttonElement = null) => {
           relativeTo: 'profile'
         };
       } catch (profileError) {
-        console.warn('無法獲取Profile組件位置，使用畫面中心', profileError);
+        console.warn('無法獲取Profile組件位置，使用計算偏移', profileError);
+        // 使用計算偏移：PC版兩個等寬組件，Profile在左邊，偏移25%到左邊
+        const screenWidth = window.innerWidth;
+        const isDesktop = screenWidth > 768; // 桌面版判斷
+        const offsetX = isDesktop ? '25%' : '50%'; // 桌面版偏移25%，手機版保持50%
+        position = {
+          x: offsetX,
+          y: '50%',
+          relativeTo: 'calculated'
+        };
       }
+    } else {
+      // 無法獲取組件時，使用計算偏移
+      const screenWidth = window.innerWidth;
+      const isDesktop = screenWidth > 768; // 桌面版判斷
+      const offsetX = isDesktop ? '25%' : '50%'; // 桌面版偏移25%，手機版保持50%
+      position = {
+        x: offsetX,
+        y: '50%',
+        relativeTo: 'calculated'
+      };
     }
   }
   
