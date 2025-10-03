@@ -5,9 +5,15 @@
 /* 行動裝置優化 */
 @media (max-width: 768px) {
   /* 減少動畫和過渡效果以提升效能 */
-  * {
+  *:not(.walker) {
     transition-duration: 0.15s !important;
     animation-duration: 0.15s !important;
+  }
+  
+  /* Walker 動畫不受限制 */
+  .walker {
+    animation-duration: unset !important;
+    transition-duration: unset !important;
   }
   
   /* 優化圖片載入 */

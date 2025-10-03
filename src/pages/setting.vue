@@ -391,6 +391,31 @@
           </v-card-text>
         </v-card>
 
+        <!-- ++ 新增彩蛋模式設定 ++ -->
+        <v-card rounded="xl" class="settings-card mb-6">
+          <v-card-title class="settings-section-title">
+            <v-icon class="mr-3" color="primary">mdi-emoticon-excited-outline</v-icon>
+            彩蛋模式
+          </v-card-title>
+          <v-card-text>
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-label">走路角色動畫</div>
+                <div class="setting-description">在導覽列顯示可愛的走路角色動畫</div>
+              </div>
+              <div class="d-flex align-center">
+                <v-switch
+                  v-model="isWalkerModeEnabled"
+                  @change="toggleWalkerMode"
+                  color="primary"
+                  hide-details
+                  :aria-label="isWalkerModeEnabled ? '關閉走路角色動畫' : '開啟走路角色動畫'"
+                ></v-switch>
+              </div>
+            </div>
+          </v-card-text>
+        </v-card>
+
         <!-- 導航按鈕 -->
         <div class="navigation-buttons">
           <v-btn
@@ -549,6 +574,14 @@ export default {
       set(value) { this.settingsStore.updateDailyCheckinReminder(value) }
     },
 
+    // ++ 新增彩蛋模式計算屬性 ++
+    isWalkerModeEnabled: {
+      get() { return this.settingsStore.activeEasterEggMode === 'walker_mode' },
+      set(value) { 
+        this.settingsStore.setEasterEggMode(value ? 'walker_mode' : 'default')
+      }
+    },
+
     forumOptions() {
       return [
         { label: this.t('forums.bahamut'), value: 'Bahamut' },
@@ -642,6 +675,14 @@ export default {
       }
     },
     
+    // ++ 新增彩蛋模式切換方法 ++
+    toggleWalkerMode() {
+      // 這個方法會在 v-switch 的 @change 事件中被調用
+      // 但由於我們已經在 computed 的 setter 中處理了邏輯，這裡可以留空
+      // 或者添加一些額外的 UI 反饋
+      console.log('Walker mode toggled:', this.isWalkerModeEnabled);
+    },
+
     // 導航功能
     goToHome() {
       this.$router.push('/');
