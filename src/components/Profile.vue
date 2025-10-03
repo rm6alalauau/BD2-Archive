@@ -198,7 +198,7 @@
               <v-btn
                 :loading="coupon.claiming"
                 :disabled="coupon.claimed"
-                @click="executeClaim(coupon, index)"
+                @click="executeClaim(coupon, index, $event)"
                 :color="getButtonColor(coupon)"
                 size="small"
                 variant="flat"
@@ -246,6 +246,11 @@
     <div 
       v-if="redeemAnimation && redeemAnimation.show" 
       class="redeem-animation-overlay"
+      :style="{
+        left: redeemAnimation.position.x,
+        top: redeemAnimation.position.y,
+        transform: redeemAnimation.position.x.includes('%') ? 'translate(-50%, -50%)' : 'translate(-50%, -50%)'
+      }"
     >
       <img 
         :src="redeemAnimation.src" 
@@ -533,11 +538,12 @@ const saveClaimedStatus = () => {
   );
 };
 
-const executeClaim = async (coupon, index) => {
+const executeClaim = async (coupon, index, event) => {
   if (coupon.claimed || coupon.claiming) return;
 
   // 顯示兌換動畫（點擊時立即觸發）
-  showRedeemAnimation();
+  const buttonElement = event?.target;
+  showRedeemAnimation(buttonElement);
 
   // 設置兌換中狀態
   redeemCodes.value[index].claiming = true;
@@ -641,7 +647,7 @@ const getButtonText = (coupon) => {
 };
 
 // 顯示兌換動畫
-const showRedeemAnimation = () => {
+const showRedeemAnimation = (buttonElement = null) => {
   // 檢查是否開啟彩蛋模式
   if (settingsStore.activeEasterEggMode !== 'walker_mode') {
     return;
@@ -654,24 +660,40 @@ const showRedeemAnimation = () => {
     ? '/yuri/effects/redeem1.gif' 
     : '/yuri/effects/redeem2.gif';
   
+  // 計算動畫位置
+  let position = { x: '50%', y: '50%' };
+  
+  if (buttonElement) {
+    try {
+      const rect = buttonElement.getBoundingClientRect();
+      position = {
+        x: `${rect.left + rect.width / 2}px`,
+        y: `${rect.top - 100}px` // 按鈕上方100px
+      };
+    } catch (error) {
+      console.warn('無法獲取按鈕位置，使用預設位置', error);
+    }
+  }
+  
   // 創建動畫物件
   redeemAnimation.value = {
     id: Date.now(),
     src: gifPath,
     show: true,
-    startTime: Date.now()
+    startTime: Date.now(),
+    position: position
   };
   
-  // 3秒後自動隱藏
+  // 2.5秒後自動隱藏（縮短時間減少干擾）
   setTimeout(() => {
     if (redeemAnimation.value) {
       redeemAnimation.value.show = false;
-      // 再過500ms完全移除
+      // 再過300ms完全移除
       setTimeout(() => {
         redeemAnimation.value = null;
-      }, 500);
+      }, 300);
     }
-  }, 3000);
+  }, 2500);
 };
 
 // 檢查是否為日期格式
@@ -1834,26 +1856,19 @@ watch(
 /* 兌換動畫樣式 */
 .redeem-animation-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.3);
   z-index: 9999;
   pointer-events: none;
   animation: fadeIn 0.3s ease-in-out;
 }
 
 .redeem-animation-gif {
-  max-width: 300px;
-  max-height: 300px;
+  max-width: 200px;
+  max-height: 200px;
   width: auto;
   height: auto;
   border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+  filter: drop-shadow(0 0 20px rgba(231, 40, 87, 0.5));
   animation: scaleIn 0.3s ease-out, fadeOut 0.5s ease-in-out 2.5s forwards;
 }
 
@@ -1891,15 +1906,15 @@ watch(
 /* 手機版動畫調整 */
 @media (max-width: 768px) {
   .redeem-animation-gif {
-    max-width: 250px;
-    max-height: 250px;
+    max-width: 180px;
+    max-height: 180px;
   }
 }
 
 @media (max-width: 480px) {
   .redeem-animation-gif {
-    max-width: 200px;
-    max-height: 200px;
+    max-width: 150px;
+    max-height: 150px;
   }
 }
 </style>
