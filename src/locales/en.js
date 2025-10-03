@@ -222,6 +222,8 @@ export default {
     // Display settings
     display: {
       title: 'Display Settings',
+      yuriMode: 'Yuri Mode',
+      yuriModeDescription: 'Turn it on and see... Rumor has it that a mysterious blessing from Yuri will descend upon the page...?',
       fontSize: 'Font Size',
       fontSizeDescription: 'Adjust interface font display size',
       r18Content: 'R18 Content',

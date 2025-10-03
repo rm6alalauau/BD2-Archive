@@ -6,27 +6,50 @@ import { getTranslation } from '@/locales'
 const TOTAL_ICONS = 17;
 
 // 生成圖標陣列，採用混合排序邏輯
-export const availableIcons = Array.from({ length: TOTAL_ICONS }, (_, i) => {
-  const iconNumber = i + 1;
-  
-  // 計算 order 值：
-  // - favicon01.png 到 favicon12.png：從新到舊排列
-  // - favicon13.png 以後：越大越新
-  let order;
-  if (iconNumber <= 12) {
-    // 1~12：favicon01是最新(12)，favicon12是最舊(1)
-    order = 12 - (iconNumber - 1); // favicon01=12, favicon02=11, ..., favicon12=1
-  } else {
-    // 13+：直接使用數字，比12更大所以更新
-    order = iconNumber; // favicon13=13, favicon14=14, ...
+const generateAvailableIcons = () => {
+  return Array.from({ length: TOTAL_ICONS }, (_, i) => {
+    const iconNumber = i + 1;
+    
+    // 計算 order 值：
+    // - favicon01.png 到 favicon12.png：從新到舊排列
+    // - favicon13.png 以後：越大越新
+    let order;
+    if (iconNumber <= 12) {
+      // 1~12：favicon01是最新(12)，favicon12是最舊(1)
+      order = 12 - (iconNumber - 1); // favicon01=12, favicon02=11, ..., favicon12=1
+    } else {
+      // 13+：直接使用數字，比12更大所以更新
+      order = iconNumber; // favicon13=13, favicon14=14, ...
+    }
+    
+    return {
+      id: `icon${iconNumber}`,
+      path: `/favicon${String(iconNumber).padStart(2, '0')}.png`,
+      order: order
+    };
+  }).sort((a, b) => b.order - a.order); // 按 order 降序排列，最新的在前面
+};
+
+// 根據彩蛋模式返回不同的圖標陣列
+export const getAvailableIcons = (easterEggMode = 'default') => {
+  if (easterEggMode === 'walker_mode') {
+    // 彩蛋模式：返回 17 個相同的 Yuri favicon，創造有趣的重複效果
+    return Array.from({ length: TOTAL_ICONS }, (_, i) => {
+      const iconNumber = i + 1;
+      return {
+        id: `yuri-favicon-${iconNumber}`,
+        path: '/yuri/favicon.png',
+        order: TOTAL_ICONS - i // 讓第一個顯示為最新
+      };
+    });
   }
   
-  return {
-    id: `icon${iconNumber}`,
-    path: `/favicon${String(iconNumber).padStart(2, '0')}.png`,
-    order: order
-  };
-}).sort((a, b) => b.order - a.order); // 按 order 降序排列，最新的在前面
+  // 正常模式：返回原本的圖標陣列
+  return generateAvailableIcons();
+};
+
+// 保持向後兼容的導出
+export const availableIcons = generateAvailableIcons();
 
 export const useSettingsStore = defineStore('settings', {
   state: () => ({
@@ -73,6 +96,12 @@ export const useSettingsStore = defineStore('settings', {
     },
     // 3. 新增 currentIconPath
     currentIconPath(state) {
+      // 彩蛋模式：強制使用 Yuri favicon
+      if (state.activeEasterEggMode === 'walker_mode') {
+        return '/yuri/favicon.png';
+      }
+      
+      // 正常模式：使用原本的邏輯
       const found = availableIcons.find(icon => icon.id === state.selectedIcon)
       return found ? found.path : availableIcons[0].path
     },

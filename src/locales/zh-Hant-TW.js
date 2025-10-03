@@ -226,6 +226,8 @@ export default {
     // 顯示設定
     display: {
       title: '顯示設定',
+      yuriMode: '尤里模式',
+      yuriModeDescription: '啟用看看，據說會有來自尤里的神秘祝福降臨在頁面上…？',
       fontSize: '字體大小',
       fontSizeDescription: '調整介面字體的顯示大小',
       r18Content: 'R18 內容',

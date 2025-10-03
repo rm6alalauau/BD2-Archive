@@ -222,6 +222,8 @@ export default {
     // Display settings
     display: {
       title: '表示設定',
+      yuriMode: 'ユリモード',
+      yuriModeDescription: '有効にして確かめてみよう。ユリからの謎の祝福が、ページに舞い降りるという噂が…？',
       fontSize: 'フォントサイズ',
       fontSizeDescription: 'インターフェースのフォント表示サイズを調整',
       r18Content: 'R18コンテンツ',
