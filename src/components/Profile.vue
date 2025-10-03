@@ -649,122 +649,45 @@ const getButtonText = (coupon) => {
 
 // 顯示兌換動畫
 const showRedeemAnimation = (buttonElement = null) => {
-  // 檢查是否開啟彩蛋模式
   if (settingsStore.activeEasterEggMode !== 'walker_mode') {
     return;
   }
 
   claimCount.value += 1;
-  
-  // 決定使用哪個 GIF
-  const gifPath = claimCount.value === 1 
+  const gifPath = claimCount.value % 2 === 1 
     ? '/yuri/effects/redeem1.gif' 
     : '/yuri/effects/redeem2.gif';
   
-  // 計算動畫位置
-  let position = { x: '50%', y: '50%', relativeTo: 'profile' };
-  
-  if (buttonElement) {
+  let position = { x: '50%', y: '50%' }; // 預設位置為卡片中央
+
+  if (buttonElement && profileCardRef.value) {
     try {
-      const rect = buttonElement.getBoundingClientRect();
+      // 計算按鈕相對於 Profile 卡片的位置
+      const cardRect = profileCardRef.value.$el.getBoundingClientRect();
+      const buttonRect = buttonElement.getBoundingClientRect();
+      
+      const relativeX = (buttonRect.left + buttonRect.width / 2) - cardRect.left;
+      const relativeY = (buttonRect.top + buttonRect.height / 2) - cardRect.top;
+
       position = {
-        x: `${rect.left + rect.width / 2}px`,
-        y: `${rect.top - 100}px`, // 按鈕上方100px
-        relativeTo: 'button'
+        x: `${relativeX}px`,
+        y: `${relativeY - 80}px`, // 在按鈕中心點上方 80px
       };
     } catch (error) {
-      console.warn('無法獲取按鈕位置，使用預設位置', error);
-      // 如果按鈕定位失敗，嘗試使用 Profile 組件中心
-      if (profileCardRef.value) {
-        try {
-          const profileRect = profileCardRef.value.getBoundingClientRect();
-          position = {
-            x: `${profileRect.left + profileRect.width / 2}px`,
-            y: `${profileRect.top + profileRect.height / 2}px`,
-            relativeTo: 'profile'
-          };
-        } catch (profileError) {
-          console.warn('無法獲取Profile組件位置，使用計算偏移', profileError);
-          // 使用計算偏移：PC版兩個等寬組件，Profile在左邊，偏移25%到左邊
-          const screenWidth = window.innerWidth;
-          const isDesktop = screenWidth > 768; // 桌面版判斷
-          const offsetX = isDesktop ? '25%' : '50%'; // 桌面版偏移25%，手機版保持50%
-          position = {
-            x: offsetX,
-            y: '50%',
-            relativeTo: 'calculated'
-          };
-        }
-      } else {
-        // 無法獲取組件時，使用計算偏移
-        const screenWidth = window.innerWidth;
-        const isDesktop = screenWidth > 768; // 桌面版判斷
-        const offsetX = isDesktop ? '25%' : '50%'; // 桌面版偏移25%，手機版保持50%
-        position = {
-          x: offsetX,
-          y: '50%',
-          relativeTo: 'calculated'
-        };
-      }
-    }
-  } else {
-    // 沒有按鈕元素時，計算偏移到Profile組件中心
-    if (profileCardRef.value) {
-      try {
-        const profileRect = profileCardRef.value.getBoundingClientRect();
-        position = {
-          x: `${profileRect.left + profileRect.width / 2}px`,
-          y: `${profileRect.top + profileRect.height / 2}px`,
-          relativeTo: 'profile'
-        };
-      } catch (profileError) {
-        console.warn('無法獲取Profile組件位置，使用計算偏移', profileError);
-        // 使用計算偏移：PC版兩個等寬組件，Profile在左邊，偏移25%到左邊
-        const screenWidth = window.innerWidth;
-        const isDesktop = screenWidth > 768; // 桌面版判斷
-        const offsetX = isDesktop ? '25%' : '50%'; // 桌面版偏移25%，手機版保持50%
-        position = {
-          x: offsetX,
-          y: '50%',
-          relativeTo: 'calculated'
-        };
-      }
-    } else {
-      // 無法獲取組件時，使用計算偏移
-      const screenWidth = window.innerWidth;
-      const isDesktop = screenWidth > 768; // 桌面版判斷
-      const offsetX = isDesktop ? '25%' : '50%'; // 桌面版偏移25%，手機版保持50%
-      position = {
-        x: offsetX,
-        y: '50%',
-        relativeTo: 'calculated'
-      };
+      console.warn('無法獲取按鈕相對位置，使用卡片中央作為預設', error);
     }
   }
   
-  // 調試信息
-  console.log('動畫位置計算:', {
-    screenWidth: window.innerWidth,
-    isDesktop: window.innerWidth > 768,
-    position: position,
-    relativeTo: position.relativeTo,
-    buttonElement: !!buttonElement
-  });
-  
-  // 創建動畫物件
   redeemAnimation.value = {
     id: Date.now(),
     src: gifPath,
     show: true,
-    startTime: Date.now(),
     position: position
   };
   
-  // 2.5秒後自動隱藏（縮短時間減少干擾）
   setTimeout(() => {
     if (redeemAnimation.value) {
       redeemAnimation.value.show = false;
-      // 再過300ms完全移除
       setTimeout(() => {
         redeemAnimation.value = null;
       }, 300);
@@ -1433,6 +1356,8 @@ watch(
 <style scoped>
 /* Profile 卡片樣式 */
 .profile-card {
+  /* 關鍵點 1: 讓自己成為子絕對定位元素的基準 */
+  position: relative; 
   min-height: 500px;
 }
 
@@ -1929,10 +1854,14 @@ watch(
   }
 }
 
-/* 兌換動畫樣式 */
+/* 兌換動畫樣式 (全新版本) */
 .redeem-animation-overlay {
-  position: fixed;
-  z-index: 9999;
+  /* 關鍵點 2: 將定位方式從 fixed 改為 absolute */
+  position: absolute; 
+  
+  /* 關鍵點 3: 層級要足夠高，能蓋住卡片內所有內容 */
+  z-index: 10; /* 或者任何比卡片內容高的數字 */
+  
   pointer-events: none;
   animation: fadeIn 0.3s ease-in-out;
 }
