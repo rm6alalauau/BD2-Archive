@@ -742,6 +742,15 @@ const showRedeemAnimation = (buttonElement = null) => {
     }
   }
   
+  // 調試信息
+  console.log('動畫位置計算:', {
+    screenWidth: window.innerWidth,
+    isDesktop: window.innerWidth > 768,
+    position: position,
+    relativeTo: position.relativeTo,
+    buttonElement: !!buttonElement
+  });
+  
   // 創建動畫物件
   redeemAnimation.value = {
     id: Date.now(),
