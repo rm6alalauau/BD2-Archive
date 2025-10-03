@@ -242,6 +242,18 @@
       </div>
     </v-card-text>
 
+    <!-- 兌換動畫 -->
+    <div 
+      v-if="redeemAnimation && redeemAnimation.show" 
+      class="redeem-animation-overlay"
+    >
+      <img 
+        :src="redeemAnimation.src" 
+        :alt="'兌換動畫'"
+        class="redeem-animation-gif"
+      />
+    </div>
+
     <!-- Dialogs -->
     <AvatarDialog
       v-model="avatarDialog"
@@ -393,6 +405,9 @@ const nicknameInputFocused = ref(false);
 // 圖片預覽相關
 const imagePreviewDialog = ref(false);
 const selectedCouponImage = ref(null);
+// 兌換動畫相關
+const redeemAnimation = ref(null);
+const claimCount = ref(0);
 
 // --- Computed ---
 const t = computed(() => settingsStore.t);
@@ -521,6 +536,9 @@ const saveClaimedStatus = () => {
 const executeClaim = async (coupon, index) => {
   if (coupon.claimed || coupon.claiming) return;
 
+  // 顯示兌換動畫（點擊時立即觸發）
+  showRedeemAnimation();
+
   // 設置兌換中狀態
   redeemCodes.value[index].claiming = true;
   redeemCodes.value[index].errorMessage = null;
@@ -620,6 +638,40 @@ const getButtonText = (coupon) => {
   if (coupon.claimed) return t.value("profile.actions.claimed");
   if (coupon.errorMessage) return t.value("common.retry");
   return t.value("profile.actions.claim");
+};
+
+// 顯示兌換動畫
+const showRedeemAnimation = () => {
+  // 檢查是否開啟彩蛋模式
+  if (settingsStore.activeEasterEggMode !== 'walker_mode') {
+    return;
+  }
+
+  claimCount.value += 1;
+  
+  // 決定使用哪個 GIF
+  const gifPath = claimCount.value === 1 
+    ? '/yuri/effects/redeem1.gif' 
+    : '/yuri/effects/redeem2.gif';
+  
+  // 創建動畫物件
+  redeemAnimation.value = {
+    id: Date.now(),
+    src: gifPath,
+    show: true,
+    startTime: Date.now()
+  };
+  
+  // 3秒後自動隱藏
+  setTimeout(() => {
+    if (redeemAnimation.value) {
+      redeemAnimation.value.show = false;
+      // 再過500ms完全移除
+      setTimeout(() => {
+        redeemAnimation.value = null;
+      }, 500);
+    }
+  }, 3000);
 };
 
 // 檢查是否為日期格式
@@ -853,6 +905,9 @@ const handleImageLoadError = () => {
 // 開啟官方兌換頁面並複製兌換碼
 const openOfficialRedeemPage = async (code) => {
   try {
+    // 顯示兌換動畫（點擊時立即觸發）
+    showRedeemAnimation();
+    
     // 複製兌換碼到剪貼板
     await copyToClipboard(code);
     
@@ -1773,6 +1828,78 @@ watch(
 
   .coupon-message-spacer {
     display: none;
+  }
+}
+
+/* 兌換動畫樣式 */
+.redeem-animation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  pointer-events: none;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.redeem-animation-gif {
+  max-width: 300px;
+  max-height: 300px;
+  width: auto;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  animation: scaleIn 0.3s ease-out, fadeOut 0.5s ease-in-out 2.5s forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+/* 手機版動畫調整 */
+@media (max-width: 768px) {
+  .redeem-animation-gif {
+    max-width: 250px;
+    max-height: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .redeem-animation-gif {
+    max-width: 200px;
+    max-height: 200px;
   }
 }
 </style>

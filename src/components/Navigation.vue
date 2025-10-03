@@ -5,6 +5,18 @@
     height="64"
     fixed
   >
+    <!-- 動畫容器 -->
+    <div class="walker-stage">
+            <img 
+              v-for="walker in activeWalkers" 
+              :key="walker.id"
+              :src="walker.src" 
+              class="walker"
+              :style="walker.style"
+              :data-walker-id="walker.id"
+            />
+    </div>
+
     <v-container class="d-flex align-center justify-space-between pa-0">
       <div class="brand-section" @click="goHome">
         <span class="brand-text">The BD2 Pulse</span>
@@ -156,6 +168,7 @@
 
 <script>
 import { useSettingsStore } from '@/stores/settings'
+import { watch } from 'vue'
 
 export default {
   name: "Navigation",
@@ -164,6 +177,22 @@ export default {
       mobileMenu: false,
       languageMenu: false,
       settingsStore: useSettingsStore(),
+
+      // --- Walker 相關 Data ---
+      walkerTemplates: [
+        { name: 'r2', duration: 25, direction: 'right', src: '/yuri/effects/r2(25s).gif' },
+        { name: 'l2', duration: 25, direction: 'left', src: '/yuri/effects/l2(25s).gif' },
+        { name: 'r3', duration: 10, direction: 'right', src: '/yuri/effects/r3(10s).gif' },
+        { name: 'l3', duration: 10, direction: 'left', src: '/yuri/effects/l3(10s).gif' },
+        { name: 'r4', duration: 15, direction: 'right', src: '/yuri/effects/r4(15s).gif' },
+        { name: 'l4', duration: 15, direction: 'left', src: '/yuri/effects/l4(15s).gif' },
+        { name: 'r5', duration: 20, direction: 'right', src: '/yuri/effects/r5(20s).gif' },
+        { name: 'l5', duration: 20, direction: 'left', src: '/yuri/effects/l5(20s).gif' },
+      ],
+      maxActiveWalkers: 8, // 同時存在的 Walker 數量上限
+      activeWalkers: [],
+      walkerInterval: null,
+      animationFrameId: null, // 用於控制動畫循環
     };
   },
   computed: {
@@ -202,8 +231,97 @@ export default {
     
     toggleMobileMenu() {
       this.mobileMenu = !this.mobileMenu;
+    },
+
+    // --- 全新的、統一的 Walker 動畫邏輯 ---
+    spawnWalker() {
+      // 檢查是否已達到數量上限
+      if (this.activeWalkers.length >= this.maxActiveWalkers) {
+        return; // 如果已達到上限，不生成新的 Walker
+      }
+
+      const template = this.walkerTemplates[Math.floor(Math.random() * this.walkerTemplates.length)];
+      const walkerWidth = 64; // 與 CSS 中設定的寬度一致
+
+      const newWalker = {
+        id: Date.now() + Math.random(),
+        src: template.src,
+        direction: template.direction,
+        duration: template.duration * 1000, // 將秒轉換為毫秒
+        startTime: performance.now(),
+        style: {
+          // 初始位置由 JS 控制，CSS 中不再需要 animation
+          transform: `translateX(${template.direction === 'left' ? -walkerWidth : window.innerWidth}px)`,
+          bottom: `${Math.random() * 4}px`,
+          zIndex: 5 - Math.round(template.duration / 5),
+        }
+      };
+      this.activeWalkers.push(newWalker);
+    },
+
+    // 動畫主循環
+    animateWalkers(timestamp) {
+      const windowWidth = window.innerWidth;
+      const walkerWidth = 64;
+
+      // 遍歷所有 activeWalkers，更新它們的位置
+      this.activeWalkers.forEach(walker => {
+        const progress = (timestamp - walker.startTime) / walker.duration; // 計算動畫進度 (0.0 to 1.0+)
+        
+        // 如果動畫已完成，則跳過計算
+        if (progress > 1.1) return; // 留一點緩衝
+
+        const totalDistance = windowWidth + walkerWidth;
+        const currentDistance = totalDistance * progress;
+
+        let currentPos;
+        if (walker.direction === 'left') {
+          // 從左向右移動
+          currentPos = -walkerWidth + currentDistance;
+        } else {
+          // 從右向左移動
+          currentPos = windowWidth - currentDistance;
+        }
+
+        // 直接更新 style 的 transform 屬性，Vue 會響應式地更新到 DOM
+        walker.style.transform = `translateX(${currentPos}px)`;
+      });
+
+      // 移除已經完全跑完動畫的 walker
+      this.activeWalkers = this.activeWalkers.filter(w => (timestamp - w.startTime) < w.duration * 1.1);
+
+      // 只要畫面上還有 walker，就繼續下一幀動畫
+      if (this.activeWalkers.length > 0) {
+        this.animationFrameId = requestAnimationFrame(this.animateWalkers);
+      } else {
+        this.animationFrameId = null; // 沒有 walker 了就停止循環
+      }
+    },
+
+    startWalkerSpawner() {
+      this.stopWalkerSpawner();
+      this.walkerInterval = setInterval(() => {
+        if (Math.random() < 0.3) {
+           // 每次生成 walker 時，如果動畫循環已停止，就重新啟動它
+          if (!this.animationFrameId) {
+            this.animationFrameId = requestAnimationFrame(this.animateWalkers);
+          }
+          this.spawnWalker();
+        }
+      }, 3000);
+    },
+
+    stopWalkerSpawner() {
+      clearInterval(this.walkerInterval);
+      this.walkerInterval = null;
+      if (this.animationFrameId) {
+        cancelAnimationFrame(this.animationFrameId);
+        this.animationFrameId = null;
+      }
+      this.activeWalkers = [];
     }
   },
+
   mounted() {
     // 確保設定已載入
     if (!this.settingsStore.isLoaded) {
@@ -215,9 +333,26 @@ export default {
       this.mobileMenu = false;
       this.languageMenu = false;
     });
+
+    // 監聽彩蛋模式變化
+    this.unwatch = watch(() => this.settingsStore.activeEasterEggMode, (newMode) => {
+      if (newMode === 'walker_mode') { 
+        this.startWalkerSpawner();
+      } else {
+        this.stopWalkerSpawner();
+      }
+    }, { immediate: true });
+  },
+
+  beforeUnmount() {
+    this.stopWalkerSpawner();
+    if (this.unwatch) {
+      this.unwatch();
+    }
   },
 };
 </script>
+
 
 <style scoped>
 /* 主導覽欄 */
@@ -225,7 +360,43 @@ export default {
   background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(20, 20, 20, 0.95) 100%);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
   z-index: 1000;
+}
+
+/* 導覽列的內容容器 (Logo, 按鈕等) */
+.custom-nav-bar :deep(.v-container) {
+  position: relative;
+  z-index: 2;
+}
+
+/* --- Walker 動畫樣式 --- */
+
+/* 動畫舞台 */
+.walker-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* 改回 hidden，因為 JS 會精確計算位置 */
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* 行走的角色 (GIF) - 只定義外觀，位置和動畫完全由 JS 控制 */
+.walker {
+  position: absolute;
+  height: 64px;
+  width: 64px; /* 固定寬度 */
+  bottom: 0;
+  pointer-events: none;
+  image-rendering: pixelated;
+  image-rendering: -webkit-optimize-contrast;
+  /* 關鍵: 告知瀏覽器 transform 會頻繁變動，進行優化 */
+  will-change: transform; 
+  /* 初始位置由 JS 的 style.transform 決定 */
+  left: 0; 
 }
 
 /* 品牌區域 */
@@ -253,6 +424,7 @@ export default {
   color: #e72857;
   letter-spacing: -0.02em;
 }
+
 
 /* 桌面版操作按鈕組 */
 .nav-actions {
@@ -402,5 +574,4 @@ export default {
   .nav-brand {
     margin-left: 0; /* 平板和手機版都不使用負 margin */
   }
-}
-</style>
+}</style>

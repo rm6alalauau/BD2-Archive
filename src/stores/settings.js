@@ -54,6 +54,8 @@ export const useSettingsStore = defineStore('settings', {
     isLoaded: false,
     // 2. 新增 icon 狀態
     selectedIcon: 'icon1',
+    // ++ 新增彩蛋模式狀態 ++
+    activeEasterEggMode: 'default', // 預設為 'default'，可設為 'walker_mode'
   }),
 
   getters: {
@@ -172,6 +174,9 @@ export const useSettingsStore = defineStore('settings', {
           this.dailyCheckinReminderEnabled = settings.dailyCheckinReminderEnabled || false
           this.dailyCheckinStatus = settings.dailyCheckinStatus || {}
           
+          // ++ 載入彩蛋模式設定 ++
+          this.activeEasterEggMode = settings.activeEasterEggMode || 'default'
+          
           this.applyFontScale()
         } else {
           // 如果沒有保存的設定，優先使用路由預設語言
@@ -220,6 +225,8 @@ export const useSettingsStore = defineStore('settings', {
         weeklyEventReminder: this.weeklyEventReminder,
         dailyCheckinReminderEnabled: this.dailyCheckinReminderEnabled,
         dailyCheckinStatus: this.dailyCheckinStatus,
+        // ++ 儲存彩蛋模式設定 ++
+        activeEasterEggMode: this.activeEasterEggMode,
       }
       
       localStorage.setItem('bd2_settings', JSON.stringify(settings))
@@ -306,6 +313,8 @@ export const useSettingsStore = defineStore('settings', {
       this.selectedIcon = 'icon1'
       this.dailyCheckinReminderEnabled = false
       this.dailyCheckinStatus = {}
+      // ++ 重置彩蛋模式 ++
+      this.activeEasterEggMode = 'default'
       
       this.applyFontScale()
       this.saveSettings()
@@ -457,6 +466,14 @@ export const useSettingsStore = defineStore('settings', {
     updateDailyCheckinStatus(statusData) {
       this.dailyCheckinStatus = { ...statusData }
       this.saveSettings()
+    },
+
+    // ++ 新增彩蛋模式相關的 action ++
+    // 設定彩蛋模式
+    setEasterEggMode(mode) {
+      this.activeEasterEggMode = mode
+      this.saveSettings()
+      console.log('[Settings] Easter Egg mode changed to:', mode)
     },
   }
 }) 
