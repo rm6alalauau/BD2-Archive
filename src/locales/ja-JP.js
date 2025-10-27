@@ -10,6 +10,7 @@ export default {
     home: 'ホーム',
     settings: '設定',
     feedback: 'フィードバック',
+    about: '情報',
     switchLanguage: '言語切り替え',
     languageSelection: '言語選択',
     openMenu: 'メニューを開く',
@@ -487,6 +488,32 @@ export default {
     remindLater: '後で提醒',
     completed: '完了',
     goToWebshop: 'ウェブショップへ'
+  },
+  
+  // 關於ページ
+  about: {
+    title: '情報',
+    description: 'The BD2 Pulse について',
+    cardTitle: 'サイトについて',
+    content: 'The BD2 Pulse は、『ブラウンダスト2』の非公式情報統合プラットフォームで、プレイヤーに便利な情報サービスを提供することを目的としています。最新の引き換えコード、公式アナウンス、コミュニティのトレンディングな議論をリアルタイムで更新し、常にゲームの動向を把握できるようにします。公式ニュース、コミュニティの議論、二次創作などの豊富なコンテンツを集めて、全てのゲーム関連情報に簡単にアクセスできます。',
+    openSource: {
+      title: 'オープンソース',
+      github: 'GitHub',
+      figma: 'Figma',
+      viewCode: 'コードを表示',
+      viewDesign: 'デザインを表示',
+      license: 'ライセンス'
+    },
+    techStack: {
+      title: '技術スタック'
+    },
+    sponsorshipReport: {
+      title: '後援レポート',
+      description: 'サイトの運営と後援情報を表示',
+      openFull: '新しいタブで完全なレポートを開く',
+      copyUrl: 'リンクをコピー',
+      copied: 'コピーしました'
+    }
   },
   
   // 免責事項

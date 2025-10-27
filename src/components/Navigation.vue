@@ -81,6 +81,17 @@
           <v-icon>mdi-comment-question-outline</v-icon>
           <v-tooltip activator="parent" location="bottom" :aria-label="t('nav.feedback')">{{ t('nav.feedback') }}</v-tooltip>
         </v-btn>
+
+        <!-- 關於按鈕 -->
+        <v-btn
+          icon
+          class="mr-2"
+          @click="goToAbout"
+          :aria-label="t('nav.about')"
+        >
+          <v-icon>mdi-information-outline</v-icon>
+          <v-tooltip activator="parent" location="bottom" :aria-label="t('nav.about')">{{ t('nav.about') }}</v-tooltip>
+        </v-btn>
       </div>
 
       <!-- 手機版選單按鈕 -->
@@ -130,6 +141,16 @@
           >
             <v-icon size="20" class="mr-3">mdi-comment-question-outline</v-icon>
             {{ t('nav.feedback') }}
+          </v-btn>
+          
+          <v-btn
+            @click="goToAbout"
+            variant="text"
+            class="mobile-nav-item"
+            block
+          >
+            <v-icon size="20" class="mr-3">mdi-information-outline</v-icon>
+            {{ t('nav.about') }}
           </v-btn>
 
           <!-- 手機版語言選擇 -->
@@ -220,6 +241,13 @@ export default {
       this.mobileMenu = false;
       if (this.$route.path !== '/feedback') {
         this.$router.push('/feedback');
+      }
+    },
+    
+    goToAbout() {
+      this.mobileMenu = false;
+      if (this.$route.path !== '/about') {
+        this.$router.push('/about');
       }
     },
     

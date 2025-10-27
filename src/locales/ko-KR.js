@@ -10,6 +10,7 @@ export default {
     home: '홈',
     settings: '설정',
     feedback: '피드백',
+    about: '정보',
     switchLanguage: '언어 전환',
     languageSelection: '언어 선택',
     openMenu: '메뉴 열기',
@@ -487,6 +488,32 @@ The BD2 Pulse를 이용해주시는 모든 유저분들께 감사드립니다! �
     remindLater: '나중에 알림',
     completed: '완료',
     goToWebshop: '웹샵으로 이동'
+  },
+  
+  // 정보 페이지
+  about: {
+    title: '정보',
+    description: 'The BD2 Pulse에 대해',
+    cardTitle: '사이트 정보',
+    content: 'The BD2 Pulse는 『브라운더스트 2』의 비공식 정보 통합 플랫폼으로, 플레이어들에게 편리한 정보 서비스를 제공하는 것을 목적으로 합니다. 최신 교환 코드, 공식 공지, 커뮤니티 트렌딩 토론을 실시간으로 업데이트하여 언제든 게임 동향을 파악할 수 있도록 합니다. 공식 뉴스, 커뮤니티 토론, 2차 창작 등 풍부한 콘텐츠를 모아 모든 게임 관련 정보를 쉽게 접근할 수 있습니다.',
+    openSource: {
+      title: '오픈 소스',
+      github: 'GitHub',
+      figma: 'Figma',
+      viewCode: '코드 보기',
+      viewDesign: '디자인 보기',
+      license: '라이선스'
+    },
+    techStack: {
+      title: '기술 스택'
+    },
+    sponsorshipReport: {
+      title: '후원 리포트',
+      description: '사이트 운영 및 후원 정보 확인',
+      openFull: '새 탭에서 전체 리포트 열기',
+      copyUrl: '링크 복사',
+      copied: '복사됨'
+    }
   },
   
   // 면책 조항

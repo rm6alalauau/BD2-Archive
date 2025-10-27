@@ -10,6 +10,7 @@ export default {
     home: 'Home',
     settings: 'Settings',
     feedback: 'Feedback',
+    about: 'About',
     switchLanguage: 'Switch Language',
     languageSelection: 'Language Selection',
     openMenu: 'Open Menu',
@@ -487,6 +488,32 @@ Thank you again for all your support!`,
     remindLater: 'Remind Later',
     completed: 'Completed',
     goToWebshop: 'Go to Webshop'
+  },
+  
+  // About page
+  about: {
+    title: 'About',
+    description: 'Learn about The BD2 Pulse',
+    cardTitle: 'About the Site',
+    content: 'The BD2 Pulse is an unofficial Brown Dust 2 information integration platform dedicated to providing convenient information services for players. We update the latest redemption codes, official announcements, and trending community discussions in real-time, keeping you up-to-date with the game. We gather official news, community discussions, fan creations, and more, helping you easily access all game-related information.',
+    openSource: {
+      title: 'Open Source',
+      github: 'GitHub',
+      figma: 'Figma',
+      viewCode: 'View Code',
+      viewDesign: 'View Design',
+      license: 'License'
+    },
+    techStack: {
+      title: 'Tech Stack'
+    },
+    sponsorshipReport: {
+      title: 'Sponsorship Report',
+      description: 'View site operations and sponsorship information',
+      openFull: 'Open Full Report in New Tab',
+      copyUrl: 'Copy Link',
+      copied: 'Copied'
+    }
   },
   
   // Disclaimer
