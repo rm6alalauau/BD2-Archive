@@ -10,6 +10,7 @@ export default {
     home: '首頁',
     settings: '設定',
     feedback: '意見回饋',
+    about: '關於',
     switchLanguage: '切換語言',
     languageSelection: '語言選擇',
     openMenu: '開啟選單',
@@ -493,6 +494,32 @@ export default {
     goToWebshop: '前往網路商店'
   },
 
+  // 關於頁面
+  about: {
+    title: '關於',
+    description: '了解 The BD2 Pulse',
+    cardTitle: '關於網站',
+    content: 'The BD2 Pulse 是一個非官方的《棕色塵埃2》遊戲資訊整合平台，致力於為玩家提供便利的資訊服務。我們即時更新最新兌換碼、官方公告與社群熱門話題，讓您隨時掌握遊戲動態。我們匯聚了官方新聞、社群討論、二次創作等豐富內容，幫助您輕鬆獲取所有遊戲相關資訊。',
+    openSource: {
+      title: '開放原始碼',
+      github: 'GitHub',
+      figma: 'Figma',
+      viewCode: '查看原始碼',
+      viewDesign: '查看設計',
+      license: '授權'
+    },
+    techStack: {
+      title: '技術棧'
+    },
+    sponsorshipReport: {
+      title: '贊助報表',
+      description: '查看網站的運營與贊助情況',
+      openFull: '在新分頁打開完整報表',
+      copyUrl: '複製連結',
+      copied: '已複製'
+    }
+  },
+  
   // 免責聲明
   disclaimer: {
     title: '免責聲明與版權資訊',

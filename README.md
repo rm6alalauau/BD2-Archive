@@ -1,8 +1,20 @@
 # The BD2 Pulse
 
-A gaming information aggregation platform for Brown Dust 2 players.
+A fan-made information aggregation platform for Brown Dust 2 players.
 
-## Tech Stack
+> ⚠️ **Note**: This is an unofficial fan site with no affiliation to the game's developers or publishers.
+
+## ✨ Features
+
+- 📰 **Official News** - Stay updated with the latest game announcements
+- 💬 **Community Forums** - Aggregate posts from Bahamut, PTT, NGA, Reddit, and more
+- 🎨 **Fan Creations** - Discover amazing artwork on Pixiv
+- 📱 **Redeem Codes** - Quick access to active redemption codes
+- 🔔 **Push Notifications** - Get notified when new redeem codes are available
+- 🌐 **Multi-language** - Support for Traditional Chinese, Simplified Chinese, English, Japanese, and Korean
+- ⚙️ **Customizable** - Adjust font size, toggle content filters, and more
+
+## 🛠️ Tech Stack
 
 **Frontend Framework**
 - Vue 3 with Composition API
@@ -32,7 +44,7 @@ A gaming information aggregation platform for Brown Dust 2 players.
 - Multi-language support (Traditional Chinese, Simplified Chinese, English, Japanese, Korean)
 - Dynamic language switching with persistent preferences
 
-## Architecture
+## 📁 Architecture
 
 ```
 src/
@@ -47,25 +59,44 @@ src/
 └── utils/              # Utility functions
 ```
 
-## Installation
+## 🚀 Quick Start
+
+### Installation
 
 ```bash
 npm install
 ```
 
-## Development
+### Development
 
 ```bash
 npm run dev
 ```
 
-## Build
+### Build
 
 ```bash
 npm run build
 ```
 
+### Preview Production Build
+
+```bash
+npm run preview
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+### Design Resources
+
+- [Figma Community File](https://www.figma.com/community/file/1441663496302710815/zzz-archive)
+
 ## 📑 License
+
 [MIT](http://opensource.org/licenses/MIT)
 
-Copyright (c) 2016-present Vuetify, LLC
+---
+
+**Disclaimer**: This is a fan-created unofficial information site with no affiliation to NEOWIZ or the Brown Dust 2 operations team.
