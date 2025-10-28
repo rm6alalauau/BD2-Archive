@@ -526,6 +526,7 @@ Thank you again for all your support!`,
   feedbackTracker: {
     title: 'Feedback Tracker',
     back: 'Back',
+    scrollToTop: 'Scroll to Top',
     description: 'Track feedback status',
     loading: 'Loading...',
     noData: 'No feedback records yet',

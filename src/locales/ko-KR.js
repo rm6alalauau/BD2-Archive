@@ -526,6 +526,7 @@ The BD2 Pulse를 이용해주시는 모든 유저분들께 감사드립니다! �
   feedbackTracker: {
     title: '피드백 추적',
     back: '돌아가기',
+    scrollToTop: '맨 위로',
     description: '피드백 처리 상태 확인',
     loading: '로딩 중...',
     noData: '피드백 기록이 없습니다',

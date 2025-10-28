@@ -526,6 +526,7 @@ export default {
   feedbackTracker: {
     title: '意见追踪',
     back: '返回',
+    scrollToTop: '回到顶部',
     description: '查看意见反馈处理状态',
     loading: '加载中...',
     noData: '尚无意见反馈记录',

@@ -526,6 +526,7 @@ export default {
   feedbackTracker: {
     title: 'フィードバック追跡',
     back: '戻る',
+    scrollToTop: 'トップに戻る',
     description: 'フィードバックの処理状況を確認',
     loading: '読み込み中...',
     noData: 'フィードバック記録がありません',

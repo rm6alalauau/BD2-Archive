@@ -530,6 +530,7 @@ export default {
   feedbackTracker: {
     title: '意見追蹤',
     back: '返回',
+    scrollToTop: '回到頂部',
     description: '查看意見回饋處理狀態',
     loading: '載入中...',
     noData: '尚無意見回饋記錄',
