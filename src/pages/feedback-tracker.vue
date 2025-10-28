@@ -42,7 +42,7 @@
         <!-- 意見回饋列表 -->
         <div v-else class="feedback-list">
           <v-card
-            v-for="item in feedbackItems"
+            v-for="item in paginatedItems"
             :key="item.id"
             rounded="xl"
             class="feedback-item-card mb-4"
@@ -51,7 +51,7 @@
               <!-- 卡片標題區域 -->
               <div class="card-header mb-4">
                 <div class="d-flex align-center justify-space-between flex-wrap">
-                  <div class="d-flex align-center gap-3">
+                  <div class="d-flex align-center">
                     <!-- 狀態徽章 -->
                     <v-chip
                       :color="getStatusColor(item.status)"
@@ -70,7 +70,7 @@
                       size="small"
                       variant="tonal"
                       rounded="lg"
-                      class="type-chip"
+                      class="type-chip ml-2"
                     >
                       <v-icon :icon="getTypeIcon(item.type)" size="16" class="mr-1"></v-icon>
                       {{ getTypeText(item.type) }}
@@ -113,6 +113,45 @@
             </v-card-text>
           </v-card>
         </div>
+
+        <!-- 分頁器 -->
+        <div v-if="totalPages > 1" class="text-center mt-6 mb-6">
+          <v-pagination
+            v-model="currentPage"
+            :length="totalPages"
+            :total-visible="7"
+            color="primary"
+            rounded="circle"
+          ></v-pagination>
+        </div>
+
+        <!-- 底部導航按鈕 -->
+        <div v-if="!loading && feedbackItems.length > 0" class="bottom-nav-buttons mt-6 mb-4">
+          <div class="d-flex align-center justify-space-between">
+            <v-btn
+              @click="scrollToTop"
+              color="primary"
+              variant="text"
+              size="small"
+              class="mr-2"
+              :aria-label="t('feedbackTracker.scrollToTop')"
+            >
+              <v-icon class="mr-2">mdi-chevron-up</v-icon>
+              {{ t('feedbackTracker.scrollToTop') }}
+            </v-btn>
+            
+            <v-btn
+              @click="goBack"
+              color="secondary"
+              variant="outlined"
+              size="small"
+              :aria-label="t('feedbackTracker.back')"
+            >
+              <v-icon class="mr-2">mdi-arrow-left</v-icon>
+              {{ t('feedbackTracker.back') }}
+            </v-btn>
+          </div>
+        </div>
       </v-col>
     </v-row>
   </v-container>
@@ -132,13 +171,27 @@ export default {
   data() {
     return {
       loading: false,
-      feedbackItems: []
+      feedbackItems: [],
+      currentPage: 1,
+      itemsPerPage: 5
     }
   },
   computed: {
     // 多語言文字
     t() {
       return (key, params) => this.$t(key, this.settingsStore.selectedLanguage, params);
+    },
+    
+    // 計算總頁數
+    totalPages() {
+      return Math.ceil(this.feedbackItems.length / this.itemsPerPage);
+    },
+    
+    // 計算當前頁顯示的項目
+    paginatedItems() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.feedbackItems.slice(start, end);
     }
   },
   mounted() {
@@ -173,6 +226,11 @@ export default {
     // 返回上一頁
     goBack() {
       this.$router.back();
+    },
+    
+    // 滾動到頂部
+    scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     },
     
     // 獲取處理狀態的文字
@@ -383,6 +441,12 @@ export default {
   backdrop-filter: blur(10px);
 }
 
+/* 底部導航按鈕 */
+.bottom-nav-buttons {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 24px;
+}
+
 /* 響應式設計 */
 @media (max-width: 768px) {
   .page-title {
@@ -406,6 +470,15 @@ export default {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
+  }
+  
+  .bottom-nav-buttons .d-flex {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .bottom-nav-buttons .v-btn {
+    width: 100%;
   }
 }
 
