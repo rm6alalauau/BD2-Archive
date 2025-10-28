@@ -66,7 +66,7 @@
                     
                     <!-- 類型徽章 -->
                     <v-chip
-                      color="secondary"
+                      :color="getTypeColor(item.type)"
                       size="small"
                       variant="tonal"
                       rounded="lg"
@@ -156,7 +156,12 @@ export default {
       this.loading = true;
       try {
         const response = await this.appStore.fetchFeedbackData();
-        this.feedbackItems = response || [];
+        // 按日期排序，新的在上
+        this.feedbackItems = (response || []).sort((a, b) => {
+          const dateA = new Date(a.created_at);
+          const dateB = new Date(b.created_at);
+          return dateB - dateA; // 降序：新的在前
+        });
       } catch (error) {
         console.error('載入意見回饋數據失敗:', error);
         this.feedbackItems = [];
@@ -217,6 +222,17 @@ export default {
         'other': 'mdi-dots-horizontal'
       };
       return iconMap[type] || 'mdi-tag';
+    },
+    
+    // 獲取類型的顏色
+    getTypeColor(type) {
+      const colorMap = {
+        'bug': 'error',
+        'content': 'warning',
+        'suggestion': 'info',
+        'other': 'default'
+      };
+      return colorMap[type] || 'default';
     },
     
     // 獲取意見內容的文字（根據當前語言）
