@@ -10,6 +10,7 @@ export default {
     home: 'Home',
     settings: 'Settings',
     feedback: 'Feedback',
+    feedbackTracker: 'Feedback Tracker',
     about: 'About',
     switchLanguage: 'Switch Language',
     languageSelection: 'Language Selection',
@@ -328,6 +329,11 @@ Thank you again for all your support!`,
     description: 'Help us improve your experience',
     cardTitle: 'Share Your Thoughts',
     formDescription: 'Thank you for taking the time to provide valuable feedback. Your input helps us continuously improve website functionality and user experience.',
+    trackerPromo: {
+      title: 'Feedback Tracker',
+      description: 'Track all reports and improvements',
+      view: 'View Now'
+    },
     
     // Form
     form: {
@@ -513,6 +519,24 @@ Thank you again for all your support!`,
       openFull: 'Open Full Report in New Tab',
       copyUrl: 'Copy Link',
       copied: 'Copied'
+    }
+  },
+  
+  // Feedback Tracker page
+  feedbackTracker: {
+    title: 'Feedback Tracker',
+    back: 'Back',
+    description: 'Track feedback status',
+    loading: 'Loading...',
+    noData: 'No feedback records yet',
+    noDataDescription: 'You haven\'t submitted any feedback yet',
+    feedback: 'Feedback',
+    resolution: 'Resolution',
+    status: {
+      completed: 'Completed',
+      inProgress: 'In Progress',
+      pending: 'Pending',
+      rejected: 'Rejected'
     }
   },
   

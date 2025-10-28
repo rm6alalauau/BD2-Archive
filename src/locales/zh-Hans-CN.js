@@ -10,6 +10,7 @@ export default {
     home: '首页',
     settings: '设置',
     feedback: '意见反馈',
+    feedbackTracker: '意见追踪',
     about: '关于',
     switchLanguage: '切换语言',
     languageSelection: '语言选择',
@@ -328,6 +329,11 @@ export default {
     description: '协助我们改善您的使用体验',
     cardTitle: '分享您的想法',
     formDescription: '感谢您花时间提供宝贵的意见。您的反馈将帮助我们持续改善网站功能与使用体验。',
+    trackerPromo: {
+      title: '查看意见追踪',
+      description: '追踪所有汇报与改进的处理状态',
+      view: '立即查看'
+    },
     
     // 表单
     form: {
@@ -513,6 +519,24 @@ export default {
       openFull: '在新分页打开完整报表',
       copyUrl: '复制链接',
       copied: '已复制'
+    }
+  },
+  
+  // 意见追踪页面
+  feedbackTracker: {
+    title: '意见追踪',
+    back: '返回',
+    description: '查看意见反馈处理状态',
+    loading: '加载中...',
+    noData: '尚无意见反馈记录',
+    noDataDescription: '还没有提交过意见反馈',
+    feedback: '意见内容',
+    resolution: '处理方式',
+    status: {
+      completed: '已完成',
+      inProgress: '处理中',
+      pending: '待处理',
+      rejected: '已拒绝'
     }
   },
   

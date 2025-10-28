@@ -276,6 +276,22 @@ export const useAppStore = defineStore('app', {
       // 暫時保持空實現，等待具體的 API 端點
     },
     
+    // 獲取意見回饋追蹤數據
+    async fetchFeedbackData() {
+      try {
+        const apiUrl = getApiUrl('https://api.thebd2pulse.com/feedback');
+        const response = await retryFetch(apiUrl);
+        const data = await response.json();
+        
+        // 返回意見回饋數據陣列
+        return data || [];
+        
+      } catch (error) {
+        console.error("Error fetching feedback data:", error);
+        return [];
+      }
+    },
+    
     // 獲取兌換碼數據
     async fetchRedeemCodes() {
       try {

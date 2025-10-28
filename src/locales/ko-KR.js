@@ -10,6 +10,7 @@ export default {
     home: '홈',
     settings: '설정',
     feedback: '피드백',
+    feedbackTracker: '피드백 추적',
     about: '정보',
     switchLanguage: '언어 전환',
     languageSelection: '언어 선택',
@@ -328,6 +329,11 @@ The BD2 Pulse를 이용해주시는 모든 유저분들께 감사드립니다! �
     description: '사용 경험 개선에 도움을 주세요',
     cardTitle: '의견을 공유해 주세요',
     formDescription: '소중한 의견을 제공해 주셔서 감사합니다. 여러분의 피드백은 웹사이트 기능과 사용자 경험을 지속적으로 개선하는 데 도움이 됩니다.',
+    trackerPromo: {
+      title: '피드백 추적',
+      description: '모든 보고 및 개선 사항의 처리 상태 확인',
+      view: '지금 보기'
+    },
     
     // Form
     form: {
@@ -513,6 +519,24 @@ The BD2 Pulse를 이용해주시는 모든 유저분들께 감사드립니다! �
       openFull: '새 탭에서 전체 리포트 열기',
       copyUrl: '링크 복사',
       copied: '복사됨'
+    }
+  },
+  
+  // 피드백 추적 페이지
+  feedbackTracker: {
+    title: '피드백 추적',
+    back: '돌아가기',
+    description: '피드백 처리 상태 확인',
+    loading: '로딩 중...',
+    noData: '피드백 기록이 없습니다',
+    noDataDescription: '아직 피드백을 제출하지 않았습니다',
+    feedback: '피드백 내용',
+    resolution: '처리 방법',
+    status: {
+      completed: '완료',
+      inProgress: '처리 중',
+      pending: '대기 중',
+      rejected: '거부됨'
     }
   },
   

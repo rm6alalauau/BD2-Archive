@@ -10,6 +10,7 @@ export default {
     home: '首頁',
     settings: '設定',
     feedback: '意見回饋',
+    feedbackTracker: '意見追蹤',
     about: '關於',
     switchLanguage: '切換語言',
     languageSelection: '語言選擇',
@@ -332,6 +333,11 @@ export default {
     description: '協助我們改善您的使用體驗',
     cardTitle: '分享您的想法',
     formDescription: '感謝您花時間提供寶貴的意見。您的回饋將幫助我們持續改善網站功能與使用體驗。',
+    trackerPromo: {
+      title: '查看意見追蹤',
+      description: '追蹤所有回報與改進的處理狀態',
+      view: '立即查看'
+    },
     
     // 表單
     form: {
@@ -517,6 +523,24 @@ export default {
       openFull: '在新分頁打開完整報表',
       copyUrl: '複製連結',
       copied: '已複製'
+    }
+  },
+  
+  // 意見追蹤頁面
+  feedbackTracker: {
+    title: '意見追蹤',
+    back: '返回',
+    description: '查看意見回饋處理狀態',
+    loading: '載入中...',
+    noData: '尚無意見回饋記錄',
+    noDataDescription: '還沒有提交過意見回饋',
+    feedback: '意見內容',
+    resolution: '處理方式',
+    status: {
+      completed: '已完成',
+      inProgress: '處理中',
+      pending: '待處理',
+      rejected: '已拒絕'
     }
   },
   

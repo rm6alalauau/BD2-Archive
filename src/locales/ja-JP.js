@@ -10,6 +10,7 @@ export default {
     home: 'ホーム',
     settings: '設定',
     feedback: 'フィードバック',
+    feedbackTracker: 'フィードバック追跡',
     about: '情報',
     switchLanguage: '言語切り替え',
     languageSelection: '言語選択',
@@ -328,6 +329,11 @@ export default {
     description: 'ユーザー体験の改善にご協力ください',
     cardTitle: 'ご意見をお聞かせください',
     formDescription: '貴重なご意見をお寄せいただき、ありがとうございます。皆様のフィードバックは、ウェブサイトの機能とユーザー体験の継続的な改善に役立てさせていただきます。',
+    trackerPromo: {
+      title: 'フィードバック追跡',
+      description: 'すべての報告と改善状況を確認',
+      view: '今すぐ確認'
+    },
     
     // Form
     form: {
@@ -513,6 +519,24 @@ export default {
       openFull: '新しいタブで完全なレポートを開く',
       copyUrl: 'リンクをコピー',
       copied: 'コピーしました'
+    }
+  },
+  
+  // フィードバック追跡ページ
+  feedbackTracker: {
+    title: 'フィードバック追跡',
+    back: '戻る',
+    description: 'フィードバックの処理状況を確認',
+    loading: '読み込み中...',
+    noData: 'フィードバック記録がありません',
+    noDataDescription: 'まだフィードバックを提出していません',
+    feedback: 'フィードバック内容',
+    resolution: '対応方法',
+    status: {
+      completed: '完了',
+      inProgress: '処理中',
+      pending: '保留中',
+      rejected: '却下'
     }
   },
   
