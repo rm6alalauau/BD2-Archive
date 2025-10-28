@@ -8,6 +8,29 @@
           <p class="page-subtitle">{{ t('feedback.description') }}</p>
         </div>
 
+        <!-- 意見追蹤提示卡 -->
+        <v-card rounded="xl" class="tracker-promo-card mb-4">
+          <v-card-text class="d-flex align-center justify-space-between flex-wrap pa-4">
+            <div class="d-flex align-center">
+              <v-icon color="primary" size="24" class="mr-3">mdi-ticket-account</v-icon>
+              <div>
+                <div class="text-h6 font-weight-medium">{{ t('feedback.trackerPromo.title') }}</div>
+                <div class="text-caption text-medium-emphasis">{{ t('feedback.trackerPromo.description') }}</div>
+              </div>
+            </div>
+            <v-btn
+              @click="goToFeedbackTracker"
+              color="primary"
+              variant="outlined"
+              size="small"
+              class="mt-3 mt-sm-0"
+            >
+              <v-icon size="16" class="mr-2">mdi-arrow-right</v-icon>
+              {{ t('feedback.trackerPromo.view') }}
+            </v-btn>
+          </v-card-text>
+        </v-card>
+
         <!-- 主要表單卡片 -->
         <v-card rounded="xl" class="feedback-card">
           <v-card-title class="feedback-card-title">
@@ -241,9 +264,16 @@ export default {
       return { os, browser, deviceType };
     },
     
-    /**
-     * 提交表單數據到 Google Form
-     */
+      /**
+       * 前往意見追蹤頁面
+       */
+      goToFeedbackTracker() {
+        this.$router.push('/feedback-tracker');
+      },
+
+      /**
+       * 提交表單數據到 Google Form
+       */
     async submitFeedback() {
       // 觸發 Vuetify 的驗證
       const { valid } = await this.$refs.form.validate();
@@ -453,6 +483,19 @@ export default {
 
 .alert-content {
   font-weight: 500;
+}
+
+/* 意見追蹤提示卡片 */
+.tracker-promo-card {
+  background: linear-gradient(135deg, rgba(231, 40, 87, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(231, 40, 87, 0.2);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.tracker-promo-card:hover {
+  border-color: rgba(231, 40, 87, 0.3);
+  box-shadow: 0 4px 16px rgba(231, 40, 87, 0.1);
 }
 
 /* 資訊卡片 */
