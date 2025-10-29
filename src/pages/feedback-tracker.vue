@@ -462,6 +462,30 @@ export default {
   border-color: #e72857 !important;
 }
 
+/* 無論是否 hover/focus，選中都維持紅底白字 */
+:deep(.v-pagination .v-pagination__item--is-active .v-btn:hover),
+:deep(.v-pagination .v-pagination__item--is-active .v-btn:focus),
+:deep(.v-pagination .v-pagination__item--is-active .v-btn:focus-visible),
+:deep(.v-pagination .v-pagination__item--is-active .v-btn:active) {
+  color: #ffffff !important;
+  background-color: #e72857 !important;
+  border-color: #e72857 !important;
+}
+
+/* 覆寫 Vuetify 的 underlay/overlay，避免白色或其他顏色覆蓋 */
+:deep(.v-pagination .v-pagination__item--is-active .v-btn .v-btn__underlay) {
+  background-color: #e72857 !important;
+  opacity: 1 !important;
+}
+
+:deep(.v-pagination .v-pagination__item--is-active .v-btn .v-btn__overlay) {
+  background-color: transparent !important;
+}
+
+:deep(.v-pagination .v-pagination__item--is-active .v-btn .v-btn__content) {
+  color: #ffffff !important;
+}
+
 /* 針對鍵盤聚焦環的顯示，改為紅色陰影，避免白色與背景衝突 */
 :deep(.v-pagination .v-btn:focus-visible) {
   box-shadow: 0 0 0 2px rgba(231, 40, 87, 0.5) !important;
