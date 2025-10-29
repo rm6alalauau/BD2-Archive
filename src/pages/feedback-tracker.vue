@@ -444,51 +444,31 @@ export default {
   backdrop-filter: blur(10px);
 }
 
-/* 分頁器樣式 */
+/* 設定 v-pagination 元件的主題色，這會影響 hover 等效果的顏色 */
 :deep(.v-pagination) {
-  --v-pagination-item-active-color: #e72857;
+  --v-theme-primary: #e72857;
+  --v-pagination-item-active-color: #ffffff; /* 設定啟用項目的文字顏色 */
 }
 
-:deep(.v-pagination .v-pagination__item--is-active) {
-  /* 使用紅色作為外框/邊界用的 currentColor，避免白色外框吃掉數字 */
-  color: #e72857 !important;
+/* 針對當前啟用(active)的分頁按鈕 */
+:deep(.v-pagination .v-pagination__item--is-active .v-btn) {
+  background-color: #e72857 !important; /* 紅色背景 */
+  color: #ffffff !important;             /* 白色文字 */
+  border-color: #e72857 !important;     /* 紅色邊框 */
   font-weight: 600;
 }
 
-:deep(.v-pagination .v-pagination__item--is-active .v-btn) {
-  /* 內部數字用白色，背景用紅色，邊框同紅色，避免看不到數字 */
-  color: #ffffff !important;
-  background-color: #e72857 !important;
-  border-color: #e72857 !important;
-}
-
-/* 無論是否 hover/focus，選中都維持紅底白字 */
+/* 確保 hover 或 focus 狀態下，啟用按鈕的樣式不變 */
 :deep(.v-pagination .v-pagination__item--is-active .v-btn:hover),
-:deep(.v-pagination .v-pagination__item--is-active .v-btn:focus),
-:deep(.v-pagination .v-pagination__item--is-active .v-btn:focus-visible),
-:deep(.v-pagination .v-pagination__item--is-active .v-btn:active) {
-  color: #ffffff !important;
+:deep(.v-pagination .v-pagination__item--is-active .v-btn:focus-visible) {
   background-color: #e72857 !important;
-  border-color: #e72857 !important;
-}
-
-/* 覆寫 Vuetify 的 underlay/overlay，避免白色或其他顏色覆蓋 */
-:deep(.v-pagination .v-pagination__item--is-active .v-btn .v-btn__underlay) {
-  background-color: #e72857 !important;
-  opacity: 1 !important;
-}
-
-:deep(.v-pagination .v-pagination__item--is-active .v-btn .v-btn__overlay) {
-  background-color: transparent !important;
-}
-
-:deep(.v-pagination .v-pagination__item--is-active .v-btn .v-btn__content) {
   color: #ffffff !important;
 }
 
-/* 針對鍵盤聚焦環的顯示，改為紅色陰影，避免白色與背景衝突 */
+/* 針對鍵盤聚焦環(focus ring)的顯示，避免預設的白色外框 */
 :deep(.v-pagination .v-btn:focus-visible) {
-  box-shadow: 0 0 0 2px rgba(231, 40, 87, 0.5) !important;
+  outline: 2px solid rgba(231, 40, 87, 0.6) !important;
+  outline-offset: 1px;
 }
 
 /* 底部導航按鈕 */
