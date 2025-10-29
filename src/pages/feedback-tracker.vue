@@ -444,21 +444,29 @@ export default {
   backdrop-filter: blur(10px);
 }
 
-:deep(.v-pagination) {
-  /* 設定主題色，這會影響 hover 等效果的顏色 */
-  --v-theme-primary: #e72857;
-  --v-pagination-item-active-color: #e72857;
-}
-
 :deep(.v-pagination .v-pagination__item--is-active .v-btn) {
-  color: #ffffff !important; /* 強制文字為白色 */
+  background-color: #e72857 !important; /* 強制背景為紅色 */
+  color: #ffffff !important;             /* 強制文字為白色 */
+  border-color: #e72857 !important;      /* 邊框也設為同色 */
   font-weight: 600;
 }
 
-/* 針對鍵盤聚焦環(focus ring)的顯示，避免預設的白色外框 */
+:deep(.v-pagination .v-pagination__item--is-active .v-btn .v-btn__overlay) {
+  display: none !important;
+}
+
+:deep(.v-pagination .v-pagination__item--is-active .v-btn .v-btn__underlay) {
+  display: none !important;
+}
+
+:deep(.v-pagination .v-pagination__item--is-active .v-btn:hover) {
+  background-color: #e72857 !important;
+  color: #ffffff !important;
+}
+
 :deep(.v-pagination .v-btn:focus-visible) {
-  outline: 2px solid rgba(231, 40, 87, 0.6);
-  outline-offset: 1px;
+  outline: 2px solid rgba(231, 40, 87, 0.6) !important;
+  outline-offset: 2px;
 }
 
 /* 底部導航按鈕 */
