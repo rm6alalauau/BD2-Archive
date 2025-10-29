@@ -444,30 +444,20 @@ export default {
   backdrop-filter: blur(10px);
 }
 
-/* 設定 v-pagination 元件的主題色，這會影響 hover 等效果的顏色 */
 :deep(.v-pagination) {
+  /* 設定主題色，這會影響 hover 等效果的顏色 */
   --v-theme-primary: #e72857;
-  --v-pagination-item-active-color: #ffffff; /* 設定啟用項目的文字顏色 */
+  --v-pagination-item-active-color: #e72857;
 }
 
-/* 針對當前啟用(active)的分頁按鈕 */
 :deep(.v-pagination .v-pagination__item--is-active .v-btn) {
-  background-color: #e72857 !important; /* 紅色背景 */
-  color: #ffffff !important;             /* 白色文字 */
-  border-color: #e72857 !important;     /* 紅色邊框 */
+  color: #ffffff !important; /* 強制文字為白色 */
   font-weight: 600;
-}
-
-/* 確保 hover 或 focus 狀態下，啟用按鈕的樣式不變 */
-:deep(.v-pagination .v-pagination__item--is-active .v-btn:hover),
-:deep(.v-pagination .v-pagination__item--is-active .v-btn:focus-visible) {
-  background-color: #e72857 !important;
-  color: #ffffff !important;
 }
 
 /* 針對鍵盤聚焦環(focus ring)的顯示，避免預設的白色外框 */
 :deep(.v-pagination .v-btn:focus-visible) {
-  outline: 2px solid rgba(231, 40, 87, 0.6) !important;
+  outline: 2px solid rgba(231, 40, 87, 0.6);
   outline-offset: 1px;
 }
 
