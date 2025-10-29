@@ -450,13 +450,21 @@ export default {
 }
 
 :deep(.v-pagination .v-pagination__item--is-active) {
-  color: #ffffff !important;
+  /* 使用紅色作為外框/邊界用的 currentColor，避免白色外框吃掉數字 */
+  color: #e72857 !important;
   font-weight: 600;
 }
 
 :deep(.v-pagination .v-pagination__item--is-active .v-btn) {
+  /* 內部數字用白色，背景用紅色，邊框同紅色，避免看不到數字 */
   color: #ffffff !important;
   background-color: #e72857 !important;
+  border-color: #e72857 !important;
+}
+
+/* 針對鍵盤聚焦環的顯示，改為紅色陰影，避免白色與背景衝突 */
+:deep(.v-pagination .v-btn:focus-visible) {
+  box-shadow: 0 0 0 2px rgba(231, 40, 87, 0.5) !important;
 }
 
 /* 底部導航按鈕 */
