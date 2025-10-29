@@ -427,6 +427,9 @@ export default {
   color: rgba(255, 255, 255, 0.85);
   text-align: justify;
   text-justify: inter-ideograph;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
 }
 
 .resolution-text {
@@ -439,6 +442,21 @@ export default {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
   border: 1px solid rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(10px);
+}
+
+/* 分頁器樣式 */
+:deep(.v-pagination) {
+  --v-pagination-item-active-color: #e72857;
+}
+
+:deep(.v-pagination .v-pagination__item--is-active) {
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+:deep(.v-pagination .v-pagination__item--is-active .v-btn) {
+  color: #ffffff !important;
+  background-color: #e72857 !important;
 }
 
 /* 底部導航按鈕 */
