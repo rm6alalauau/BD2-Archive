@@ -4,6 +4,12 @@ export default {
   common: {
     today: '오늘'
   },
+
+  // 서비스 공지
+  serviceAnnouncement: {
+    title: '서비스 공지',
+    content: '개발자의 개인 일정으로 인해 12월 18일부터 12월 25일까지는 사이트의 일부 실시간 콘텐츠(예: 교환 코드) 업데이트가 지연될 수 있습니다. 불편을 드려 죄송합니다.'
+  },
   
   // Navigation
   nav: {

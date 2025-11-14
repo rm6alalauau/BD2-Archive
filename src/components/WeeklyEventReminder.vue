@@ -1,4 +1,33 @@
 <template>
+  <div class="weekly-reminder-container">
+    <v-banner
+      v-if="shouldDisplayServiceAnnouncement"
+      class="service-announcement-banner mb-4"
+      color="warning"
+      density="comfortable"
+      rounded="lg"
+      prepend-icon="mdi-alert-circle-outline"
+      variant="tonal"
+    >
+      <template #text>
+        <div class="banner-text">
+          <div class="banner-title">{{ t('serviceAnnouncement.title') }}</div>
+          <div class="banner-content">
+            {{ t('serviceAnnouncement.content') }}
+          </div>
+        </div>
+      </template>
+      <template #actions>
+        <v-btn
+          variant="text"
+          color="warning"
+          @click="dismissServiceAnnouncement"
+        >
+          {{ t('common.close') }}
+        </v-btn>
+      </template>
+    </v-banner>
+
     <v-dialog
       v-model="showReminder"
       max-width="400"
@@ -15,16 +44,16 @@
             <v-icon color="white">mdi-calendar-check</v-icon>
           </v-avatar>
         </template>
-  
+
         <template v-slot:subtitle>
           {{ t('weeklyReminder.currentWeek', { week: currentWeek }) }}
         </template>
-  
+
         <v-card-text class="pb-4">
           <p class="text-body-1 mb-4">
             {{ t('weeklyReminder.description') }}
           </p>
-          
+
           <!-- 移除 v-card，直接顯示時間 -->
           <div>
             <div class="text-caption text-medium-emphasis">
@@ -35,40 +64,41 @@
             </div>
           </div>
         </v-card-text>
-  
+
         <!-- 使用 v-card-actions 進行標準按鈕佈局 -->
         <v-card-actions class="px-6 pb-4">
-        <!-- "稍後提醒" 作為最低優先級，使用 text button，放在最左邊 -->
-        <v-btn
-          variant="text"
-          @click="dismissReminder"
-        >
-          {{ t('weeklyReminder.remindLater') }}
-        </v-btn>
-        
-        <v-spacer></v-spacer>
-        
-        <!-- "已完成" 作為中等優先級，使用 tonal button -->
-        <v-btn
-          variant="tonal"
-          @click="markAsCompleted"
-          class="mr-2"
-        >
-          {{ t('weeklyReminder.completed') }}
-        </v-btn>
-        
-        <!-- "前往" 作為最高優先級，使用 elevated button -->
-        <v-btn
-          color="primary"
-          variant="elevated"
-          @click="openWebshop"
-        >
-          {{ t('weeklyReminder.goToWebshop') }}
-        </v-btn>
-      </v-card-actions>
+          <!-- "稍後提醒" 作為最低優先級，使用 text button，放在最左邊 -->
+          <v-btn
+            variant="text"
+            @click="dismissReminder"
+          >
+            {{ t('weeklyReminder.remindLater') }}
+          </v-btn>
+
+          <v-spacer></v-spacer>
+
+          <!-- "已完成" 作為中等優先級，使用 tonal button -->
+          <v-btn
+            variant="tonal"
+            @click="markAsCompleted"
+            class="mr-2"
+          >
+            {{ t('weeklyReminder.completed') }}
+          </v-btn>
+
+          <!-- "前往" 作為最高優先級，使用 elevated button -->
+          <v-btn
+            color="primary"
+            variant="elevated"
+            @click="openWebshop"
+          >
+            {{ t('weeklyReminder.goToWebshop') }}
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
-  </template>
+  </div>
+</template>
 
 <script>
 import { useSettingsStore } from '@/stores/settings'
@@ -81,6 +111,10 @@ export default {
       showReminder: false,
       settingsStore: useSettingsStore(),
       webshopUrl: 'https://webshop.browndust2.global/',
+      currentTime: new Date(),
+      bannerStartDate: new Date('2025-12-10T00:00:00+08:00'),
+      bannerEndDate: new Date('2025-12-25T23:59:59+08:00'),
+      serviceAnnouncementId: '2025-holiday-update-delay',
       
       // 官方活動時間配置 - 使用台灣標準時間 (CST, UTC+8)
       // JavaScript 會自動根據用戶的本地時區進行轉換和計算
@@ -148,6 +182,12 @@ export default {
       return this.currentWeekData !== undefined
     },
     
+    // 是否已關閉服務公告
+    isServiceAnnouncementDismissed() {
+      const dismissed = this.settingsStore.dismissedServiceAnnouncements || {}
+      return Boolean(dismissed[this.serviceAnnouncementId])
+    },
+
     // 是否應該顯示提醒
     shouldShowReminder() {
       if (!this.isInEventPeriod || !this.currentWeekKey) {
@@ -168,6 +208,16 @@ export default {
       }
       
       return true
+    },
+
+    // 是否在公告顯示期間內
+    isWithinBannerPeriod() {
+      return this.currentTime >= this.bannerStartDate && this.currentTime <= this.bannerEndDate
+    },
+
+    // 服務公告是否應該顯示
+    shouldDisplayServiceAnnouncement() {
+      return this.isWithinBannerPeriod && !this.isServiceAnnouncementDismissed
     }
   },
   
@@ -189,6 +239,8 @@ export default {
   methods: {
     // 檢查並顯示提醒
     checkAndShowReminder() {
+      this.currentTime = new Date()
+
       if (this.shouldShowReminder && !this.showReminder) {
         // 延遲2秒顯示，讓頁面先載入完成
         setTimeout(() => {
@@ -249,6 +301,11 @@ export default {
       })
       this.showReminder = false
     },
+
+    // 關閉服務公告
+    dismissServiceAnnouncement() {
+      this.settingsStore.dismissServiceAnnouncement(this.serviceAnnouncementId)
+    },
     
     // 更新週期狀態
     updateWeeklyStatus(status) {
@@ -270,6 +327,21 @@ export default {
 <style scoped>
 .weekly-reminder-dialog :deep(.v-dialog) {
   backdrop-filter: blur(8px);
+}
+
+.service-announcement-banner {
+  border-radius: 20px;
+}
+
+.service-announcement-banner .banner-title {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.service-announcement-banner .banner-content {
+  font-size: 0.95rem;
+  white-space: pre-line;
 }
 
 .reminder-card {

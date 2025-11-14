@@ -4,6 +4,12 @@ export default {
   common: {
     today: '今天'
   },
+
+  // 服务公告
+  serviceAnnouncement: {
+    title: '服务公告',
+    content: '由于开发者个人行程安排，12 月 18 日至 12 月 25 日期间，网站部分即时内容（例如兑换码）的更新可能会延迟。造成不便，敬请谅解。'
+  },
   
   // 导航栏
   nav: {

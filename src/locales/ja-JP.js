@@ -4,6 +4,12 @@ export default {
   common: {
     today: '今日'
   },
+
+  // サービス告知
+  serviceAnnouncement: {
+    title: 'サービス告知',
+    content: '開発者の都合により、12 月 18 日から 12 月 25 日の間は、サイトの一部リアルタイムコンテンツ（例：交換コード）の更新が遅れる場合があります。ご不便をおかけしますが、何卒ご理解ください。'
+  },
   
   // Navigation
   nav: {
