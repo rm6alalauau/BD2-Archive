@@ -4,6 +4,12 @@ export default {
   common: {
     today: '今天'
   },
+
+  // 服務公告
+  serviceAnnouncement: {
+    title: '服務公告',
+    content: '由於開發者個人行程安排，12 月 18 日至 12 月 25 日期間，網站部分即時內容（例如兌換碼）更新可能會延遲。造成不便，敬請見諒。'
+  },
   
   // 導航欄
   nav: {

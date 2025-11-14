@@ -79,6 +79,8 @@ export const useSettingsStore = defineStore('settings', {
     selectedIcon: 'icon1',
     // ++ 新增彩蛋模式狀態 ++
     activeEasterEggMode: 'default', // 預設為 'default'，可設為 'walker_mode'
+    // 服務公告關閉狀態
+    dismissedServiceAnnouncements: {},
   }),
 
   getters: {
@@ -205,6 +207,9 @@ export const useSettingsStore = defineStore('settings', {
           
           // ++ 載入彩蛋模式設定 ++
           this.activeEasterEggMode = settings.activeEasterEggMode || 'default'
+
+          // 載入服務公告狀態
+          this.dismissedServiceAnnouncements = settings.dismissedServiceAnnouncements || {}
           
           this.applyFontScale()
         } else {
@@ -256,6 +261,7 @@ export const useSettingsStore = defineStore('settings', {
         dailyCheckinStatus: this.dailyCheckinStatus,
         // ++ 儲存彩蛋模式設定 ++
         activeEasterEggMode: this.activeEasterEggMode,
+        dismissedServiceAnnouncements: this.dismissedServiceAnnouncements,
       }
       
       localStorage.setItem('bd2_settings', JSON.stringify(settings))
@@ -344,6 +350,7 @@ export const useSettingsStore = defineStore('settings', {
       this.dailyCheckinStatus = {}
       // ++ 重置彩蛋模式 ++
       this.activeEasterEggMode = 'default'
+      this.dismissedServiceAnnouncements = {}
       
       this.applyFontScale()
       this.saveSettings()
@@ -359,6 +366,19 @@ export const useSettingsStore = defineStore('settings', {
       this.updateServiceWorkerIcon()
       // 更新 PWA manifest 圖標
       this.updatePWAIcon()
+    },
+
+    // 關閉服務公告
+    dismissServiceAnnouncement(announcementId) {
+      if (!announcementId) return
+
+      const dismissed = {
+        ...(this.dismissedServiceAnnouncements || {}),
+        [announcementId]: new Date().getTime()
+      }
+
+      this.dismissedServiceAnnouncements = dismissed
+      this.saveSettings()
     },
 
     // 更新 PWA manifest 圖標

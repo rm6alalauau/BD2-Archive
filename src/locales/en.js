@@ -4,6 +4,12 @@ export default {
   common: {
     today: 'Today'
   },
+
+  // Service announcement
+  serviceAnnouncement: {
+    title: 'Service Notice',
+    content: 'Due to the developer\'s personal schedule, updates to certain real-time content (such as coupon codes) may be delayed between December 18 and December 25. We apologize for any inconvenience.'
+  },
   
   // Navigation
   nav: {
