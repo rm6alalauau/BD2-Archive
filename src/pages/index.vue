@@ -237,18 +237,18 @@ export default {
 
   .media-section {
     flex: 1; /* 填滿右側剩餘空間 */
-    /* 關鍵修正：設定最小高度，並強制忽略內容高度 */
-    min-height: 500px; 
-    height: 1px; /* 強制讓 flex-basis 生效，忽略內容撐開的高度 */
+    /* 恢復高度限制，防止無限延伸 */
+    max-height: 600px;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* 防止內容溢出 */
   }
   
   /* 強制覆蓋 OfficialMedia 的最大高度限制 */
   :deep(.official-media-card) {
-    max-height: none !important;
+    /* 這裡設為 100% 讓它跟隨外層 .media-section 的高度 */
     height: 100%;
+    max-height: none !important; /* 已經在外層限制了，這裡解除 */
   }
   
   /* 確保 OfficialMedia 內部的列表也能伸展，但要處理滾動 */
