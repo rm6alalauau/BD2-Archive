@@ -110,4 +110,24 @@ const t = computed(() => settingsStore.t);
 .coupon-list-container::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.5);
 }
+
+@media (max-width: 768px) {
+  .coupon-list-container {
+    height: 350px;
+  }
+
+  .loading-container {
+    height: 350px;
+  }
+}
+
+@media (max-width: 480px) {
+  .coupon-list-container {
+    height: 300px;
+  }
+
+  .loading-container {
+    height: 300px;
+  }
+}
 </style>
