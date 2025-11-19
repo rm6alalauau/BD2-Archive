@@ -224,10 +224,7 @@ export default {
   }
 
   .profile-section {
-    /* Profile 不強制伸展，但如果左側較短，它會自然保持高度 */
-    /* 如果需要 Profile 填滿左側剩餘空間（當右側較高時），可以設為 flex: 1 */
-    /* 根據用戶需求：Profile 底部跟 OfficialMedia 底部在同一水平線 */
-    /* 這意味著兩欄高度要一樣，且最後一個元素要填滿 */
+    /* Profile 填滿左側剩餘空間 */
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -240,9 +237,12 @@ export default {
 
   .media-section {
     flex: 1; /* 填滿右側剩餘空間 */
-    min-height: 0;
+    /* 關鍵修正：設定最小高度，並強制忽略內容高度 */
+    min-height: 500px; 
+    height: 1px; /* 強制讓 flex-basis 生效，忽略內容撐開的高度 */
     display: flex;
     flex-direction: column;
+    overflow: hidden; /* 防止內容溢出 */
   }
   
   /* 強制覆蓋 OfficialMedia 的最大高度限制 */
@@ -251,8 +251,13 @@ export default {
     height: 100%;
   }
   
-  /* 確保 OfficialMedia 內部的列表也能伸展 */
-  :deep(.media-list-container),
+  /* 確保 OfficialMedia 內部的列表也能伸展，但要處理滾動 */
+  :deep(.media-list-container) {
+    max-height: none !important;
+    flex: 1;
+    overflow-y: auto; /* 確保可以滾動 */
+  }
+  
   :deep(.error-state),
   :deep(.empty-state) {
     max-height: none !important;
@@ -272,6 +277,12 @@ export default {
   
   .profile-section {
     flex-grow: 1;
+  }
+  
+  /* 手機版恢復 OfficialMedia 的高度限制 */
+  .media-section {
+    height: auto;
+    min-height: 0;
   }
 }
 
