@@ -319,9 +319,10 @@ const getButtonText = (coupon) => {
 }
 
 .coupon-message-row {
-  padding: 0 16px 12px 16px;
   display: flex;
-  margin-top: -4px;
+  padding: 8px 16px 12px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.02);
 }
 
 .coupon-message-spacer {
@@ -331,6 +332,7 @@ const getButtonText = (coupon) => {
 
 .coupon-message-content {
   flex: 1;
+  min-width: 0;
 }
 
 .coupon-message {
@@ -338,24 +340,27 @@ const getButtonText = (coupon) => {
   align-items: center;
   gap: 6px;
   font-size: 0.85rem;
-  padding: 6px 10px;
-  border-radius: 6px;
-  background-color: rgba(0, 0, 0, 0.2);
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-top: 4px;
 }
 
 .coupon-message--success {
   color: #4caf50;
-  background-color: rgba(76, 175, 80, 0.1);
+  background-color: rgba(76, 175, 80, 0.15);
+  border: 1px solid rgba(76, 175, 80, 0.3);
 }
 
 .coupon-message--error {
-  color: #ff5252;
-  background-color: rgba(255, 82, 82, 0.1);
+  color: #f44336;
+  background-color: rgba(244, 67, 54, 0.15);
+  border: 1px solid rgba(244, 67, 54, 0.3);
 }
 
 .coupon-message--warning {
   color: #fb8c00;
-  background-color: rgba(251, 140, 0, 0.1);
+  background-color: rgba(251, 140, 0, 0.15);
+  border: 1px solid rgba(251, 140, 0, 0.3);
 }
 
 @media (max-width: 768px) {

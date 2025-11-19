@@ -41,42 +41,60 @@ const t = computed(() => settingsStore.t);
 .user-profile-card {
   display: flex;
   align-items: center;
+  gap: 16px; /* Added gap from original */
   padding: 16px;
-  background: rgba(255, 255, 255, 0.05);
+  margin-bottom: 8px; /* Changed from 16px to 8px */
+  border: 1px solid rgba(255, 255, 255, 0.12); /* Changed from 0.1 */
   border-radius: 16px;
-  margin-bottom: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  transition: all 0.2s ease-in-out; /* Changed timing */
 }
 
 .user-profile-card:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: rgba(231, 40, 87, 0.3);
+  background: linear-gradient(
+    135deg,
+    rgba(231, 40, 87, 0.08) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  transform: none; /* Removed transform */
+  box-shadow: none; /* Removed box-shadow */
 }
 
 .user-avatar {
+  flex-shrink: 0;
   cursor: pointer;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.3s ease;
+  transition: transform 0.2s ease-in-out;
+  border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 .user-avatar:hover {
-  border-color: #e72857;
   transform: scale(1.05);
+  border-color: rgba(231, 40, 87, 0.5);
 }
 
 .user-info {
   flex: 1;
-  margin-left: 16px;
+  min-width: 0;
   cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  border-radius: 8px;
+  padding: 4px 8px;
+  margin: -4px -8px;
+}
+
+.user-info:hover {
+  background-color: rgba(231, 40, 87, 0.1);
 }
 
 .user-nickname {
-  font-size: 1.1rem;
   font-weight: 600;
-  color: #ffffff;
+  font-size: 1.1rem;
+  color: #e72857; /* Changed from #ffffff */
   margin-bottom: 2px;
 }
 
