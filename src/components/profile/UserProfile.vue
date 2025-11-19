@@ -88,4 +88,26 @@ const t = computed(() => settingsStore.t);
 .user-actions {
   margin-left: 8px;
 }
+
+@media (max-width: 768px) {
+  .user-profile-card {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .user-nickname {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-profile-card {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .user-subtitle {
+    display: none;
+  }
+}
 </style>

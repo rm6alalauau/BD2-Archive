@@ -356,4 +356,16 @@ onMounted(() => {
     min-height: 0; /* 允許內容收縮 */
   }
 }
+
+@media (max-width: 768px) {
+  .profile-card {
+    min-height: 450px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-card {
+    min-height: 400px;
+  }
+}
 </style>

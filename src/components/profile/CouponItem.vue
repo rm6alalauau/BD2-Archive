@@ -357,4 +357,48 @@ const getButtonText = (coupon) => {
   color: #fb8c00;
   background-color: rgba(251, 140, 0, 0.1);
 }
+
+@media (max-width: 768px) {
+  .coupon-main-row {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .coupon-code {
+    font-size: 0.9rem;
+  }
+
+  .coupon-description {
+    font-size: 0.8rem;
+  }
+
+  .coupon-action-btn {
+    min-width: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .coupon-main-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .coupon-code-row {
+    justify-content: space-between;
+  }
+
+  .coupon-status-chip {
+    margin-left: auto;
+  }
+
+  .coupon-message-row {
+    padding: 8px 12px 10px 12px;
+  }
+
+  .coupon-message-spacer {
+    display: none;
+  }
+}
 </style>
