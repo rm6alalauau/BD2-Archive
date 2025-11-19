@@ -6,7 +6,7 @@
   <DailyCheckinReminder />
 
   <v-container>
-    <v-row class="ga" align="stretch">
+    <v-row class="ga">
       <v-col cols="12" md="6" class="d-flex flex-column left-column">
         <News class="news-section" />
         <Profile class="profile-section" />
@@ -224,44 +224,15 @@ export default {
   }
 
   .profile-section {
-    /* Profile 填滿左側剩餘空間 */
-    flex: 1;
+    /* 恢復原始設定，不強制伸展 */
     display: flex;
     flex-direction: column;
   }
   
-  /* 讓 Profile 內部的卡片填滿高度 */
-  :deep(.profile-card) {
-    height: 100%;
-  }
-
   .media-section {
-    flex: 1; /* 填滿右側剩餘空間 */
-    /* 恢復高度限制，防止無限延伸 */
-    max-height: 600px;
-    min-height: 0;
+    /* 恢復原始設定，不強制伸展 */
     display: flex;
     flex-direction: column;
-  }
-  
-  /* 強制覆蓋 OfficialMedia 的最大高度限制 */
-  :deep(.official-media-card) {
-    /* 這裡設為 100% 讓它跟隨外層 .media-section 的高度 */
-    height: 100%;
-    max-height: none !important; /* 已經在外層限制了，這裡解除 */
-  }
-  
-  /* 確保 OfficialMedia 內部的列表也能伸展，但要處理滾動 */
-  :deep(.media-list-container) {
-    max-height: none !important;
-    flex: 1;
-    overflow-y: auto; /* 確保可以滾動 */
-  }
-  
-  :deep(.error-state),
-  :deep(.empty-state) {
-    max-height: none !important;
-    flex: 1;
   }
 }
 
@@ -273,16 +244,6 @@ export default {
 
   .news-section {
     margin-bottom: 0;
-  }
-  
-  .profile-section {
-    flex-grow: 1;
-  }
-  
-  /* 手機版恢復 OfficialMedia 的高度限制 */
-  .media-section {
-    height: auto;
-    min-height: 0;
   }
 }
 
