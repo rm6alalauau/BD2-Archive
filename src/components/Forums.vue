@@ -1,27 +1,26 @@
 <template>
-  <v-row>
-    <v-col>
-      <!-- 載入狀態 -->
-      <div v-if="!hasAnyData" class="d-flex justify-center align-center" style="height: 300px;">
-        <v-progress-circular indeterminate color="primary" size="64"></v-progress-circular>
-      </div>
-      
-      <!-- 內容區域 -->
-      <component v-else :is="selectedComponent" :items="items[selectedComponent]" />
-      
-      <!-- 標籤組 -->
-      <v-chip-group v-model="selectedComponent" column mandatory>
-        <v-chip
-          v-for="component in components"
-          :key="component.value"
-          :value="component.value"
-          variant="outlined"
-        >
-          {{ component.text }}
-        </v-chip>
-      </v-chip-group>
-    </v-col>
-  </v-row>
+  <div>
+    <!-- 載入狀態 -->
+    <div v-if="!hasAnyData" class="d-flex justify-center align-center" style="height: 300px;">
+      <v-progress-circular indeterminate color="primary" size="64"></v-progress-circular>
+    </div>
+    
+    <!-- 內容區域 -->
+    <component v-else :is="selectedComponent" :items="items[selectedComponent]" />
+    
+    <!-- 標籤組 -->
+    <v-chip-group v-model="selectedComponent" column mandatory class="mt-1 mb-0">
+      <v-chip
+        v-for="component in components"
+        :key="component.value"
+        :value="component.value"
+        variant="outlined"
+        class="ma-1"
+      >
+        {{ component.text }}
+      </v-chip>
+    </v-chip-group>
+  </div>
 </template>
 
 <script>
