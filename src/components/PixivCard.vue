@@ -1,90 +1,84 @@
 <template>
-  <v-row>
-    <v-col>
-      <v-card rounded="t-xl" class="position-relative">
-        <v-card-title
-          class="headline"
-          style="font-size: 1rem; display: flex; align-items: center"
+  <v-card rounded="t-xl" class="position-relative">
+    <v-card-title
+      class="headline"
+      style="font-size: 1rem; display: flex; align-items: center"
+    >
+      Pixiv Hot
+      <v-select
+        v-model="selectedOption"
+        :items="options"
+        item-title="title"
+        item-value="value"
+        class="ml-4 pixiv-select"
+        style="max-width: 160px; height: 60px; align-items: center"
+        rounded="xl"
+        @update:modelValue="onOptionChange"
+        return-object
+        :loading="isLoading"
+        :disabled="isLoading"
+      ></v-select>
+      <div style="margin-left: auto; display: flex; align-items: center">
+        <v-btn icon @click="scrollLeft" :disabled="isLoading" aria-label="向左滾動">
+          <v-icon>mdi-chevron-left</v-icon>
+        </v-btn>
+        <v-btn icon @click="scrollRight" :disabled="isLoading" aria-label="向右滾動">
+          <v-icon>mdi-chevron-right</v-icon>
+        </v-btn>
+      </div>
+    </v-card-title>
+    <div
+      ref="scrollContainer"
+      class="scroll-container"
+      @scroll="handleScroll"
+    >
+      <div
+        v-for="item in list"
+        :key="item.id"
+        class="d-inline-block mx-2 text-left"
+      >
+        <!-- 關鍵修正：確保 item.id 存在，此連結現在可以工作 -->
+        <a
+          :href="`https://www.pixiv.net/artworks/${item.id}`"
+          target="_blank"
         >
-          Pixiv Hot
-          <v-select
-            v-model="selectedOption"
-            :items="options"
-            item-title="title"
-            item-value="value"
-            class="ml-4 pixiv-select"
-            style="max-width: 160px; height: 60px; align-items: center"
-            rounded="xl"
-            @update:modelValue="onOptionChange"
-            return-object
-            :loading="isLoading"
-            :disabled="isLoading"
-          ></v-select>
-          <div style="margin-left: auto; display: flex; align-items: center">
-            <v-btn icon @click="scrollLeft" :disabled="isLoading" aria-label="向左滾動">
-              <v-icon>mdi-chevron-left</v-icon>
-            </v-btn>
-            <v-btn icon @click="scrollRight" :disabled="isLoading" aria-label="向右滾動">
-              <v-icon>mdi-chevron-right</v-icon>
-            </v-btn>
-          </div>
-        </v-card-title>
-        <div
-          ref="scrollContainer"
-          class="scroll-container"
-          @scroll="handleScroll"
-        >
-          <div
-            v-for="item in list"
-            :key="item.id"
-            class="d-inline-block mx-2 text-left"
-          >
-            <!-- 關鍵修正：確保 item.id 存在，此連結現在可以工作 -->
+          <v-img
+            :src="item.imageUrl"
+            :alt="item.title || 'Pixiv 插畫'"
+            height="160"
+            width="160"
+            class="d-block mx-auto"
+            :lazy-src="getPlaceholderImage()"
+            loading="lazy"
+            @error="handleImageError"
+          ></v-img>
+        </a>
+        <div class="text-ellipsis">{{ item.title }}</div>
+        <div class="d-flex align-items-center">
+          <v-avatar size="24">
+            <!-- 關鍵修正：確保 item.userId 存在，此連結現在可以工作 -->
             <a
-              :href="`https://www.pixiv.net/artworks/${item.id}`"
+              :href="`https://www.pixiv.net/users/${item.userId}`"
               target="_blank"
             >
               <v-img
-                :src="item.imageUrl"
-                :alt="item.title || 'Pixiv 插畫'"
-                height="160"
-                width="160"
+                :src="item.authorAvatar"
+                :alt="item.authorName || '作者頭像'"
+                height="24"
+                width="24"
                 class="d-block mx-auto"
-                :lazy-src="getPlaceholderImage()"
-                loading="lazy"
-                @error="handleImageError"
-              ></v-img>
+              />
             </a>
-            <div class="text-ellipsis">{{ item.title }}</div>
-            <div class="d-flex align-items-center">
-              <v-avatar size="24">
-                <!-- 關鍵修正：確保 item.userId 存在，此連結現在可以工作 -->
-                <a
-                  :href="`https://www.pixiv.net/users/${item.userId}`"
-                  target="_blank"
-                >
-                  <v-img
-                    :src="item.authorAvatar"
-                    :alt="item.authorName || '作者頭像'"
-                    height="24"
-                    width="24"
-                    class="d-block mx-auto"
-                  />
-                </a>
-              </v-avatar>
-              <span class="ml-2 text-ellipsis">{{ item.authorName }}</span>
-            </div>
-          </div>
+          </v-avatar>
+          <span class="ml-2 text-ellipsis">{{ item.authorName }}</span>
         </div>
-      </v-card>
-    </v-col>
-  </v-row>
+      </div>
+    </div>
+  </v-card>
 </template>
 
 <script>
 import { useSettingsStore } from '@/stores/settings'
-
-
 
 export default {
   name: "PixivCard",

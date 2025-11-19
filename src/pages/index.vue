@@ -6,14 +6,14 @@
   <DailyCheckinReminder />
 
   <v-container>
-    <v-row class="ga">
+    <v-row class="ga" align="stretch">
       <v-col cols="12" md="6" class="d-flex flex-column left-column">
         <News class="news-section" />
         <Profile class="profile-section" />
       </v-col>
       <v-col cols="12" md="6" class="d-flex flex-column right-column">
         <Forums class="forums-section" />
-        <PixivCard class="pixiv-section mb-2"/>
+        <PixivCard class="pixiv-section"/>
         <OfficialMedia class="media-section" />
       </v-col>
     </v-row>
@@ -196,34 +196,78 @@ export default {
 .left-column {
   display: flex;
   flex-direction: column;
-}
-
-/* 桌面版佈局 */
-@media (min-width: 769px) {
-  .news-section {
-    flex-shrink: 0; /* 固定高度，不縮放 */
-    margin-bottom: 1rem;
-  }
-  .forums-section {
-    flex-shrink: 0; /* 固定高度，不縮放 */
-    margin-bottom: 1rem;
-  }
-  .profile-section {
-    flex: 1; /* 填滿剩餘空間 */
-    min-height: 0; /* 允許收縮 */
-  }
+  gap: 16px; /* 統一間距 */
 }
 
 /* 右側列佈局 */
 .right-column {
   display: flex;
   flex-direction: column;
+  gap: 16px; /* 統一間距 */
 }
 
-/* 手機版保持原有佈局 */
-@media (max-width: 768px) {
+/* 桌面版佈局 */
+@media (min-width: 769px) {
   .news-section {
-    margin-bottom: 1rem;
+    flex-shrink: 0;
+    margin-bottom: 0; /* 移除 margin */
+  }
+  
+  .forums-section {
+    flex-shrink: 0;
+    margin-bottom: 0; /* 移除 margin */
+  }
+  
+  .pixiv-section {
+    flex-shrink: 0;
+    margin-bottom: 0; /* 移除 margin */
+  }
+
+  .profile-section {
+    /* Profile 不強制伸展，但如果左側較短，它會自然保持高度 */
+    /* 如果需要 Profile 填滿左側剩餘空間（當右側較高時），可以設為 flex: 1 */
+    /* 根據用戶需求：Profile 底部跟 OfficialMedia 底部在同一水平線 */
+    /* 這意味著兩欄高度要一樣，且最後一個元素要填滿 */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* 讓 Profile 內部的卡片填滿高度 */
+  :deep(.profile-card) {
+    height: 100%;
+  }
+
+  .media-section {
+    flex: 1; /* 填滿右側剩餘空間 */
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* 強制覆蓋 OfficialMedia 的最大高度限制 */
+  :deep(.official-media-card) {
+    max-height: none !important;
+    height: 100%;
+  }
+  
+  /* 確保 OfficialMedia 內部的列表也能伸展 */
+  :deep(.media-list-container),
+  :deep(.error-state),
+  :deep(.empty-state) {
+    max-height: none !important;
+    flex: 1;
+  }
+}
+
+/* 手機版保持原有佈局，但使用 gap */
+@media (max-width: 768px) {
+  .left-column, .right-column {
+    gap: 16px;
+  }
+
+  .news-section {
+    margin-bottom: 0;
   }
   
   .profile-section {
