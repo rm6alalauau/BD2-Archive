@@ -13,16 +13,16 @@
 
   <!-- PWA Manifest -->
   <link rel="manifest" href="/manifest.json" />
-  
+
   <!-- iOS PWA Support -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="The BD2 Pulse" />
-  
+
   <!-- Theme Color -->
   <meta name="theme-color" content="#1976d2" />
   <meta name="msapplication-navbutton-color" content="#1976d2" />
-  
+
   <!-- 說明 -->
   <meta name="description" content="一个专为《棕色尘埃2》玩家打造的信息聚合站。即时更新最新可用兑换码、官方新闻，以及来自NGA、Pixiv、X 等社群的热门讨论与二创作品。" />
 
@@ -33,10 +33,10 @@
   <link rel="alternate" hreflang="ko" href="https://thebd2pulse.com/ko-KR/" />
   <link rel="alternate" hreflang="zh-Hans" href="https://thebd2pulse.com/zh-CN/" />
   <link rel="alternate" hreflang="x-default" href="https://thebd2pulse.com/" />
-  
+
   <!-- Canonical URL for SEO -->
   <link id="canonical-link" rel="canonical" href="https://thebd2pulse.com/zh-CN/" />
-  
+
   <!-- SEO 優化標籤 -->
   <meta name="author" content="The BD2 Pulse" />
   <meta name="robots" content="index, follow" />
@@ -49,31 +49,32 @@
   <meta name="twitter:title" content="棕色尘埃2 游戏资讯 - The BD2 Pulse" />
   <meta name="twitter:image" content="https://thebd2pulse.com/favicon19.png" />
   <meta name="twitter:description" content="一个专为《棕色尘埃2》玩家打造的信息聚合站。即时更新最新可用兑换码、官方新闻，以及来自NGA、Pixiv、X 等社群的热门讨论与二创作品。" />
-  
+
   <!-- arca.live 驗證標籤 -->
-  <meta name="arca-live-dev-proof" content="Hello from The BD2 Pulse developer! This is proof for the post on arca.live.">
-  
+  <meta name="arca-live-dev-proof"
+    content="Hello from The BD2 Pulse developer! This is proof for the post on arca.live.">
+
   <!-- DNS 預解析 -->
   <link rel="dns-prefetch" href="//res.cloudinary.com">
   <link rel="dns-prefetch" href="//www.googletagmanager.com">
-  
+
   <!-- 預載入 Cloudinary 資源 -->
   <link rel="preconnect" href="https://res.cloudinary.com">
   <link rel="dns-prefetch" href="https://res.cloudinary.com">
-  
+
   <!-- Google tag (gtag.js) - 延遲載入以避免影響 LCP -->
   <script>
     // 延遲載入 Google Analytics，避免影響頁面載入效能
-    window.addEventListener('load', function() {
-      setTimeout(function() {
+    window.addEventListener('load', function () {
+      setTimeout(function () {
         var script = document.createElement('script');
         script.async = true;
         script.src = 'https://www.googletagmanager.com/gtag/js?id=G-E4DJGM8X5P';
         document.head.appendChild(script);
-        
-        script.onload = function() {
+
+        script.onload = function () {
           window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
+          function gtag() { dataLayer.push(arguments); }
           gtag('js', new Date());
           gtag('config', 'G-E4DJGM8X5P');
         };
@@ -84,7 +85,7 @@
 
 <body>
   <div id="app">
-    
+
     <div id="static-fallback-content" style="
       padding: 20px;
       background: rgba(18, 18, 18, 0.95);
@@ -107,11 +108,6 @@
         margin: 0;
       ">暂无可用兑换码</p>
     </div>
-  </div>
-  </div>
-  </div>
-  </div>
-  </div>
   </div>
 
   <script type="module" src="/src/main-zh-CN.js"></script>
