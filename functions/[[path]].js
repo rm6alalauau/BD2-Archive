@@ -10,18 +10,20 @@ export async function onRequest(context) {
 
     let targetHtml = '/'; // Default to zh-Hant (Root)
 
-    // 2. Handle Root Path '/' with Accept-Language Rewrite
+    // 2. Handle Root Path '/' with Accept-Language Rewrite & IP Geolocation
     if (path === '/') {
         const acceptLanguage = request.headers.get('Accept-Language') || '';
         const userAgent = (request.headers.get('User-Agent') || '').toLowerCase();
+        const country = (request.cf?.country || '').toUpperCase();
 
         // Get the primary language (first one in the list)
         const primaryLang = acceptLanguage.split(',')[0].trim().toLowerCase();
 
-        // Bot/Crawler Detection for specific platforms
+        // Priority 1: Specific Bot Detection
         if (userAgent.includes('arca') || userAgent.includes('kakao') || userAgent.includes('naver')) {
             targetHtml = '/ko-KR';
         }
+        // Priority 2: Accept-Language Header (User Preference)
         else if (primaryLang.startsWith('ko')) {
             targetHtml = '/ko-KR';
         } else if (primaryLang.startsWith('ja')) {
@@ -29,6 +31,16 @@ export async function onRequest(context) {
         } else if (primaryLang.startsWith('en')) {
             targetHtml = '/en';
         } else if (primaryLang === 'zh-cn' || primaryLang === 'zh-sg' || primaryLang.startsWith('zh-hans')) {
+            targetHtml = '/zh-CN';
+        }
+        // Priority 3: IP Geolocation Fallback (for bots/users without headers)
+        else if (country === 'KR') {
+            targetHtml = '/ko-KR';
+        } else if (country === 'JP') {
+            targetHtml = '/ja-JP';
+        } else if (['US', 'GB', 'CA', 'AU', 'NZ', 'IE'].includes(country)) {
+            targetHtml = '/en';
+        } else if (country === 'CN' || country === 'SG') {
             targetHtml = '/zh-CN';
         }
         // Default (zh-TW/HK or others) -> / which serves index.html
