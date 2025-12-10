@@ -21,7 +21,7 @@ export async function onRequest(context) {
 
         // Priority 1: Specific Bot Detection
         // Force Traditional Chinese for these platforms
-        if (userAgent.includes('discord') || userAgent.includes('bahamut') || userAgent.includes('ptt')) {
+        if (userAgent.includes('discord') || userAgent.includes('bahamut') || userAgent.includes('gamer')) {
             targetHtml = '/';
         }
         // Force Korean for these platforms
