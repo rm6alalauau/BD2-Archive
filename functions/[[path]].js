@@ -13,10 +13,16 @@ export async function onRequest(context) {
     // 2. Handle Root Path '/' with Accept-Language Rewrite
     if (path === '/') {
         const acceptLanguage = request.headers.get('Accept-Language') || '';
+        const userAgent = (request.headers.get('User-Agent') || '').toLowerCase();
+
         // Get the primary language (first one in the list)
         const primaryLang = acceptLanguage.split(',')[0].trim().toLowerCase();
 
-        if (primaryLang.startsWith('ko')) {
+        // Bot/Crawler Detection for specific platforms
+        if (userAgent.includes('arca') || userAgent.includes('kakao') || userAgent.includes('naver')) {
+            targetHtml = '/ko-KR';
+        }
+        else if (primaryLang.startsWith('ko')) {
             targetHtml = '/ko-KR';
         } else if (primaryLang.startsWith('ja')) {
             targetHtml = '/ja-JP';
