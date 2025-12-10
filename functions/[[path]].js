@@ -4,7 +4,7 @@ export async function onRequest(context) {
     const path = url.pathname;
 
     // 1. Ignore static assets
-    if (path.match(/\.(png|jpg|jpeg|gif|ico|svg|css|js|json|xml|txt|webmanifest)$/)) {
+    if (path.match(/\.(png|jpg|jpeg|gif|ico|svg|css|js|json|xml|txt|webmanifest|woff|woff2|ttf|eot|otf)$/)) {
         return next();
     }
 
