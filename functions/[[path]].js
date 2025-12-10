@@ -20,7 +20,12 @@ export async function onRequest(context) {
         const primaryLang = acceptLanguage.split(',')[0].trim().toLowerCase();
 
         // Priority 1: Specific Bot Detection
-        if (userAgent.includes('arca') || userAgent.includes('kakao') || userAgent.includes('naver')) {
+        // Force Traditional Chinese for these platforms
+        if (userAgent.includes('discord') || userAgent.includes('bahamut') || userAgent.includes('ptt')) {
+            targetHtml = '/';
+        }
+        // Force Korean for these platforms
+        else if (userAgent.includes('arca') || userAgent.includes('kakao') || userAgent.includes('naver')) {
             targetHtml = '/ko-KR';
         }
         // Priority 2: Accept-Language Header (User Preference)
