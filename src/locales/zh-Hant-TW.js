@@ -501,7 +501,7 @@ export default {
     confirmDontShowAgain: '您確定要永久隱藏此活動提醒嗎？',
     completed: '已完成',
     remindLater: '稍後提醒',
-    goToWebshop: '前往網路商店'
+    goToWebshop: '前往簽到'
   },
 
   // 每日簽到提醒

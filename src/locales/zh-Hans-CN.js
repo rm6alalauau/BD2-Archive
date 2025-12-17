@@ -497,7 +497,7 @@ export default {
     confirmDontShowAgain: '您确定要永久隐藏此活动提醒吗？',
     completed: '已完成',
     remindLater: '稍后提醒',
-    goToWebshop: '前往网络商店'
+    goToWebshop: '前往签到'
   },
 
   // 每日签到提醒

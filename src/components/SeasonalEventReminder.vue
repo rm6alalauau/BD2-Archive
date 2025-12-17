@@ -101,7 +101,7 @@ export default {
     return {
       showReminder: false,
       settingsStore: useSettingsStore(),
-      webshopUrl: 'https://webshop.browndust2.global/',
+      webshopUrl: 'https://webshop.browndust2.global/CT/events/attend-event/',
       
       // Campaign Config
       campaignId: 'winter_2025_checkin',

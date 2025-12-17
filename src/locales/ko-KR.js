@@ -497,7 +497,7 @@ The BD2 Pulse를 이용해주시는 모든 유저분들께 감사드립니다! �
     confirmDontShowAgain: '이 이벤트 알림을 영구적으로 숨기시겠습니까?',
     completed: '완료',
     remindLater: '나중에 알림',
-    goToWebshop: '웹상점으로 이동'
+    goToWebshop: '출석 체크하러 가기'
   },
 
   // 데일리 체크인 알림

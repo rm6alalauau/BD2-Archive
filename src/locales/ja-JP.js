@@ -497,7 +497,7 @@ export default {
     confirmDontShowAgain: 'このイベントリマインダーを永久に非表示にしますか？',
     completed: '完了',
     remindLater: '後で通知',
-    goToWebshop: 'Webショップへ'
+    goToWebshop: 'チェックインへ'
   },
 
   // デイリーチェックイン提醒
