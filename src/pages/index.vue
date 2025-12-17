@@ -1,6 +1,8 @@
 <template>
   <!-- 週期性活動提醒 -->
   <WeeklyEventReminder />
+  <!-- 季節性活動提醒 -->
+  <SeasonalEventReminder />
   
   <!-- 每日簽到提醒 -->
   <DailyCheckinReminder />
@@ -108,11 +110,13 @@
 import { useAppStore } from '@/stores/app'
 import { useSettingsStore } from '@/stores/settings'
 import WeeklyEventReminder from '@/components/WeeklyEventReminder.vue'
+import SeasonalEventReminder from '@/components/SeasonalEventReminder.vue'
 import DailyCheckinReminder from '@/components/DailyCheckinReminder.vue'
 
 export default {
   components: {
     WeeklyEventReminder,
+    SeasonalEventReminder,
     DailyCheckinReminder
   },
   

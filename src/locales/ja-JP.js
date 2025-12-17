@@ -10,7 +10,7 @@ export default {
     title: 'サービス告知',
     content: '開発者の都合により、12 月 18 日から 12 月 25 日の間は、サイトの一部リアルタイムコンテンツ（例：交換コード）の更新が遅れる場合があります。ご不便をおかけしますが、何卒ご理解ください。'
   },
-  
+
   // Navigation
   nav: {
     home: 'ホーム',
@@ -23,7 +23,7 @@ export default {
     openMenu: 'メニューを開く',
     closeMenu: 'メニューを閉じる'
   },
-  
+
   // Profile/Coupon page
   profile: {
     title: 'クーポンコード',
@@ -37,7 +37,7 @@ export default {
     retryButton: '再読み込み',
     processing: '処理中...',
     expiryDate: '期限',
-    
+
     // User profile
     userProfile: {
       clickAvatarToChange: 'アバターをクリックして変更 • ニックネームをクリックして切り替え',
@@ -47,7 +47,7 @@ export default {
       selectAvatar: 'アバター選択',
       confirmSelection: '選択確認'
     },
-    
+
     // API status
     apiStatus: {
       loading: 'API読み込み中...',
@@ -57,7 +57,7 @@ export default {
       retry: '再試行',
       techDetails: '技術詳細'
     },
-    
+
     // Loading states
     loading: {
       waitingApi: 'API読み込み待機中',
@@ -65,7 +65,7 @@ export default {
       updatingList: 'クーポンコードリスト更新中',
       retryingData: '最新データ再取得中'
     },
-    
+
     // Status
     status: {
       limited: '期間限定',
@@ -75,7 +75,7 @@ export default {
       expired: '期限切れ',
       unknown: '不明'
     },
-    
+
     // Action buttons
     actions: {
       copy: 'コピー',
@@ -95,7 +95,7 @@ export default {
     couponLink: {
       tooltip: 'クリックして公式引き換えページを開き、クーポンコードをコピー: {code}'
     },
-    
+
     // Error messages
     errors: {
       loadFailed: '読み込み失敗',
@@ -113,7 +113,7 @@ export default {
       serverError: 'サーバーが一時的に利用できません。後でもう一度お試しください',
       rateLimited: 'リクエストが多すぎます。しばらくしてから再試行してください'
     },
-    
+
     // Nickname management
     nickname: {
       saved: '保存されたニックネーム',
@@ -127,7 +127,7 @@ export default {
       confirmDelete: 'このニックネームを削除しますか？',
       deleteTitle: 'このニックネームを削除'
     },
-    
+
     // Help text
     helpText: {
       reloadHint: 'クーポンコードが正しく読み込まれない場合、ここをクリックして再読み込みしてください',
@@ -136,7 +136,7 @@ export default {
       solution2: '上の「クーポンコード再読み込み」ボタンをクリック',
       solution3: 'または「終了」をクリックしてニックネームを再入力'
     },
-    
+
     // Network status
     network: {
       checking: 'クーポンサービス接続確認中...',
@@ -147,7 +147,7 @@ export default {
     nicknameHelpTitle: 'ゲーム内のニックネームとは？',
     nicknameHelp: 'ゲーム内で使用しているニックネームを入力してください（画像参照）。正しく報酬を受け取るために必要です。',
     nicknameDialogTitle: 'ニックネームを選択',
-    
+
     // クーポンコード機能説明
     helpDialog: {
       title: 'クーポンコード機能ガイド',
@@ -164,21 +164,21 @@ export default {
       localStorageNote: '引き換え記録は現在のブラウザにのみ保存されます。他のデバイスやブラウザで使用する場合は、ステータスを確認するために引き換えボタンを再度クリックする必要があります。'
     }
   },
-  
+
   // News
   news: {
     title: '公式ニュース',
     noData: 'ニュースデータがありません',
     loading: '読み込み中...',
     loadFailed: '読み込み失敗',
-    
+
     // Date related
     date: {
       today: '今日',
       yesterday: '昨日',
       daysAgo: '日前'
     },
-    
+
     // Tags
     tags: {
       notice: 'お知らせ',
@@ -189,7 +189,7 @@ export default {
       issue: '既知の問題'
     }
   },
-  
+
   // Official media
   media: {
     title: '公式メディア',
@@ -198,7 +198,7 @@ export default {
     loadFailed: '読み込み失敗',
     watchVideo: '動画を見る'
   },
-  
+
   // Forums
   forums: {
     title: 'コミュニティフォーラム',
@@ -212,7 +212,7 @@ export default {
     loading: '読み込み中...',
     loadFailed: '読み込み失敗'
   },
-  
+
   // Pixiv card
   pixiv: {
     title: 'Pixiv人気作品',
@@ -221,12 +221,12 @@ export default {
     loading: '読み込み中...',
     loadFailed: '読み込み失敗'
   },
-  
+
   // Settings page
   settings: {
     title: '設定',
     subtitle: '使用体験をカスタマイズ',
-    
+
     // Display settings
     display: {
       title: '表示設定',
@@ -240,7 +240,7 @@ export default {
       websiteIconDescription: 'お好みのウェブサイトアイコンを選択',
       iconPage: 'ページ'
     },
-    
+
     // Content settings
     contentSettings: {
       title: 'コンテンツ設定',
@@ -261,14 +261,14 @@ export default {
     notifications: {
       title: '通知設定'
     },
-    
+
     // Forum settings
     forumSettings: {
       title: 'フォーラム表示設定',
       description: '表示するフォーラムを選択',
       minRequired: '少なくとも1つのフォーラムソースを選択する必要があります'
     },
-    
+
     // Data management
     dataManagement: {
       title: 'データ管理',
@@ -280,12 +280,12 @@ export default {
       resetButton: 'デフォルトに戻す',
       resetHint: 'すべての設定をデフォルト状態に復元'
     },
-    
+
     // Actions
     actions: {
       backToHome: 'ホームに戻る'
     },
-    
+
     // Confirm dialog
     confirmDialog: {
       clearDataTitle: 'データクリア確認',
@@ -296,7 +296,7 @@ export default {
         'アバター選択記録'
       ],
       clearDataWarning: 'この操作は取り消せません。続行しますか？',
-      
+
       resetTitle: '設定リセット確認',
       resetMessage: 'この操作によりすべての設定がデフォルト値に復元されます：',
       resetItems: [
@@ -306,11 +306,11 @@ export default {
         '言語：繁体字中国語'
       ],
       resetWarning: 'すべての設定をリセットしますか？',
-      
+
       confirm: '確認',
       cancel: 'キャンセル'
     },
-    
+
     // 成功メッセージ
     success: {
       cleared: 'データがクリアされました',
@@ -328,7 +328,7 @@ export default {
 もしこのサイトが便利だと感じ、長期的な運営を応援していただけるようでしたら、以下のリンクから「コーヒーを一杯おごる」形でご支援いただけますと幸いです。皆様からのご支援は、サーバーやドメイン費用の維持、そして新機能開発の大きな励みとなります。
 いつも温かいご支援、心より感謝申し上げます。`,
   },
-  
+
   // Feedback page
   feedback: {
     title: 'フィードバック',
@@ -340,7 +340,7 @@ export default {
       description: 'すべての報告と改善状況を確認',
       view: '今すぐ確認'
     },
-    
+
     // Form
     form: {
       issueType: '問題の種類',
@@ -351,7 +351,7 @@ export default {
       nicknamePlaceholder: '（任意）',
       submit: 'フィードバック送信'
     },
-    
+
     // Issue types
     issueTypes: {
       bug: 'クラッシュまたはバグ',
@@ -359,35 +359,35 @@ export default {
       suggestion: '提案',
       other: 'その他'
     },
-    
+
     // System info
     systemInfo: {
       title: 'システム情報',
       description: '問題解決をより良くサポートするため、デバイス情報を自動的に添付いたします'
     },
-    
+
     // Validation
     validation: {
       required: 'この項目は必須です',
       maxLength: '長さは{limit}文字を超えることはできません'
     },
-    
+
     // Errors
     errors: {
       validation: 'フォームのエラーを修正してから送信してください。'
     },
-    
+
     // Results
     success: '貴重なフィードバックをありがとうございます！ご意見を受け取りました。慎重に評価し、継続的な改善に取り組んでまいります。',
     error: '送信中に不明なエラーが発生しました。後でもう一度お試しください。問題が続く場合は、直接お問い合わせください。',
-    
+
     // Privacy
     privacy: {
       title: 'プライバシー保護',
       description: 'ご提供いただいたすべての情報は、問題の解決と機能の最適化のためのみに使用されます。プライバシーの保護をお約束いたします。'
     }
   },
-  
+
   // Common
   common: {
     loading: '読み込み中...',
@@ -472,7 +472,7 @@ export default {
     uploaded: 'アップロード済み',
     downloaded: 'ダウンロード済み'
   },
-  
+
   // 週次活動提醒
   weeklyReminder: {
     title: '週次サインイン提醒',
@@ -488,6 +488,18 @@ export default {
     remindLater: '後で提醒'
   },
 
+
+  // 季節イベントリマインダー
+  seasonalEvent: {
+    title: 'ログインボーナス',
+    description: 'チェックインイベントに参加するのを忘れないでください',
+    dontShowAgain: '今後表示しない',
+    confirmDontShowAgain: 'このイベントリマインダーを永久に非表示にしますか？',
+    completed: '完了',
+    remindLater: '後で通知',
+    goToWebshop: 'Webショップへ'
+  },
+
   // デイリーチェックイン提醒
   dailyCheckin: {
     title: 'デイリーチェックイン提醒',
@@ -501,7 +513,7 @@ export default {
     completed: '完了',
     goToWebshop: 'ウェブショップへ'
   },
-  
+
   // 關於ページ
   about: {
     title: '情報',
@@ -527,7 +539,7 @@ export default {
       copied: 'コピーしました'
     }
   },
-  
+
   // フィードバック追跡ページ
   feedbackTracker: {
     title: 'フィードバック追跡',
@@ -546,7 +558,7 @@ export default {
       rejected: '却下'
     }
   },
-  
+
   // 免責事項
   disclaimer: {
     title: '免責事項・著作権情報',

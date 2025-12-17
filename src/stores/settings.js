@@ -9,7 +9,7 @@ const TOTAL_ICONS = 22;
 const generateAvailableIcons = () => {
   return Array.from({ length: TOTAL_ICONS }, (_, i) => {
     const iconNumber = i + 1;
-    
+
     // 計算 order 值：
     // - favicon01.png 到 favicon12.png：從新到舊排列
     // - favicon13.png 以後：越大越新
@@ -21,7 +21,7 @@ const generateAvailableIcons = () => {
       // 13+：直接使用數字，比12更大所以更新
       order = iconNumber; // favicon13=13, favicon14=14, ...
     }
-    
+
     return {
       id: `icon${iconNumber}`,
       path: `/favicon${String(iconNumber).padStart(2, '0')}.png`,
@@ -43,7 +43,7 @@ export const getAvailableIcons = (easterEggMode = 'default') => {
       };
     });
   }
-  
+
   // 正常模式：返回原本的圖標陣列
   return generateAvailableIcons();
 };
@@ -63,6 +63,8 @@ export const useSettingsStore = defineStore('settings', {
     routeDefaultLanguage: null,
     // 週期性活動提醒狀態
     weeklyEventReminder: {},
+    // 季節性活動提醒狀態 (新增)
+    seasonalEventStatus: {},
     // 每日簽到提醒設定
     dailyCheckinReminderEnabled: false,
     // 每日簽到狀態記錄
@@ -88,7 +90,7 @@ export const useSettingsStore = defineStore('settings', {
     currentLanguage: (state) => {
       return state.supportedLanguages.find(lang => lang.code === state.selectedLanguage) || state.supportedLanguages[0]
     },
-    
+
     // 翻譯函數
     t: (state) => {
       return (key, language = null, params = {}) => {
@@ -102,7 +104,7 @@ export const useSettingsStore = defineStore('settings', {
       if (state.activeEasterEggMode === 'walker_mode') {
         return '/yuri/favicon.png';
       }
-      
+
       // 正常模式：使用原本的邏輯
       const found = availableIcons.find(icon => icon.id === state.selectedIcon)
       return found ? found.path : availableIcons[0].path
@@ -113,11 +115,11 @@ export const useSettingsStore = defineStore('settings', {
     // 檢測瀏覽器語言
     detectBrowserLanguage() {
       const browserLang = navigator.language || navigator.userLanguage
-      
+
       // 語言映射表，將瀏覽器語言代碼映射到我們支援的語言
       const langMap = {
         'zh-TW': 'zh-Hant-TW',
-        'zh-HK': 'zh-Hant-TW', 
+        'zh-HK': 'zh-Hant-TW',
         'zh-MO': 'zh-Hant-TW',
         'zh-CN': 'zh-Hans-CN',
         'zh-SG': 'zh-Hans-CN',
@@ -131,12 +133,12 @@ export const useSettingsStore = defineStore('settings', {
         'ko': 'ko-KR',
         'ko-KR': 'ko-KR'
       }
-      
+
       // 檢查完整匹配
       if (langMap[browserLang]) {
         return langMap[browserLang]
       }
-      
+
       // 檢查語言代碼的前綴匹配（例如 en-CA -> en）
       const langPrefix = browserLang.split('-')[0]
       if (langMap[langPrefix]) {
@@ -148,7 +150,7 @@ export const useSettingsStore = defineStore('settings', {
         }
         return langMap[langPrefix]
       }
-      
+
       // 預設返回繁體中文
       return 'zh-Hant-TW'
     },
@@ -162,7 +164,7 @@ export const useSettingsStore = defineStore('settings', {
         'zh-Hans-CN': ['Bahamut', 'NGAList', 'PTTList', 'XPosts', 'RedditPosts'], // 簡體中文：維持原預設
         'zh-Hant-TW': ['Bahamut', 'NGAList', 'PTTList', 'XPosts', 'RedditPosts'] // 繁體中文：維持原預設
       }
-      
+
       return forumDefaults[languageCode] || forumDefaults['zh-Hant-TW']
     },
 
@@ -172,7 +174,7 @@ export const useSettingsStore = defineStore('settings', {
         const saved = localStorage.getItem('bd2_settings')
         if (saved) {
           const settings = JSON.parse(saved)
-          
+
           this.fontScale = settings.fontScale || 1.0
           this.showR18Content = settings.showR18Content || false
           this.showAIContent = settings.showAIContent !== undefined ? settings.showAIContent : true
@@ -183,10 +185,10 @@ export const useSettingsStore = defineStore('settings', {
           } else {
             targetLanguage = settings.selectedLanguage || this.detectBrowserLanguage()
           }
-          
+
           // 根據語言設定預設論壇，但如果用戶已有自定義設定則保留
           this.selectedForums = settings.selectedForums || this.getDefaultForumsByLanguage(targetLanguage)
-          
+
           // 語言優先級：路由預設語言 > 儲存的語言 > 瀏覽器語言
           if (this.routeDefaultLanguage) {
             // 如果是新用戶（沒有儲存的語言設定），使用路由預設語言
@@ -194,23 +196,24 @@ export const useSettingsStore = defineStore('settings', {
           } else {
             this.selectedLanguage = settings.selectedLanguage || this.detectBrowserLanguage()
           }
-          
+
           // 載入 icon 設定
           this.selectedIcon = settings.selectedIcon || 'icon1'
-          
+
           // 載入週期性活動提醒設定
           this.weeklyEventReminder = settings.weeklyEventReminder || {}
-          
+          this.seasonalEventStatus = settings.seasonalEventStatus || {}
+
           // 載入每日簽到提醒設定
           this.dailyCheckinReminderEnabled = settings.dailyCheckinReminderEnabled || false
           this.dailyCheckinStatus = settings.dailyCheckinStatus || {}
-          
+
           // ++ 載入彩蛋模式設定 ++
           this.activeEasterEggMode = settings.activeEasterEggMode || 'default'
 
           // 載入服務公告狀態
           this.dismissedServiceAnnouncements = settings.dismissedServiceAnnouncements || {}
-          
+
           this.applyFontScale()
         } else {
           // 如果沒有保存的設定，優先使用路由預設語言
@@ -222,14 +225,14 @@ export const useSettingsStore = defineStore('settings', {
             this.selectedLanguage = this.detectBrowserLanguage()
             targetLanguage = this.selectedLanguage
           }
-          
+
           // 新用戶根據語言設定預設論壇
           this.selectedForums = this.getDefaultForumsByLanguage(targetLanguage)
-          
+
           // 立即保存初始設定，確保下次不會再檢測
           this.saveSettings()
         }
-        
+
         this.isLoaded = true
         this.updateFavicon() // 載入時更新 favicon
         this.updatePWAIcon() // 載入時更新 PWA manifest
@@ -257,13 +260,14 @@ export const useSettingsStore = defineStore('settings', {
         selectedLanguage: this.selectedLanguage,
         selectedIcon: this.selectedIcon,
         weeklyEventReminder: this.weeklyEventReminder,
+        seasonalEventStatus: this.seasonalEventStatus,
         dailyCheckinReminderEnabled: this.dailyCheckinReminderEnabled,
         dailyCheckinStatus: this.dailyCheckinStatus,
         // ++ 儲存彩蛋模式設定 ++
         activeEasterEggMode: this.activeEasterEggMode,
         dismissedServiceAnnouncements: this.dismissedServiceAnnouncements,
       }
-      
+
       localStorage.setItem('bd2_settings', JSON.stringify(settings))
     },
 
@@ -351,7 +355,7 @@ export const useSettingsStore = defineStore('settings', {
       // ++ 重置彩蛋模式 ++
       this.activeEasterEggMode = 'default'
       this.dismissedServiceAnnouncements = {}
-      
+
       this.applyFontScale()
       this.saveSettings()
       this.updateFavicon()
@@ -429,7 +433,7 @@ export const useSettingsStore = defineStore('settings', {
           // 創建 blob URL 並設定新的 manifest
           const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' })
           const manifestURL = URL.createObjectURL(manifestBlob)
-          
+
           const newManifest = document.createElement('link')
           newManifest.rel = 'manifest'
           newManifest.href = manifestURL
@@ -495,13 +499,19 @@ export const useSettingsStore = defineStore('settings', {
         'ko': 'ko-KR',
         'ko-kr': 'ko-KR'
       }
-      
+
       this.routeDefaultLanguage = langMap[languageCode.toLowerCase()] || languageCode
     },
 
     // 更新週期性活動提醒狀態
     updateWeeklyEventReminder(reminderData) {
       this.weeklyEventReminder = { ...reminderData }
+      this.saveSettings()
+    },
+
+    // 更新季節性活動提醒狀態
+    updateSeasonalEventStatus(statusData) {
+      this.seasonalEventStatus = { ...statusData }
       this.saveSettings()
     },
 

@@ -10,7 +10,7 @@ export default {
     title: '服務公告',
     content: '由於開發者個人行程安排，12 月 18 日至 12 月 25 日期間，網站部分即時內容（例如兌換碼）更新可能會延遲。造成不便，敬請見諒。'
   },
-  
+
   // 導航欄
   nav: {
     home: '首頁',
@@ -23,7 +23,7 @@ export default {
     openMenu: '開啟選單',
     closeMenu: '關閉選單'
   },
-  
+
   // 個人資料/兌換碼頁面
   profile: {
     title: '兌換碼',
@@ -37,7 +37,7 @@ export default {
     retryButton: '重新載入',
     processing: '處理中...',
     expiryDate: '到期',
-    
+
     // 用戶資訊
     userProfile: {
       clickAvatarToChange: '點擊頭像可更換 • 點擊暱稱可切換',
@@ -47,7 +47,7 @@ export default {
       selectAvatar: '選擇頭像',
       confirmSelection: '確認選擇'
     },
-    
+
     // API 狀態
     apiStatus: {
       loading: 'API 載入中...',
@@ -57,7 +57,7 @@ export default {
       retry: '重試',
       techDetails: '技術細節'
     },
-    
+
     // 載入狀態
     loading: {
       waitingApi: '正在等待API載入完成',
@@ -65,7 +65,7 @@ export default {
       updatingList: '正在更新兌換碼列表',
       retryingData: '重新獲取最新資料'
     },
-    
+
     // 狀態
     status: {
       limited: '限時可用',
@@ -79,7 +79,7 @@ export default {
       // maintenance: '維護中',
       // special: '特殊活動'
     },
-    
+
     // 操作按鈕
     actions: {
       copy: '複製',
@@ -99,7 +99,7 @@ export default {
     couponLink: {
       tooltip: '點擊開啟官方兌換頁面並複製兌換碼: {code}'
     },
-    
+
     // 錯誤訊息
     errors: {
       loadFailed: '載入失敗',
@@ -117,7 +117,7 @@ export default {
       serverError: '伺服器暫時無法回應，請稍後重試',
       rateLimited: '請求過於頻繁，請稍後再試'
     },
-    
+
     // 暱稱管理
     nickname: {
       saved: '已儲存的暱稱',
@@ -131,7 +131,7 @@ export default {
       confirmDelete: '確認刪除此暱稱？',
       deleteTitle: '刪除此暱稱'
     },
-    
+
     // 幫助文字
     helpText: {
       reloadHint: '如果兌換碼未正確載入，點擊此處重新載入',
@@ -140,7 +140,7 @@ export default {
       solution2: '點擊上方「重新載入兌換碼」',
       solution3: '或者點擊「退出」重新輸入暱稱'
     },
-    
+
     // 網路狀態
     network: {
       checking: '正在檢測兌換服務連接...',
@@ -151,7 +151,7 @@ export default {
     nicknameHelpTitle: '什麼是遊戲暱稱？',
     nicknameHelp: '請輸入您在遊戲內的暱稱（如圖所示），否則無法正確領取獎勵。',
     nicknameDialogTitle: '選擇暱稱',
-    
+
     // 兌換碼功能說明
     helpDialog: {
       title: '兌換碼功能說明',
@@ -168,21 +168,21 @@ export default {
       localStorageNote: '兌換記錄僅儲存在目前的瀏覽器中。如果您在其他裝置或瀏覽器使用，將需要重新逐一點擊兌換按鈕來確認狀態。'
     }
   },
-  
+
   // 新聞
   news: {
     title: '官方新聞',
     noData: '目前沒有新聞資料',
     loading: '載入中...',
     loadFailed: '載入失敗',
-    
+
     // 日期相關
     date: {
       today: '今天',
       yesterday: '昨天',
       daysAgo: '天前'
     },
-    
+
     // 標籤
     tags: {
       notice: '公告事項',
@@ -193,7 +193,7 @@ export default {
       issue: '遊戲已知問題'
     }
   },
-  
+
   // 官方媒體
   media: {
     title: '官方媒體',
@@ -202,7 +202,7 @@ export default {
     loadFailed: '載入失敗',
     watchVideo: '觀看影片'
   },
-  
+
   // 論壇
   forums: {
     title: '社群論壇',
@@ -216,7 +216,7 @@ export default {
     loading: '載入中...',
     loadFailed: '載入失敗'
   },
-  
+
   // Pixiv 卡片
   pixiv: {
     title: 'Pixiv 熱門作品',
@@ -225,12 +225,12 @@ export default {
     loading: '載入中...',
     loadFailed: '載入失敗'
   },
-  
+
   // 設定頁面
   settings: {
     title: '設定',
     subtitle: '自訂您的使用體驗',
-    
+
     // 顯示設定
     display: {
       title: '顯示設定',
@@ -244,7 +244,7 @@ export default {
       websiteIconDescription: '選擇你喜歡的網站圖示',
       iconPage: '頁面'
     },
-    
+
     // 內容設定
     contentSettings: {
       title: '內容設定',
@@ -265,14 +265,14 @@ export default {
     notifications: {
       title: '通知設定'
     },
-    
+
     // 論壇設定
     forumSettings: {
       title: '論壇顯示設定',
       description: '選擇要顯示的論壇',
       minRequired: '至少需要選擇一個論壇來源'
     },
-    
+
     // 資料管理
     dataManagement: {
       title: '資料管理',
@@ -284,23 +284,23 @@ export default {
       resetButton: '還原預設值',
       resetHint: '將所有設定恢復為預設狀態'
     },
-    
+
     // 按鈕和操作
     actions: {
       backToHome: '返回首頁'
     },
-    
+
     // 確認對話框
     confirmDialog: {
       clearDataTitle: '確認清除資料',
       clearDataMessage: '此操作將清除以下資料：',
       clearDataItems: [
         '已儲存的遊戲暱稱',
-        '兌換碼使用記錄', 
+        '兌換碼使用記錄',
         '頭像選擇記錄'
       ],
       clearDataWarning: '此操作無法復原，確定要繼續嗎？',
-      
+
       resetTitle: '確認重置設定',
       resetMessage: '此操作將恢復所有設定為預設值：',
       resetItems: [
@@ -310,11 +310,11 @@ export default {
         '語言：繁體中文'
       ],
       resetWarning: '確定要重置所有設定嗎？',
-      
+
       confirm: '確定',
       cancel: '取消'
     },
-    
+
     // 成功訊息
     success: {
       cleared: '資料已清除',
@@ -332,7 +332,7 @@ export default {
 如果您覺得這個網站對您有幫助，並且願意支持它的長期運營，歡迎通過下方的連結「請我喝杯咖啡」。您的任何一點支持，都將直接用於支付伺服器和網域名稱的費用，並激勵我投入更多時間來維護和開發新功能。
 再次感謝大家的支持！`,
   },
-  
+
   // 意見回饋頁面
   feedback: {
     title: '意見回饋',
@@ -344,7 +344,7 @@ export default {
       description: '追蹤所有回報與改進的處理狀態',
       view: '立即查看'
     },
-    
+
     // 表單
     form: {
       issueType: '問題類型',
@@ -355,7 +355,7 @@ export default {
       nicknamePlaceholder: '(選填)',
       submit: '送出回饋'
     },
-    
+
     // 問題類型
     issueTypes: {
       bug: '閃退或 Bug',
@@ -363,35 +363,35 @@ export default {
       suggestion: '建議',
       other: '其他'
     },
-    
+
     // 系統資訊
     systemInfo: {
       title: '系統資訊',
       description: '為了更好地協助您解決問題，我們將自動附加您的設備資訊'
     },
-    
+
     // 驗證
     validation: {
       required: '此為必填欄位',
       maxLength: '長度不能超過 {limit} 個字'
     },
-    
+
     // 錯誤
     errors: {
       validation: '請修正表單中的錯誤後再次提交。'
     },
-    
+
     // 結果
     success: '感謝您的寶貴回饋！我們已成功收到您的意見，將會仔細評估並持續改善。',
     error: '發送時發生未知錯誤，請稍後再試。如問題持續發生，請直接聯繫我們。',
-    
+
     // 隱私
     privacy: {
       title: '隱私保護',
       description: '您提供的所有資訊僅用於問題排查與功能優化，我們承諾保護您的隱私。'
     }
   },
-  
+
   // 通用
   common: {
     loading: '載入中...',
@@ -476,7 +476,7 @@ export default {
     uploaded: '已上傳',
     downloaded: '已下載'
   },
-  
+
   // 週期性活動提醒
   weeklyReminder: {
     title: '每週簽到提醒',
@@ -490,6 +490,18 @@ export default {
     goToWebshop: '前往網路商店',
     completed: '已完成',
     remindLater: '稍後提醒'
+  },
+
+
+  // 季節性活動提醒
+  seasonalEvent: {
+    title: '簽到活動',
+    description: '記得前往參與簽到活動',
+    dontShowAgain: '本活動不再顯示',
+    confirmDontShowAgain: '您確定要永久隱藏此活動提醒嗎？',
+    completed: '已完成',
+    remindLater: '稍後提醒',
+    goToWebshop: '前往網路商店'
   },
 
   // 每日簽到提醒
@@ -531,7 +543,7 @@ export default {
       copied: '已複製'
     }
   },
-  
+
   // 意見追蹤頁面
   feedbackTracker: {
     title: '意見追蹤',
@@ -550,7 +562,7 @@ export default {
       rejected: '已拒絕'
     }
   },
-  
+
   // 免責聲明
   disclaimer: {
     title: '免責聲明與版權資訊',

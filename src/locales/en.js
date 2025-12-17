@@ -10,7 +10,7 @@ export default {
     title: 'Service Notice',
     content: 'Due to the developer\'s personal schedule, updates to certain real-time content (such as coupon codes) may be delayed between December 18 and December 25. We apologize for any inconvenience.'
   },
-  
+
   // Navigation
   nav: {
     home: 'Home',
@@ -23,7 +23,7 @@ export default {
     openMenu: 'Open Menu',
     closeMenu: 'Close Menu'
   },
-  
+
   // Profile/Coupon page
   profile: {
     title: 'Coupon Codes',
@@ -37,7 +37,7 @@ export default {
     retryButton: 'Reload',
     processing: 'Processing...',
     expiryDate: 'Expires',
-    
+
     // User profile
     userProfile: {
       clickAvatarToChange: 'Click avatar to change • Click nickname to switch',
@@ -47,7 +47,7 @@ export default {
       selectAvatar: 'Select Avatar',
       confirmSelection: 'Confirm Selection'
     },
-    
+
     // API status
     apiStatus: {
       loading: 'API Loading...',
@@ -57,7 +57,7 @@ export default {
       retry: 'Retry',
       techDetails: 'Technical Details'
     },
-    
+
     // Loading states
     loading: {
       waitingApi: 'Waiting for API to load',
@@ -65,7 +65,7 @@ export default {
       updatingList: 'Updating coupon code list',
       retryingData: 'Retrying to get latest data'
     },
-    
+
     // Status
     status: {
       limited: 'Limited Time Available',
@@ -75,7 +75,7 @@ export default {
       expired: 'Expired',
       unknown: 'Unknown'
     },
-    
+
     // Action buttons
     actions: {
       copy: 'Copy',
@@ -95,7 +95,7 @@ export default {
     couponLink: {
       tooltip: 'Click to open official redemption page and copy coupon code: {code}'
     },
-    
+
     // Error messages
     errors: {
       loadFailed: 'Load Failed',
@@ -113,7 +113,7 @@ export default {
       serverError: 'Server temporarily unavailable, please try again later',
       rateLimited: 'Too many requests, please try again later'
     },
-    
+
     // Nickname management
     nickname: {
       saved: 'Saved Nicknames',
@@ -127,7 +127,7 @@ export default {
       confirmDelete: 'Confirm delete this nickname?',
       deleteTitle: 'Delete this nickname'
     },
-    
+
     // Help text
     helpText: {
       reloadHint: 'If coupon codes are not loaded correctly, click here to reload',
@@ -136,7 +136,7 @@ export default {
       solution2: 'Click the "Reload Coupon Codes" button above',
       solution3: 'Or click "Exit" to re-enter nickname'
     },
-    
+
     // Network status
     network: {
       checking: 'Checking coupon service connection...',
@@ -147,7 +147,7 @@ export default {
     nicknameHelpTitle: 'What is the in-game nickname?',
     nicknameHelp: 'Please enter your in-game nickname (as shown in the picture) to receive rewards correctly.',
     nicknameDialogTitle: 'Select Nickname',
-    
+
     // Redeem Code Help
     helpDialog: {
       title: 'Redeem Code Function Guide',
@@ -164,21 +164,21 @@ export default {
       localStorageNote: 'Redemption records are only stored in your current browser. If you use this on other devices or browsers, you will need to click the redeem buttons again to check the status.'
     }
   },
-  
+
   // News
   news: {
     title: 'Official News',
     noData: 'No news data available',
     loading: 'Loading...',
     loadFailed: 'Load Failed',
-    
+
     // Date related
     date: {
       today: 'Today',
       yesterday: 'Yesterday',
       daysAgo: 'days ago'
     },
-    
+
     // Tags
     tags: {
       notice: 'Notice',
@@ -189,7 +189,7 @@ export default {
       issue: 'Known Issue'
     }
   },
-  
+
   // Official media
   media: {
     title: 'Official Media',
@@ -198,7 +198,7 @@ export default {
     loadFailed: 'Load Failed',
     watchVideo: 'Watch Video'
   },
-  
+
   // Forums
   forums: {
     title: 'Community Forums',
@@ -212,7 +212,7 @@ export default {
     loading: 'Loading...',
     loadFailed: 'Load failed'
   },
-  
+
   // Pixiv card
   pixiv: {
     title: 'Pixiv Popular Works',
@@ -221,12 +221,12 @@ export default {
     loading: 'Loading...',
     loadFailed: 'Load Failed'
   },
-  
+
   // Settings page
   settings: {
     title: 'Settings',
     subtitle: 'Customize your experience',
-    
+
     // Display settings
     display: {
       title: 'Display Settings',
@@ -240,7 +240,7 @@ export default {
       websiteIconDescription: 'Choose your favorite website icon',
       iconPage: 'Page'
     },
-    
+
     // Content settings
     contentSettings: {
       title: 'Content Settings',
@@ -261,14 +261,14 @@ export default {
     notifications: {
       title: 'Notification Settings'
     },
-    
+
     // Forum settings
     forumSettings: {
       title: 'Forum Display Settings',
       description: 'Select forums to display',
       minRequired: 'At least one forum source must be selected'
     },
-    
+
     // Data management
     dataManagement: {
       title: 'Data Management',
@@ -280,12 +280,12 @@ export default {
       resetButton: 'Restore Defaults',
       resetHint: 'Restore all settings to default state'
     },
-    
+
     // Actions
     actions: {
       backToHome: 'Back to Home'
     },
-    
+
     // Confirm dialog
     confirmDialog: {
       clearDataTitle: 'Confirm Clear Data',
@@ -296,7 +296,7 @@ export default {
         'Avatar selection records'
       ],
       clearDataWarning: 'This operation cannot be undone. Are you sure you want to continue?',
-      
+
       resetTitle: 'Confirm Reset Settings',
       resetMessage: 'This operation will restore all settings to default values:',
       resetItems: [
@@ -306,11 +306,11 @@ export default {
         'Language: Traditional Chinese'
       ],
       resetWarning: 'Are you sure you want to reset all settings?',
-      
+
       confirm: 'Confirm',
       cancel: 'Cancel'
     },
-    
+
     // Success messages
     success: {
       cleared: 'Data cleared',
@@ -328,7 +328,7 @@ To handle the growing traffic and ensure the site remains fast and stable, I've 
 If you find this website useful and would like to support its long-term operation, please consider "buying me a coffee" through the link below. Every bit of support goes directly towards server and domain costs, and encourages me to spend more time on maintenance and developing new features.
 Thank you again for all your support!`,
   },
-  
+
   // Feedback page
   feedback: {
     title: 'Feedback',
@@ -340,7 +340,7 @@ Thank you again for all your support!`,
       description: 'Track all reports and improvements',
       view: 'View Now'
     },
-    
+
     // Form
     form: {
       issueType: 'Issue Type',
@@ -351,7 +351,7 @@ Thank you again for all your support!`,
       nicknamePlaceholder: '(Optional)',
       submit: 'Submit Feedback'
     },
-    
+
     // Issue types
     issueTypes: {
       bug: 'Crash or Bug',
@@ -359,35 +359,35 @@ Thank you again for all your support!`,
       suggestion: 'Suggestion',
       other: 'Other'
     },
-    
+
     // System info
     systemInfo: {
       title: 'System Information',
       description: 'To better assist you with problem resolution, we will automatically attach your device information'
     },
-    
+
     // Validation
     validation: {
       required: 'This field is required',
       maxLength: 'Length cannot exceed {limit} characters'
     },
-    
+
     // Errors
     errors: {
       validation: 'Please correct the errors in the form before submitting.'
     },
-    
+
     // Results
     success: 'Thank you for your valuable feedback! We have successfully received your input and will carefully evaluate and continuously improve.',
     error: 'An unknown error occurred during sending, please try again later. If the problem persists, please contact us directly.',
-    
+
     // Privacy
     privacy: {
       title: 'Privacy Protection',
       description: 'All information you provide is used solely for troubleshooting and feature optimization. We are committed to protecting your privacy.'
     }
   },
-  
+
   // Common
   common: {
     loading: 'Loading...',
@@ -472,7 +472,7 @@ Thank you again for all your support!`,
     uploaded: 'Uploaded',
     downloaded: 'Downloaded'
   },
-  
+
   // Weekly Event Reminder
   weeklyReminder: {
     title: 'Weekly Check-in Reminder',
@@ -488,6 +488,18 @@ Thank you again for all your support!`,
     remindLater: 'Remind Later'
   },
 
+
+  // Seasonal Event Reminder
+  seasonalEvent: {
+    title: 'Check-in Event',
+    description: "Don't forget to participate in the check-in event",
+    dontShowAgain: "Don't show again",
+    confirmDontShowAgain: "Are you sure you want to hide this event reminder permanently?",
+    completed: 'Completed',
+    remindLater: 'Remind Later',
+    goToWebshop: 'Go to Webshop'
+  },
+
   // Daily Check-in Reminder
   dailyCheckin: {
     title: 'Daily Check-in Reminder',
@@ -501,7 +513,7 @@ Thank you again for all your support!`,
     completed: 'Completed',
     goToWebshop: 'Go to Webshop'
   },
-  
+
   // About page
   about: {
     title: 'About',
@@ -527,7 +539,7 @@ Thank you again for all your support!`,
       copied: 'Copied'
     }
   },
-  
+
   // Feedback Tracker page
   feedbackTracker: {
     title: 'Feedback Tracker',
@@ -546,7 +558,7 @@ Thank you again for all your support!`,
       rejected: 'Rejected'
     }
   },
-  
+
   // Disclaimer
   disclaimer: {
     title: 'Disclaimer & Copyright Information',
