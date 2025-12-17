@@ -10,7 +10,7 @@ export default {
     title: '服务公告',
     content: '由于开发者个人行程安排，12 月 18 日至 12 月 25 日期间，网站部分即时内容（例如兑换码）的更新可能会延迟。造成不便，敬请谅解。'
   },
-  
+
   // 导航栏
   nav: {
     home: '首页',
@@ -23,7 +23,7 @@ export default {
     openMenu: '开启选单',
     closeMenu: '关闭选单'
   },
-  
+
   // 个人资料/兑换码页面
   profile: {
     title: '兑换码',
@@ -37,7 +37,7 @@ export default {
     retryButton: '重新加载',
     processing: '处理中...',
     expiryDate: '到期',
-    
+
     // 用户信息
     userProfile: {
       clickAvatarToChange: '点击头像可更换 • 点击昵称可切换',
@@ -47,7 +47,7 @@ export default {
       selectAvatar: '选择头像',
       confirmSelection: '确认选择'
     },
-    
+
     // API 状态
     apiStatus: {
       loading: 'API 加载中...',
@@ -57,7 +57,7 @@ export default {
       retry: '重试',
       techDetails: '技术细节'
     },
-    
+
     // 加载状态
     loading: {
       waitingApi: '正在等待API加载完成',
@@ -65,7 +65,7 @@ export default {
       updatingList: '正在更新兑换码列表',
       retryingData: '重新获取最新数据'
     },
-    
+
     // 状态
     status: {
       limited: '限时可用',
@@ -75,7 +75,7 @@ export default {
       expired: '已过期',
       unknown: '未知状态'
     },
-    
+
     // 操作按钮
     actions: {
       copy: '复制',
@@ -95,7 +95,7 @@ export default {
     couponLink: {
       tooltip: '点击打开官方兑换页面并复制兑换码: {code}'
     },
-    
+
     // 错误消息
     errors: {
       loadFailed: '加载失败',
@@ -113,7 +113,7 @@ export default {
       serverError: '服务器暂时无法回应，请稍后重试',
       rateLimited: '请求过于频繁，请稍后再试'
     },
-    
+
     // 昵称管理
     nickname: {
       saved: '已保存的昵称',
@@ -127,7 +127,7 @@ export default {
       confirmDelete: '确认删除此昵称？',
       deleteTitle: '删除此昵称'
     },
-    
+
     // 帮助文字
     helpText: {
       reloadHint: '如果兑换码未正确加载，点击此处重新加载',
@@ -136,7 +136,7 @@ export default {
       solution2: '点击上方「重新加载兑换码」',
       solution3: '或者点击「退出」重新输入昵称'
     },
-    
+
     // 网络状态
     network: {
       checking: '正在检测兑换服务连接...',
@@ -147,7 +147,7 @@ export default {
     nicknameHelpTitle: '什么是游戏昵称？',
     nicknameHelp: '请输入您在游戏内的昵称（如图所示），否则无法正确领取奖励。',
     nicknameDialogTitle: '选择昵称',
-    
+
     // 兑换码功能说明
     helpDialog: {
       title: '兑换码功能说明',
@@ -164,21 +164,21 @@ export default {
       localStorageNote: '兑换记录仅储存在当前的浏览器中。如果您在其他设备或浏览器使用，将需要重新逐一点击兑换按钮来确认状态。'
     }
   },
-  
+
   // 新闻
   news: {
     title: '官方新闻',
     noData: '目前没有新闻数据',
     loading: '加载中...',
     loadFailed: '加载失败',
-    
+
     // 日期相关
     date: {
       today: '今天',
       yesterday: '昨天',
       daysAgo: '天前'
     },
-    
+
     // 标签
     tags: {
       notice: '公告事项',
@@ -189,7 +189,7 @@ export default {
       issue: '游戏已知问题'
     }
   },
-  
+
   // 官方媒体
   media: {
     title: '官方媒体',
@@ -198,7 +198,7 @@ export default {
     loadFailed: '加载失败',
     watchVideo: '观看视频'
   },
-  
+
   // 论坛
   forums: {
     title: '社群论坛',
@@ -212,7 +212,7 @@ export default {
     loading: '加载中...',
     loadFailed: '加载失败'
   },
-  
+
   // Pixiv 卡片
   pixiv: {
     title: 'Pixiv 热门作品',
@@ -221,12 +221,12 @@ export default {
     loading: '加载中...',
     loadFailed: '加载失败'
   },
-  
+
   // 设置页面
   settings: {
     title: '设置',
     subtitle: '自定义您的使用体验',
-    
+
     // 显示设置
     display: {
       title: '显示设置',
@@ -240,7 +240,7 @@ export default {
       websiteIconDescription: '选择你喜欢的网站图标',
       iconPage: '页面'
     },
-    
+
     // 内容设置
     contentSettings: {
       title: '内容设置',
@@ -261,14 +261,14 @@ export default {
     notifications: {
       title: '通知设置'
     },
-    
+
     // 论坛设置
     forumSettings: {
       title: '论坛显示设置',
       description: '选择要显示的论坛',
       minRequired: '至少需要选择一个论坛来源'
     },
-    
+
     // 数据管理
     dataManagement: {
       title: '数据管理',
@@ -280,23 +280,23 @@ export default {
       resetButton: '还原默认值',
       resetHint: '将所有设置恢复为默认状态'
     },
-    
+
     // 按钮和操作
     actions: {
       backToHome: '返回首页'
     },
-    
+
     // 确认对话框
     confirmDialog: {
       clearDataTitle: '确认清除数据',
       clearDataMessage: '此操作将清除以下数据：',
       clearDataItems: [
         '已保存的游戏昵称',
-        '兑换码使用记录', 
+        '兑换码使用记录',
         '头像选择记录'
       ],
       clearDataWarning: '此操作无法复原，确定要继续吗？',
-      
+
       resetTitle: '确认重置设置',
       resetMessage: '此操作将恢复所有设置为默认值：',
       resetItems: [
@@ -306,11 +306,11 @@ export default {
         '语言：简体中文'
       ],
       resetWarning: '确定要重置所有设置吗？',
-      
+
       confirm: '确定',
       cancel: '取消'
     },
-    
+
     // 成功消息
     success: {
       cleared: '数据已清除',
@@ -328,7 +328,7 @@ export default {
 如果您觉得这个网站对您有帮助，并且愿意支持它的长期运营，欢迎通过下方的链接「请我喝杯咖啡」。您的任何一点支持，都将直接用于支付服务器和域名的费用，并激励我投入更多时间来维护和开发新功能。
 再次感谢大家的支持！`,
   },
-  
+
   // 意见反馈页面
   feedback: {
     title: '意见反馈',
@@ -340,7 +340,7 @@ export default {
       description: '追踪所有汇报与改进的处理状态',
       view: '立即查看'
     },
-    
+
     // 表单
     form: {
       issueType: '问题类型',
@@ -351,7 +351,7 @@ export default {
       nicknamePlaceholder: '(选填)',
       submit: '送出反馈'
     },
-    
+
     // 问题类型
     issueTypes: {
       bug: '闪退或 Bug',
@@ -359,35 +359,35 @@ export default {
       suggestion: '建议',
       other: '其他'
     },
-    
+
     // 系统信息
     systemInfo: {
       title: '系统信息',
       description: '为了更好地协助您解决问题，我们将自动附加您的设备信息'
     },
-    
+
     // 验证
     validation: {
       required: '此为必填字段',
       maxLength: '长度不能超过 {limit} 个字'
     },
-    
+
     // 错误
     errors: {
       validation: '请修正表单中的错误后再次提交。'
     },
-    
+
     // 结果
     success: '感谢您的宝贵反馈！我们已成功收到您的意见，将会仔细评估并持续改善。',
     error: '发送时发生未知错误，请稍后再试。如问题持续发生，请直接联系我们。',
-    
+
     // 隐私
     privacy: {
       title: '隐私保护',
       description: '您提供的所有信息仅用于问题排查与功能优化，我们承诺保护您的隐私。'
     }
   },
-  
+
   // 通用
   common: {
     loading: '加载中...',
@@ -472,7 +472,7 @@ export default {
     uploaded: '已上传',
     downloaded: '已下载'
   },
-  
+
   // 周期性活动提醒
   weeklyReminder: {
     title: '每周签到提醒',
@@ -488,6 +488,18 @@ export default {
     remindLater: '稍后提醒'
   },
 
+
+  // 季节性活动提醒
+  seasonalEvent: {
+    title: '签到活动',
+    description: '记得前往参与签到活动',
+    dontShowAgain: '本活动不再显示',
+    confirmDontShowAgain: '您确定要永久隐藏此活动提醒吗？',
+    completed: '已完成',
+    remindLater: '稍后提醒',
+    goToWebshop: '前往网络商店'
+  },
+
   // 每日签到提醒
   dailyCheckin: {
     title: '每日签到提醒',
@@ -501,7 +513,7 @@ export default {
     completed: '已完成',
     goToWebshop: '前往网络商店'
   },
-  
+
   // 关于页面
   about: {
     title: '关于',
@@ -527,7 +539,7 @@ export default {
       copied: '已复制'
     }
   },
-  
+
   // 意见追踪页面
   feedbackTracker: {
     title: '意见追踪',
@@ -546,7 +558,7 @@ export default {
       rejected: '已拒绝'
     }
   },
-  
+
   // 免责声明
   disclaimer: {
     title: '免责声明与版权信息',

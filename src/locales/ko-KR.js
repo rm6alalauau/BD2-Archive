@@ -10,7 +10,7 @@ export default {
     title: '서비스 공지',
     content: '개발자의 개인 일정으로 인해 12월 18일부터 12월 25일까지는 사이트의 일부 실시간 콘텐츠(예: 교환 코드) 업데이트가 지연될 수 있습니다. 불편을 드려 죄송합니다.'
   },
-  
+
   // Navigation
   nav: {
     home: '홈',
@@ -23,7 +23,7 @@ export default {
     openMenu: '메뉴 열기',
     closeMenu: '메뉴 닫기'
   },
-  
+
   // Profile/Coupon page
   profile: {
     title: '쿠폰 코드',
@@ -37,7 +37,7 @@ export default {
     retryButton: '재로딩',
     processing: '처리 중...',
     expiryDate: '만료',
-    
+
     // User profile
     userProfile: {
       clickAvatarToChange: '아바타를 클릭하여 변경 • 닉네임을 클릭하여 전환',
@@ -47,7 +47,7 @@ export default {
       selectAvatar: '아바타 선택',
       confirmSelection: '선택 확인'
     },
-    
+
     // API status
     apiStatus: {
       loading: 'API 로딩 중...',
@@ -57,7 +57,7 @@ export default {
       retry: '재시도',
       techDetails: '기술 세부사항'
     },
-    
+
     // Loading states
     loading: {
       waitingApi: 'API 로딩 대기 중',
@@ -65,7 +65,7 @@ export default {
       updatingList: '쿠폰 코드 목록 업데이트 중',
       retryingData: '최신 데이터 재획득 중'
     },
-    
+
     // Status
     status: {
       limited: '기간 한정',
@@ -75,7 +75,7 @@ export default {
       expired: '기간 만료',
       unknown: '알 수 없음'
     },
-    
+
     // Action buttons
     actions: {
       copy: '복사',
@@ -95,7 +95,7 @@ export default {
     couponLink: {
       tooltip: '클릭하여 공식 교환 페이지를 열고 쿠폰 코드 복사: {code}'
     },
-    
+
     // Error messages
     errors: {
       loadFailed: '로딩 실패',
@@ -113,7 +113,7 @@ export default {
       serverError: '서버가 일시적으로 사용할 수 없습니다. 나중에 다시 시도해 주세요',
       rateLimited: '너무 많은 요청입니다. 잠시 후 다시 시도해 주세요'
     },
-    
+
     // Nickname management
     nickname: {
       saved: '저장된 닉네임',
@@ -130,7 +130,7 @@ export default {
       nicknameHelp: '게임 내 닉네임을 입력해 주세요(이미지 참고). 올바르게 보상을 받으려면 필요합니다.',
       nicknameDialogTitle: '닉네임 선택'
     },
-    
+
     // Help text
     helpText: {
       reloadHint: '쿠폰 코드가 올바르게 로딩되지 않은 경우, 여기를 클릭하여 다시 로딩하세요',
@@ -139,7 +139,7 @@ export default {
       solution2: '위의 "쿠폰 코드 다시 로딩" 버튼을 클릭',
       solution3: '또는 "종료"를 클릭하여 닉네임을 다시 입력'
     },
-    
+
     // Network status
     network: {
       checking: '쿠폰 서비스 연결 확인 중...',
@@ -147,7 +147,7 @@ export default {
       unreachable: '쿠폰 서비스에 연결할 수 없습니다. 네트워크를 확인해 주세요',
       corsError: 'iOS Safari 호환성 문제'
     },
-    
+
     // 쿠폰 코드 기능 설명
     helpDialog: {
       title: '쿠폰 코드 기능 가이드',
@@ -164,21 +164,21 @@ export default {
       localStorageNote: '교환 기록은 현재 브라우저에만 저장됩니다. 다른 기기나 브라우저에서 사용하는 경우, 상태를 확인하기 위해 교환 버튼을 다시 클릭해야 합니다.'
     }
   },
-  
+
   // News
   news: {
     title: '공식 뉴스',
     noData: '뉴스 데이터가 없습니다',
     loading: '로딩 중...',
     loadFailed: '로딩 실패',
-    
+
     // Date related
     date: {
       today: '오늘',
       yesterday: '어제',
       daysAgo: '일 전'
     },
-    
+
     // Tags
     tags: {
       notice: '공지사항',
@@ -189,7 +189,7 @@ export default {
       issue: '알려진 문제'
     }
   },
-  
+
   // Official media
   media: {
     title: '공식 미디어',
@@ -198,7 +198,7 @@ export default {
     loadFailed: '로딩 실패',
     watchVideo: '비디오 시청'
   },
-  
+
   // Forums
   forums: {
     title: '커뮤니티 포럼',
@@ -212,7 +212,7 @@ export default {
     loading: '로딩 중...',
     loadFailed: '로딩 실패'
   },
-  
+
   // Pixiv card
   pixiv: {
     title: 'Pixiv 인기 작품',
@@ -221,12 +221,12 @@ export default {
     loading: '로딩 중...',
     loadFailed: '로딩 실패'
   },
-  
+
   // Settings page
   settings: {
     title: '설정',
     subtitle: '사용 경험을 맞춤 설정하세요',
-    
+
     // Display settings
     display: {
       title: '표시 설정',
@@ -240,7 +240,7 @@ export default {
       websiteIconDescription: '마음에 드는 웹사이트 아이콘을 선택하세요',
       iconPage: '페이지'
     },
-    
+
     // Content settings
     contentSettings: {
       title: '콘텐츠 설정',
@@ -261,14 +261,14 @@ export default {
     notifications: {
       title: '알림 설정'
     },
-    
+
     // Forum settings
     forumSettings: {
       title: '포럼 표시 설정',
       description: '표시할 포럼 선택',
       minRequired: '최소 하나의 포럼 소스를 선택해야 합니다'
     },
-    
+
     // Data management
     dataManagement: {
       title: '데이터 관리',
@@ -280,12 +280,12 @@ export default {
       resetButton: '기본값으로 복원',
       resetHint: '모든 설정을 기본 상태로 복원'
     },
-    
+
     // Actions
     actions: {
       backToHome: '홈으로 돌아가기'
     },
-    
+
     // Confirm dialog
     confirmDialog: {
       clearDataTitle: '데이터 지우기 확인',
@@ -296,7 +296,7 @@ export default {
         '아바타 선택 기록'
       ],
       clearDataWarning: '이 작업은 되돌릴 수 없습니다. 계속하시겠습니까?',
-      
+
       resetTitle: '설정 초기화 확인',
       resetMessage: '이 작업으로 모든 설정이 기본값으로 복원됩니다:',
       resetItems: [
@@ -306,11 +306,11 @@ export default {
         '언어: 번체 중국어'
       ],
       resetWarning: '모든 설정을 초기화하시겠습니까?',
-      
+
       confirm: '확인',
       cancel: '취소'
     },
-    
+
     // 성공 메시지
     success: {
       cleared: '데이터가 지워졌습니다',
@@ -328,7 +328,7 @@ The BD2 Pulse를 이용해주시는 모든 유저분들께 감사드립니다! �
 만약 이 사이트가 유용하다고 생각하시고, 장기적인 운영을 지원하고 싶으시다면, 아래 링크를 통해 "커피 한 잔 사주기"로 후원해주시면 감사하겠습니다. 여러분의 모든 후원은 서버 및 도메인 비용으로 직접 사용되며, 제가 사이트를 유지하고 새로운 기능을 개발하는 데 큰 힘이 됩니다.
 다시 한번 여러분의 성원에 감사드립니다!`,
   },
-  
+
   // Feedback page
   feedback: {
     title: '피드백',
@@ -340,7 +340,7 @@ The BD2 Pulse를 이용해주시는 모든 유저분들께 감사드립니다! �
       description: '모든 보고 및 개선 사항의 처리 상태 확인',
       view: '지금 보기'
     },
-    
+
     // Form
     form: {
       issueType: '문제 유형',
@@ -351,7 +351,7 @@ The BD2 Pulse를 이용해주시는 모든 유저분들께 감사드립니다! �
       nicknamePlaceholder: '(선택사항)',
       submit: '피드백 전송'
     },
-    
+
     // Issue types
     issueTypes: {
       bug: '앱 충돌 또는 버그',
@@ -359,35 +359,35 @@ The BD2 Pulse를 이용해주시는 모든 유저분들께 감사드립니다! �
       suggestion: '제안',
       other: '기타'
     },
-    
+
     // System info
     systemInfo: {
       title: '시스템 정보',
       description: '문제 해결을 더 잘 지원하기 위해 기기 정보를 자동으로 첨부합니다'
     },
-    
+
     // Validation
     validation: {
       required: '이 항목은 필수입니다',
       maxLength: '길이는 {limit}자를 초과할 수 없습니다'
     },
-    
+
     // Errors
     errors: {
       validation: '양식의 오류를 수정한 후 제출해 주세요.'
     },
-    
+
     // Results
     success: '소중한 피드백 감사합니다! 의견을 성공적으로 받았으며, 신중히 평가하여 지속적으로 개선해 나가겠습니다.',
     error: '전송 중 알 수 없는 오류가 발생했습니다. 나중에 다시 시도해 주세요. 문제가 지속되면 직접 연락해 주세요.',
-    
+
     // Privacy
     privacy: {
       title: '개인정보 보호',
       description: '제공해 주신 모든 정보는 문제 해결과 기능 최적화를 위해서만 사용됩니다. 개인정보 보호를 약속드립니다.'
     }
   },
-  
+
   // Common
   common: {
     loading: '로딩 중...',
@@ -472,7 +472,7 @@ The BD2 Pulse를 이용해주시는 모든 유저분들께 감사드립니다! �
     uploaded: '업로드됨',
     downloaded: '다운로드됨'
   },
-  
+
   // 주간 활동 알림
   weeklyReminder: {
     title: '주간 출석 알림',
@@ -488,6 +488,18 @@ The BD2 Pulse를 이용해주시는 모든 유저분들께 감사드립니다! �
     remindLater: '나중에 알림'
   },
 
+
+  // 시즌 이벤트 알림
+  seasonalEvent: {
+    title: '출석 이벤트',
+    description: '출석 이벤트 참여를 잊지 마세요',
+    dontShowAgain: '다시 보지 않기',
+    confirmDontShowAgain: '이 이벤트 알림을 영구적으로 숨기시겠습니까?',
+    completed: '완료',
+    remindLater: '나중에 알림',
+    goToWebshop: '웹상점으로 이동'
+  },
+
   // 데일리 체크인 알림
   dailyCheckin: {
     title: '데일리 체크인 알림',
@@ -501,7 +513,7 @@ The BD2 Pulse를 이용해주시는 모든 유저분들께 감사드립니다! �
     completed: '완료',
     goToWebshop: '웹샵으로 이동'
   },
-  
+
   // 정보 페이지
   about: {
     title: '정보',
@@ -527,7 +539,7 @@ The BD2 Pulse를 이용해주시는 모든 유저분들께 감사드립니다! �
       copied: '복사됨'
     }
   },
-  
+
   // 피드백 추적 페이지
   feedbackTracker: {
     title: '피드백 추적',
@@ -546,7 +558,7 @@ The BD2 Pulse를 이용해주시는 모든 유저분들께 감사드립니다! �
       rejected: '거부됨'
     }
   },
-  
+
   // 면책 조항
   disclaimer: {
     title: '면책 조항 및 저작권 정보',
