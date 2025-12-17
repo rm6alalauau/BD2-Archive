@@ -18,7 +18,7 @@ const messages = {
 export function getTranslation(key, language = 'zh-Hant-TW', params = {}) {
   const keys = key.split('.')
   let value = messages[language]
-  
+
   // 遞歸查找嵌套的 key
   for (const k of keys) {
     if (value && typeof value === 'object' && k in value) {
@@ -32,14 +32,15 @@ export function getTranslation(key, language = 'zh-Hant-TW', params = {}) {
       return key // 如果連繁體中文都找不到，返回 key 本身
     }
   }
-  
+
   // 處理參數替換
   if (typeof value === 'string' && Object.keys(params).length > 0) {
     return value.replace(/\{(\w+)\}/g, (match, paramKey) => {
-      return params[paramKey] || match
+      const val = params[paramKey]
+      return val !== undefined ? val : match
     })
   }
-  
+
   return value
 }
 

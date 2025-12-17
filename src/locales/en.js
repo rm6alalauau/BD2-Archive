@@ -497,7 +497,7 @@ Thank you again for all your support!`,
     confirmDontShowAgain: "Are you sure you want to hide this event reminder permanently?",
     completed: 'Completed',
     remindLater: 'Remind Later',
-    goToWebshop: 'Go to Webshop'
+    goToWebshop: 'Go to Check-in'
   },
 
   // Daily Check-in Reminder
