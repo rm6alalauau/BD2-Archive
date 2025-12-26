@@ -96,7 +96,17 @@
                   {{ t('feedbackTracker.feedback') }}
                 </div>
                 <div class="content-text">
-                  {{ getFeedbackText(item) }}
+                  <template v-for="(segment, index) in parseContent(getFeedbackText(item))" :key="index">
+                    <span v-if="segment.type === 'text'">{{ segment.content }}</span>
+                    <v-img
+                      v-else-if="segment.type === 'image'"
+                      :src="segment.src"
+                      :alt="segment.alt"
+                      max-height="300"
+                      class="my-2 rounded-lg"
+                      cover
+                    ></v-img>
+                  </template>
                 </div>
               </div>
 
@@ -107,7 +117,17 @@
                   {{ t('feedbackTracker.resolution') }}
                 </div>
                 <div class="content-text resolution-text">
-                  {{ getResolutionText(item) }}
+                  <template v-for="(segment, index) in parseContent(getResolutionText(item))" :key="index">
+                    <span v-if="segment.type === 'text'">{{ segment.content }}</span>
+                    <v-img
+                      v-else-if="segment.type === 'image'"
+                      :src="segment.src"
+                      :alt="segment.alt"
+                      max-height="300"
+                      class="my-2 rounded-lg"
+                      cover
+                    ></v-img>
+                  </template>
                 </div>
               </div>
             </v-card-text>
@@ -326,6 +346,52 @@ export default {
       } catch (error) {
         return dateString;
       }
+    },
+
+    // 解析內容，處理圖片標籤
+    parseContent(text) {
+      if (!text) return [];
+      
+      // Regex to match ![alt](url)
+      const regex = /!\[(.*?)\]\((.*?)\)/g;
+      const segments = [];
+      let lastIndex = 0;
+      let match;
+
+      while ((match = regex.exec(text)) !== null) {
+        // Add text before the image
+        if (match.index > lastIndex) {
+          segments.push({
+            type: 'text',
+            content: text.substring(lastIndex, match.index)
+          });
+        }
+        
+        // Add the image
+        let src = match[2];
+        // If it's a relative path (not starting with http/https), assume it's in /feedback/
+        if (!src.startsWith('http') && !src.startsWith('/')) {
+          src = `/feedback/${src}`;
+        }
+        
+        segments.push({
+          type: 'image',
+          alt: match[1],
+          src: src
+        });
+        
+        lastIndex = regex.lastIndex;
+      }
+
+      // Add remaining text
+      if (lastIndex < text.length) {
+        segments.push({
+          type: 'text',
+          content: text.substring(lastIndex)
+        });
+      }
+
+      return segments;
     }
   }
 };
