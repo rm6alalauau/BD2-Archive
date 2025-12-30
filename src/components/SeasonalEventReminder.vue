@@ -108,13 +108,13 @@ export default {
       startDate: new Date('2025-12-16T00:00:00+08:00'),
       endDate: new Date('2026-01-15T23:59:59+08:00'),
 
-      // Banner URLs
+      // Banner URLs (Local)
       banners: {
-        'ko-KR': 'https://webshop.browndust2.global/public/uploads/1765845284954-251211_BD2_%EC%9B%B9%EC%83%81%EC%A0%90_%EC%B6%9C%EC%84%9D%EC%9D%B4%EB%B2%A4%ED%8A%B8%EB%B0%B0%EB%84%88_%EC%9B%B9%EC%83%81%EC%A0%90_01KR_01POPUP_640x920.jpg',
-        'ja-JP': 'https://webshop.browndust2.global/public/uploads/1765845345768-251215_BD2_%EC%9B%B9%EC%83%81%EC%A0%90_%EC%B6%9C%EC%84%9D%EC%9D%B4%EB%B2%A4%ED%8A%B8%EB%B0%B0%EB%84%88_%EC%9B%B9%EC%83%81%EC%A0%90_03JP_01POPUP_640x920.jpg',
-        'en': 'https://webshop.browndust2.global/public/uploads/1765845316880-251215_BD2_%EC%9B%B9%EC%83%81%EC%A0%90_%EC%B6%9C%EC%84%9D%EC%9D%B4%EB%B2%A4%ED%8A%B8%EB%B0%B0%EB%84%88_%EC%9B%B9%EC%83%81%EC%A0%90_02EN_01POPUP_640x920.jpg',
-        'zh-Hans-CN': 'https://webshop.browndust2.global/public/uploads/1765845394721-251215_BD2_%EC%9B%B9%EC%83%81%EC%A0%90_%EC%B6%9C%EC%84%9D%EC%9D%B4%EB%B2%A4%ED%8A%B8%EB%B0%B0%EB%84%88_%EC%9B%B9%EC%83%81%EC%A0%90_05SC_01POPUP_640x920.jpg',
-        'zh-Hant-TW': 'https://webshop.browndust2.global/public/uploads/1765845366374-251215_BD2_%EC%9B%B9%EC%83%81%EC%A0%90_%EC%B6%9C%EC%84%9D%EC%9D%B4%EB%B2%A4%ED%8A%B8%EB%B0%B0%EB%84%88_%EC%9B%B9%EC%83%81%EC%A0%90_04TC_01POPUP_640x920.jpg'
+        'ko-KR': '/event/ko-KR.jpg',
+        'ja-JP': '/event/ja-JP.jpg',
+        'en': '/event/en.jpg',
+        'zh-Hans-CN': '/event/zh-CN.jpg',
+        'zh-Hant-TW': '/event/zh-TW.jpg'
       }
     }
   },
