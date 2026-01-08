@@ -201,6 +201,7 @@ export default {
     serverTime: '서버 시간 (UTC+8)',
     localTime: '내 시간',
     ended: '종료됨',
+    showEndedEvents: '종료된 이벤트 표시',
   },
 
   // Official media

@@ -11,10 +11,17 @@
 
     <!-- 控制列 -->
     <v-row class="mb-4 align-center">
-      <v-col cols="12" sm="auto">
+      <v-col cols="12" sm="auto" class="d-flex align-center flex-wrap">
         <v-checkbox
           v-model="useLocalTime"
           :label="t('events.useLocalTime')"
+          hide-details
+          density="compact"
+          class="mr-4"
+        ></v-checkbox>
+        <v-checkbox
+          v-model="showEndedEvents"
+          :label="t('events.showEndedEvents')"
           hide-details
           density="compact"
           class="mr-4"
@@ -55,12 +62,13 @@
                     <v-progress-linear
                         :model-value="getProgress(event)"
                         :color="getEventColor(event.type)"
-                        height="20"
+                        height="24"
                         rounded
                         striped
+                        class="event-progress-bar"
                     >
                         <template v-slot:default="{ value }">
-                            <span class="text-caption white--text">{{ Math.ceil(value) }}%</span>
+                            <span class="text-caption font-weight-bold ml-2 progress-text">{{ Math.ceil(value) }}%</span>
                         </template>
                     </v-progress-linear>
                     
@@ -93,6 +101,7 @@ export default {
       settingsStore: useSettingsStore(),
       appStore: useAppStore(),
       useLocalTime: true,
+      showEndedEvents: false,
       loading: false,
     }
   },
@@ -101,8 +110,17 @@ export default {
       return (key, params) => this.settingsStore.t(key, null, params);
     },
     sortedEvents() {
-        // Sort by start time
-        return [...(this.appStore.gameEvents || [])].sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+        const now = new Date();
+        let events = [...(this.appStore.gameEvents || [])];
+
+        // Filter ended events if showEndedEvents is false
+        if (!this.showEndedEvents) {
+            events = events.filter(e => new Date(e.endTime) >= now);
+        }
+
+        // Sort by start time. If showing ended events, maybe reverse order or keep standard?
+        // Standard start time sorting seems best for gantt chart view
+        return events.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
     }
   },
   methods: {
@@ -165,5 +183,33 @@ export default {
 
 .timeline-card {
     min-height: 500px;
+}
+
+/* Enhance striped progress bar visibility */
+:deep(.v-progress-linear__background) {
+    opacity: 0.3 !important;
+}
+
+/* Make stripes more visible */
+:deep(.v-progress-linear--striped .v-progress-linear__determinate) {
+    background-image: linear-gradient(
+        45deg, 
+        rgba(255, 255, 255, 0.35) 25%, 
+        transparent 25%, 
+        transparent 50%, 
+        rgba(255, 255, 255, 0.35) 50%, 
+        rgba(255, 255, 255, 0.35) 75%, 
+        transparent 75%, 
+        transparent
+    ) !important;
+    background-size: 20px 20px !important; 
+}
+
+/* Make text shadow more prominent */
+.progress-text {
+    text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.8);
+    color: white !important;
+    letter-spacing: 0.5px;
+    z-index: 2;
 }
 </style>

@@ -201,6 +201,7 @@ export default {
     serverTime: '服务器时间 (UTC+8)',
     localTime: '您的时间',
     ended: '已结束',
+    showEndedEvents: '显示已结束活动',
   },
 
   // 官方媒体

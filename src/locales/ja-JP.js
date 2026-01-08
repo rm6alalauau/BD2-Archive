@@ -201,6 +201,7 @@ export default {
     serverTime: 'サーバー時間 (UTC+8)',
     localTime: 'あなたの時間',
     ended: '終了',
+    showEndedEvents: '終了したイベントを表示',
   },
 
   // Official media

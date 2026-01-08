@@ -197,9 +197,9 @@ export default {
     noActiveEvents: 'No active events',
     viewAllSchedule: 'View Schedule',
     ended: 'Ended',
-    useLocalTime: 'Use Local Time',
     localTime: 'Displaying your device local time',
-    serverTime: 'Displaying server time (UTC+8)'
+    serverTime: 'Displaying server time (UTC+8)',
+    showEndedEvents: 'Show Ended Events'
   },
 
   // Official media
