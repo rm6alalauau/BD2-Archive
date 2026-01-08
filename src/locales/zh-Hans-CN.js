@@ -190,6 +190,19 @@ export default {
     }
   },
 
+  events: {
+    title: '活动',
+    timeline: '活动时间表',
+    currentEvents: '进行中的活动',
+    upcomingEvents: '即将开始的活动',
+    noActiveEvents: '目前没有进行中的活动',
+    viewAllSchedule: '查看完整时间表',
+    useLocalTime: '使用本地时间',
+    serverTime: '服务器时间 (UTC+8)',
+    localTime: '您的时间',
+    ended: '已结束',
+  },
+
   // 官方媒体
   media: {
     title: '官方媒体',

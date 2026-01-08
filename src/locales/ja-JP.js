@@ -190,6 +190,19 @@ export default {
     }
   },
 
+  events: {
+    title: 'イベント',
+    timeline: 'イベントスケジュール',
+    currentEvents: '開催中のイベント',
+    upcomingEvents: '開催予定のイベント',
+    noActiveEvents: '現在開催中のイベントはありません',
+    viewAllSchedule: '全スケジュールを見る',
+    useLocalTime: '現地時間を使用',
+    serverTime: 'サーバー時間 (UTC+8)',
+    localTime: 'あなたの時間',
+    ended: '終了',
+  },
+
   // Official media
   media: {
     title: '公式メディア',

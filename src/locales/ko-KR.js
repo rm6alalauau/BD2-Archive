@@ -190,6 +190,19 @@ export default {
     }
   },
 
+  events: {
+    title: '이벤트',
+    timeline: '이벤트 일정',
+    currentEvents: '진행 중인 이벤트',
+    upcomingEvents: '진행 예정 이벤트',
+    noActiveEvents: '현재 진행 중인 이벤트가 없습니다',
+    viewAllSchedule: '전체 일정 보기',
+    useLocalTime: '현지 시간 사용',
+    serverTime: '서버 시간 (UTC+8)',
+    localTime: '내 시간',
+    ended: '종료됨',
+  },
+
   // Official media
   media: {
     title: '공식 미디어',
