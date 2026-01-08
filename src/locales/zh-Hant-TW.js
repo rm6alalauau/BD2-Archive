@@ -194,6 +194,18 @@ export default {
     }
   },
 
+  // 活動
+  events: {
+    timeline: '活動時間軸',
+    currentEvents: '目前活動',
+    noActiveEvents: '目前沒有進行中的活動',
+    viewAllSchedule: '活動時間一覽',
+    ended: '已結束',
+    useLocalTime: '使用本機時間',
+    localTime: '顯示您裝置的當地時間',
+    serverTime: '顯示伺服器時間 (UTC+8)'
+  },
+
   // 官方媒體
   media: {
     title: '官方媒體',

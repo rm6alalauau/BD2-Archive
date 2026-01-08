@@ -190,6 +190,18 @@ export default {
     }
   },
 
+  // Events
+  events: {
+    timeline: 'Event Timeline',
+    currentEvents: 'Current Events',
+    noActiveEvents: 'No active events',
+    viewAllSchedule: 'View Schedule',
+    ended: 'Ended',
+    useLocalTime: 'Use Local Time',
+    localTime: 'Displaying your device local time',
+    serverTime: 'Displaying server time (UTC+8)'
+  },
+
   // Official media
   media: {
     title: 'Official Media',
