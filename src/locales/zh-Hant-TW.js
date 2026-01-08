@@ -203,7 +203,8 @@ export default {
     ended: '已結束',
     useLocalTime: '使用本機時間',
     localTime: '顯示您裝置的當地時間',
-    serverTime: '顯示伺服器時間 (UTC+8)'
+    serverTime: '顯示伺服器時間 (UTC+8)',
+    showEndedEvents: '顯示已結束活動'
   },
 
   // 官方媒體
