@@ -42,18 +42,11 @@
             <!-- 這裡我們使用一個自定義的網格系統來模擬 -->
             
             <div class="gantt-container">
-                <!-- 頭部日期 (簡單模擬) -->
-                <div class="gantt-header d-flex border-b mb-2 pb-2">
-                    <div class="gantt-col-header" v-for="day in 28" :key="day" style="flex: 1; text-align: center; font-size: 0.75rem; color: #aaa;">
-                        {{ day }}
-                    </div>
-                </div>
-
                 <!-- 活動條目 -->
                 <div v-for="event in sortedEvents" :key="event.id" class="gantt-row mb-3 position-relative">
                     <div class="d-flex align-center justify-space-between mb-1">
                         <span class="text-subtitle-2">{{ getLocalizedTitle(event.title) }}</span>
-                        <v-chip size="x-small" :color="getEventColor(event.type)" variant="flat" label>
+                        <v-chip size="x-small" :color="getEventColor(event)" variant="flat" label>
                             {{ getRemainingTime(event.endTime) }}
                         </v-chip>
                     </div>
@@ -61,7 +54,7 @@
                     <!-- 進度條模擬 -->
                     <v-progress-linear
                         :model-value="getProgress(event)"
-                        :color="getEventColor(event.type)"
+                        :color="getEventColor(event)"
                         height="24"
                         rounded
                         striped
@@ -118,9 +111,8 @@ export default {
             events = events.filter(e => new Date(e.endTime) >= now);
         }
 
-        // Sort by start time. If showing ended events, maybe reverse order or keep standard?
-        // Standard start time sorting seems best for gantt chart view
-        return events.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+        // Sort by start time descending (Newest first)
+        return events.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
     }
   },
   methods: {
@@ -129,9 +121,18 @@ export default {
         const lang = this.settingsStore.selectedLanguage;
         return titleObj[lang] || titleObj['en'] || Object.values(titleObj)[0] || '';
     },
-    getEventColor(type) {
-         const colors = {
+    getEventColor(event) {
+        // If event ended, return grey
+        const now = new Date();
+        const end = new Date(event.endTime);
+        if (end < now) {
+            return 'grey-darken-2';
+        }
+
+        const type = event.type;
+        const colors = {
             banner_character: 'amber-darken-3',
+            banner: 'amber-darken-3', // handle implicit banner type
             event: 'red-darken-2',
             minigame: 'deep-purple-lighten-1',
             season_pass: 'cyan-darken-2',

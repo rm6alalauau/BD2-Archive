@@ -70,14 +70,28 @@ export default {
       const now = new Date();
       const events = this.appStore.gameEvents || [];
       
-      // Filter for active events and sort by end time (soonest ending first)
+      // Filter for active events
+      // Sort priority:
+      // 1. Banners (banner/banner_character)
+      // 2. End time (soonest ending first)
       return events
         .filter(e => {
           const start = new Date(e.startTime);
           const end = new Date(e.endTime);
           return now >= start && now <= end;
         })
-        .sort((a, b) => new Date(a.endTime) - new Date(b.endTime))
+        .sort((a, b) => {
+          // Check if event is a banner
+          const isBannerA = a.type === 'banner' || a.type === 'banner_character';
+          const isBannerB = b.type === 'banner' || b.type === 'banner_character';
+
+          // Prioritize banners
+          if (isBannerA && !isBannerB) return -1;
+          if (!isBannerA && isBannerB) return 1;
+
+          // If both are banners or both are not, sort by end time
+          return new Date(a.endTime) - new Date(b.endTime);
+        })
         .slice(0, 5); // Show top 5
     }
   },
