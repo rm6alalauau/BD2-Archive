@@ -103,19 +103,33 @@ export default {
       settingsStore: useSettingsStore(),
       webshopUrl: 'https://webshop.browndust2.global/CT/events/attend-event/',
       
-      // Campaign Config
-      campaignId: 'winter_2025_checkin',
-      startDate: new Date('2025-12-16T00:00:00+08:00'),
-      endDate: new Date('2026-01-15T23:59:59+08:00'),
-
-      // Banner URLs (Local)
-      banners: {
-        'ko-KR': '/event/ko-KR.jpg',
-        'ja-JP': '/event/ja-JP.jpg',
-        'en': '/event/en.jpg',
-        'zh-Hans-CN': '/event/zh-CN.jpg',
-        'zh-Hant-TW': '/event/zh-TW.jpg'
-      }
+      // Campaign Configs
+      campaigns: [
+        {
+          id: 'winter_2025_checkin',
+          startDate: new Date('2025-12-16T00:00:00+08:00'),
+          endDate: new Date('2026-01-15T07:59:59+08:00'),
+          banners: {
+            'ko-KR': '/events/winter_2025_checkin/ko-KR.jpg',
+            'ja-JP': '/events/winter_2025_checkin/ja-JP.jpg',
+            'en': '/events/winter_2025_checkin/en.jpg',
+            'zh-Hans-CN': '/events/winter_2025_checkin/zh-CN.jpg',
+            'zh-Hant-TW': '/events/winter_2025_checkin/zh-TW.jpg'
+          }
+        },
+        {
+          id: 'spring_2026_checkin',
+          startDate: new Date('2026-01-15T12:30:00+08:00'),
+          endDate: new Date('2026-02-12T07:59:59+08:00'),
+          banners: {
+            'ko-KR': '/events/spring_2026_checkin/ko-KR.png',
+            'ja-JP': '/events/spring_2026_checkin/ja-JP.png',
+            'en': '/events/spring_2026_checkin/en.png',
+            'zh-Hans-CN': '/events/spring_2026_checkin/zh-CN.png',
+            'zh-Hant-TW': '/events/spring_2026_checkin/zh-TW.png'
+          }
+        }
+      ]
     }
   },
 
@@ -124,29 +138,31 @@ export default {
       return (key, params) => this.settingsStore.t(key, null, params)
     },
 
-    currentBannerUrl() {
-      return this.banners[this.settingsStore.selectedLanguage] || this.banners['en']
+    activeCampaign() {
+      const now = new Date()
+      return this.campaigns.find(c => now >= c.startDate && now <= c.endDate)
     },
 
-    isInEventPeriod() {
-      const now = new Date()
-      return now >= this.startDate && now <= this.endDate
+    currentBannerUrl() {
+      if (!this.activeCampaign) return ''
+      return this.activeCampaign.banners[this.settingsStore.selectedLanguage] || this.activeCampaign.banners['en']
     },
 
     statusKey() {
+      if (!this.activeCampaign) return ''
       const now = new Date()
-      // Create a unique key for each day to support daily check-ins
-      const dateKey = now.toISOString().split('T')[0] // YYYY-MM-DD
-      return `${this.campaignId}_${dateKey}`
+      const dateKey = now.toISOString().split('T')[0]
+      return `${this.activeCampaign.id}_${dateKey}`
     },
     
     // Key for "Don't Show Again" which applies to the whole campaign
     permanentDismissKey() {
-      return `${this.campaignId}_permanent_dismiss`
+      if (!this.activeCampaign) return ''
+      return `${this.activeCampaign.id}_permanent_dismiss`
     },
 
     shouldShowReminder() {
-      if (!this.isInEventPeriod) return false
+      if (!this.activeCampaign) return false
 
       const status = this.settingsStore.seasonalEventStatus || {}
       
