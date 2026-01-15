@@ -3,7 +3,7 @@ import { getTranslation } from '@/locales'
 
 // 1. 新增可選 icon 陣列
 // 當前圖標總數
-const TOTAL_ICONS = 22;
+const TOTAL_ICONS = 23;
 
 // 生成圖標陣列，採用混合排序邏輯
 const generateAvailableIcons = () => {
