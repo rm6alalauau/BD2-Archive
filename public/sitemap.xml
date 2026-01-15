@@ -44,5 +44,40 @@
   <priority>0.9</priority>
 </url>
 
+</url>
+
+
+<!-- Events Page -->
+<!-- 繁體中文（預設） -->
+<url>
+  <loc>https://thebd2pulse.com/events</loc>
+  <lastmod>2026-01-09T14:45:00+08:00</lastmod>
+  <priority>0.8</priority>
+</url>
+<!-- 英文版 -->
+<url>
+  <loc>https://thebd2pulse.com/en/events</loc>
+  <lastmod>2026-01-09T14:45:00+08:00</lastmod>
+  <priority>0.8</priority>
+</url>
+<!-- 日文版 -->
+<url>
+  <loc>https://thebd2pulse.com/ja-JP/events</loc>
+  <lastmod>2026-01-09T14:45:00+08:00</lastmod>
+  <priority>0.8</priority>
+</url>
+<!-- 韓文版 -->
+<url>
+  <loc>https://thebd2pulse.com/ko-KR/events</loc>
+  <lastmod>2026-01-09T14:45:00+08:00</lastmod>
+  <priority>0.8</priority>
+</url>
+<!-- 簡體中文版 -->
+<url>
+  <loc>https://thebd2pulse.com/zh-CN/events</loc>
+  <lastmod>2026-01-09T14:45:00+08:00</lastmod>
+  <priority>0.8</priority>
+</url>
+
 
 </urlset>
