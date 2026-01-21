@@ -1,31 +1,29 @@
 <template>
-  <v-container fluid class="events-page pa-0">
+  <div class="events-page d-flex flex-column">
     <!-- Header Bar -->
-    <v-row no-gutters class="header-bar bg-surface elevation-1 position-relative" style="z-index: 10;">
-      <v-col cols="12" class="d-flex align-center px-4 py-2">
+    <div class="d-flex flex-column flex-shrink-0 bg-surface elevation-1 position-relative" style="z-index: 10;">
+      <!-- Title & Controls -->
+      <div class="d-flex align-center px-4 py-2 border-b" style="border-color: rgba(255, 255, 255, 0.1) !important;">
         <v-btn icon="mdi-arrow-left" variant="text" @click="$router.back()" class="mr-2"></v-btn>
         <h1 class="text-h6 font-weight-bold">{{ t('events.timeline') }}</h1>
         
         <v-spacer></v-spacer>
         
-        <!-- Controls -->
-        <div class="d-flex align-center flex-wrap justify-end">
+        <div class="d-flex align-center">
              <!-- Time Settings -->
-            <div class="d-flex align-center mr-4">
-                <v-checkbox
-                    v-model="useLocalTime"
-                    :label="t('events.useLocalTime')"
-                    hide-details
-                    density="compact"
-                    class="mr-3 d-none d-sm-flex"
-                ></v-checkbox>
-                <v-checkbox
-                    v-model="showEndedEvents"
-                    :label="t('events.showEndedEvents')"
-                    hide-details
-                    density="compact"
-                ></v-checkbox>
-            </div>
+            <v-checkbox
+                v-model="useLocalTime"
+                :label="t('events.useLocalTime')"
+                hide-details
+                density="compact"
+                class="mr-3 d-none d-sm-flex"
+            ></v-checkbox>
+            <v-checkbox
+                v-model="showEndedEvents"
+                :label="t('events.showEndedEvents')"
+                hide-details
+                density="compact"
+            ></v-checkbox>
 
              <!-- Sort Button -->
              <v-btn 
@@ -34,31 +32,31 @@
                 :color="sortDescending ? 'primary' : ''"
                 @click="toggleSort"
                 :title="t('events.sort_reverse')"
-                class="mr-2"
+                class="ml-2"
             >
                 <v-icon>{{ sortDescending ? 'mdi-sort-clock-ascending-outline' : 'mdi-sort-clock-descending-outline' }}</v-icon>
              </v-btn>
         </div>
-      </v-col>
+      </div>
       
       <!-- Filter Bar -->
-      <v-col cols="12" class="px-4 pb-2 pt-0 d-flex flex-wrap align-center gap-2">
-          <v-chip-group v-model="selectedFilters" multiple column filter>
+      <div class="px-4 py-2 d-flex flex-wrap align-center gap-2">
+          <v-chip-group v-model="selectedFilters" multiple column filter class="my-0">
                <v-chip value="banner" density="compact" label size="small" color="amber-darken-3" variant="outlined">{{ t('events.filter_banner') }}</v-chip>
                <v-chip value="event" density="compact" label size="small" color="red-darken-2" variant="outlined">{{ t('events.filter_event') }}</v-chip>
                <v-chip value="abyss" density="compact" label size="small" color="green-darken-2" variant="outlined">{{ t('events.filter_abyss') }}</v-chip>
                <v-chip value="season" density="compact" label size="small" color="cyan-darken-2" variant="outlined">{{ t('events.filter_season') }}</v-chip>
           </v-chip-group>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
 
     <!-- Gantt Chart Container -->
-    <div class="gantt-wrapper position-relative" ref="ganttWrapper">
-        <div v-if="loading" class="d-flex align-center justify-center" style="height: 400px;">
+    <div class="gantt-wrapper position-relative flex-grow-1" ref="ganttWrapper">
+        <div v-if="loading" class="d-flex align-center justify-center h-100">
             <v-progress-circular indeterminate></v-progress-circular>
         </div>
         
-        <div v-else-if="filteredEvents.length === 0" class="d-flex align-center justify-center" style="height: 400px;">
+        <div v-else-if="filteredEvents.length === 0" class="d-flex align-center justify-center h-100">
              {{ t('events.noActiveEvents') }}
         </div>
 
@@ -135,7 +133,7 @@
             </div>
         </div>
     </div>
-  </v-container>
+  </div>
 </template>
 
 <script>
@@ -182,17 +180,33 @@ export default {
             return this.selectedFilters.includes(category);
         });
 
-        // 3. Sort
-        // Default (sortDescending=false): Ascending End Time (Ending Soon first)
-        // Reverse (sortDescending=true): Descending End Time
+        // 3. Sort (Category Priority -> End Time)
+        // Priority: Banner(1) > Event(2) > Abyss(3) > Season(4)
+        const priorityMap = {
+            'banner': 1,
+            'event': 2,
+            'abyss': 3,
+            'season': 4,
+            'other': 5
+        };
+
         return events.sort((a,b) => {
+            const catA = this.getEventCategory(a.type);
+            const catB = this.getEventCategory(b.type);
+            
+            // Primary: Category Priority (Ascending = 1 -> 4)
+            if (priorityMap[catA] !== priorityMap[catB]) {
+                return priorityMap[catA] - priorityMap[catB];
+            }
+            
+            // Secondary: End Time
             const endA = new Date(a.endTime).getTime();
             const endB = new Date(b.endTime).getTime();
             
             if (this.sortDescending) {
-                return endB - endA;
+                return endB - endA; // Ending Latest first
             } else {
-                return endA - endB;
+                return endA - endB; // Ending Soonest first
             }
         });
     },
@@ -215,7 +229,8 @@ export default {
     },
     totalWidth() {
         const hours = (this.timelineEnd - this.timelineStart) / (1000 * 60 * 60);
-        return hours * this.pixelsPerHour;
+        // Ensure minimum width to prevent collapse
+        return Math.max(window.innerWidth, hours * this.pixelsPerHour);
     },
     totalHeight() {
         return Math.max(400, this.filteredEvents.length * this.eventRowHeight + 50); // Min height or based on events
@@ -383,12 +398,10 @@ export default {
 <style scoped>
 .events-page {
   height: 100vh;
-  display: flex;
-  flex-direction: column;
+  overflow: hidden;
 }
 
 .gantt-wrapper {
-    flex: 1;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -396,8 +409,6 @@ export default {
 
 .gantt-scroll-container {
     overflow-x: auto;
-    overflow-y: hidden; /* Main vertical scroll is managed by window/page, but here we might want this to be scrollable if many events? */
-    /* Actually better: keep overflow-y auto for many events */
     overflow-y: auto;
     flex: 1;
     position: relative;
