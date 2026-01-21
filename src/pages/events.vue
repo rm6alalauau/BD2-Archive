@@ -1,85 +1,116 @@
 <template>
-  <v-container fluid class="events-page">
-    <v-row>
+  <v-container fluid class="events-page pa-0">
+    <v-row no-gutters>
       <v-col cols="12">
-        <div class="d-flex align-center mb-4">
+        <div class="d-flex align-center pa-4 bg-surface elevation-1 position-relative" style="z-index: 10;">
           <v-btn icon="mdi-arrow-left" variant="text" @click="$router.back()" class="mr-2"></v-btn>
-          <h1 class="text-h4 font-weight-bold">{{ t('events.timeline') }}</h1>
+          <h1 class="text-h5 font-weight-bold">{{ t('events.timeline') }}</h1>
+          
+          <v-spacer></v-spacer>
+          
+          <div class="d-flex align-center">
+            <v-checkbox
+                v-model="useLocalTime"
+                :label="t('events.useLocalTime')"
+                hide-details
+                density="compact"
+                class="mr-4 d-none d-sm-flex"
+            ></v-checkbox>
+            <v-checkbox
+                v-model="showEndedEvents"
+                :label="t('events.showEndedEvents')"
+                hide-details
+                density="compact"
+                class="mr-2"
+            ></v-checkbox>
+          </div>
         </div>
       </v-col>
     </v-row>
 
-    <!-- 控制列 -->
-    <v-row class="mb-4 align-center">
-      <v-col cols="12" sm="auto" class="d-flex align-center flex-wrap">
-        <v-checkbox
-          v-model="useLocalTime"
-          :label="t('events.useLocalTime')"
-          hide-details
-          density="compact"
-          class="mr-4"
-        ></v-checkbox>
-        <v-checkbox
-          v-model="showEndedEvents"
-          :label="t('events.showEndedEvents')"
-          hide-details
-          density="compact"
-          class="mr-4"
-        ></v-checkbox>
-      </v-col>
-      <v-col cols="12" sm="auto">
-         <div class="text-caption text-medium-emphasis">
-           {{ useLocalTime ? t('events.localTime') : t('events.serverTime') }}
-         </div>
-      </v-col>
-    </v-row>
+    <!-- Gantt Chart Container -->
+    <div class="gantt-wrapper position-relative" ref="ganttWrapper">
+        <div v-if="loading" class="d-flex align-center justify-center" style="height: 400px;">
+            <v-progress-circular indeterminate></v-progress-circular>
+        </div>
+        
+        <div v-else-if="filteredEvents.length === 0" class="d-flex align-center justify-center" style="height: 400px;">
+             {{ t('events.noActiveEvents') }}
+        </div>
 
-    <!-- 時間軸視圖 (Gantt Chart) -->
-    <v-row>
-      <v-col cols="12">
-        <v-card class="timeline-card pa-4" rounded="xl">
-            <!-- 這裡是簡單的實現，實際的甘特圖可能需要專門的庫或複雜的 SVG 渲染 -->
-            <!-- 這裡我們使用一個自定義的網格系統來模擬 -->
-            
-            <div class="gantt-container">
-                <!-- 活動條目 -->
-                <div v-for="event in sortedEvents" :key="event.id" class="gantt-row mb-3 position-relative">
-                    <div class="d-flex align-center justify-space-between mb-1">
-                        <span class="text-subtitle-2">{{ getLocalizedTitle(event.title) }}</span>
-                        <v-chip size="x-small" :color="getEventColor(event)" variant="flat" label>
-                            {{ getRemainingTime(event.endTime) }}
-                        </v-chip>
-                    </div>
-                    
-                    <!-- 進度條模擬 -->
-                    <v-progress-linear
-                        :model-value="getProgress(event)"
-                        :color="getEventColor(event)"
-                        height="24"
-                        rounded
-                        striped
-                        class="event-progress-bar"
+        <div v-else class="gantt-scroll-container" ref="scrollContainer">
+            <!-- Timeline Header (Dates) -->
+            <div class="timeline-header" :style="{ width: totalWidth + 'px' }">
+                <div 
+                    v-for="tick in timeTicks" 
+                    :key="tick.timestamp" 
+                    class="time-tick-label"
+                    :style="{ left: tick.left + 'px' }"
+                >
+                    {{ formatDateShort(tick.date) }}
+                </div>
+            </div>
+
+            <!-- Grid Lines -->
+             <div class="grid-lines" :style="{ width: totalWidth + 'px', height: totalHeight + 'px' }">
+                <div 
+                    v-for="tick in timeTicks" 
+                    :key="'line-' + tick.timestamp" 
+                    class="grid-line"
+                    :style="{ left: tick.left + 'px' }"
+                ></div>
+            </div>
+
+            <!-- Current Time Line -->
+            <div 
+                class="current-time-line"
+                :style="{ left: currentTimeOffset + 'px', height: totalHeight + 'px' }"
+            >
+                <div class="current-time-label">
+                     {{ formatTime(nowDate) }}
+                </div>
+            </div>
+
+            <!-- Events -->
+            <div class="events-track-container" :style="{ width: totalWidth + 'px' }">
+                <div 
+                    v-for="(event, index) in filteredEvents" 
+                    :key="event.id" 
+                    class="event-bar-wrapper"
+                    :style="{ 
+                        top: (index * eventRowHeight) + 'px',
+                        left: getEventLeft(event) + 'px',
+                        width: getEventWidth(event) + 'px',
+                        height: (eventRowHeight - 10) + 'px'
+                    }"
+                >
+                    <v-tooltip location="top" activator="parent">
+                         <span>{{ getLocalizedTitle(event.title) }}</span>
+                         <br/>
+                         <span class="text-caption">{{ formatDateFull(event.startTime) }} ~ {{ formatDateFull(event.endTime) }}</span>
+                    </v-tooltip>
+
+                    <div 
+                        class="event-bar"
+                        :class="getEventClass(event)"
+                        :style="{ backgroundColor: getEventColor(event) }"
                     >
-                        <template v-slot:default="{ value }">
-                            <span class="text-caption font-weight-bold ml-2 progress-text">{{ Math.ceil(value) }}%</span>
-                        </template>
-                    </v-progress-linear>
-                    
-                     <div class="text-caption text-medium-emphasis mt-1">
-                        {{ formatDate(event.startTime) }} ~ {{ formatDate(event.endTime) }}
+                        <!-- Progress Overlay for past part of event -->
+                        <div class="event-progress" :style="{ width: getEventProgress(event) + '%' }"></div>
+                        
+                        <div class="event-content px-2 d-flex align-center justify-space-between fill-height">
+                             <span class="text-caption font-weight-bold text-truncate text-white" style="z-index: 2; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">
+                                {{ getLocalizedTitle(event.title) }}
+                             </span>
+                             <span class="text-caption text-white d-none d-sm-block ml-2" style="z-index: 2; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">
+                                {{ getRemainingTime(event.endTime) }}
+                             </span>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-             <div v-if="sortedEvents.length === 0" class="text-center pa-8">
-                <v-progress-circular v-if="loading" indeterminate></v-progress-circular>
-                <div v-else>{{ t('events.noActiveEvents') }}</div>
-            </div>
-
-        </v-card>
-      </v-col>
-    </v-row>
-
+        </div>
+    </div>
   </v-container>
 </template>
 
@@ -96,23 +127,69 @@ export default {
       useLocalTime: true,
       showEndedEvents: false,
       loading: false,
+      nowDate: new Date(),
+      timer: null,
+      
+      // Configuration
+      pixelsPerHour: 5, // Width per hour
+      eventRowHeight: 50,
+      paddingDays: 2, // Days to show before/after events
     }
   },
   computed: {
     t() {
       return (key, params) => this.settingsStore.t(key, null, params);
     },
-    sortedEvents() {
-        const now = new Date();
-        let events = [...(this.appStore.gameEvents || [])];
-
-        // Filter ended events if showEndedEvents is false
+    filteredEvents() {
+        const events = this.appStore.gameEvents || [];
         if (!this.showEndedEvents) {
-            events = events.filter(e => new Date(e.endTime) >= now);
+            return events.filter(e => new Date(e.endTime) >= this.nowDate).sort((a,b) => new Date(a.startTime) - new Date(b.startTime));
         }
-
-        // Sort by start time descending (Newest first)
-        return events.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
+        return [...events].sort((a,b) => new Date(a.startTime) - new Date(b.startTime));
+    },
+    // Dynamically calculate timeline range based on filtered events
+    timelineStart() {
+        if (this.filteredEvents.length === 0) return new Date();
+        const earliest = Math.min(...this.filteredEvents.map(e => new Date(e.startTime).getTime()));
+        const d = new Date(earliest);
+        d.setDate(d.getDate() - this.paddingDays);
+        d.setHours(0, 0, 0, 0);
+        return d;
+    },
+    timelineEnd() {
+        if (this.filteredEvents.length === 0) return new Date();
+        const latest = Math.max(...this.filteredEvents.map(e => new Date(e.endTime).getTime()));
+        const d = new Date(latest);
+        d.setDate(d.getDate() + this.paddingDays);
+        d.setHours(23, 59, 59, 999);
+        return d;
+    },
+    totalWidth() {
+        const hours = (this.timelineEnd - this.timelineStart) / (1000 * 60 * 60);
+        return hours * this.pixelsPerHour;
+    },
+    totalHeight() {
+        return Math.max(400, this.filteredEvents.length * this.eventRowHeight + 50); // Min height or based on events
+    },
+    currentTimeOffset() {
+        const diffMs = this.nowDate - this.timelineStart;
+        return (diffMs / (1000 * 60 * 60)) * this.pixelsPerHour;
+    },
+    timeTicks() {
+        const ticks = [];
+        let current = new Date(this.timelineStart);
+        current.setHours(0,0,0,0); // Start at midnight
+        
+        while (current <= this.timelineEnd) {
+            const diffMs = current - this.timelineStart;
+            ticks.push({
+                date: new Date(current),
+                timestamp: current.getTime(),
+                left: (diffMs / (1000 * 60 * 60)) * this.pixelsPerHour
+            });
+            current.setDate(current.getDate() + 1);
+        }
+        return ticks;
     }
   },
   methods: {
@@ -122,95 +199,250 @@ export default {
         return titleObj[lang] || titleObj['en'] || Object.values(titleObj)[0] || '';
     },
     getEventColor(event) {
-        // If event ended, return grey
-        const now = new Date();
         const end = new Date(event.endTime);
-        if (end < now) {
-            return 'grey-darken-2';
-        }
+        if (end < this.nowDate) return '#616161'; // Grey for ended
 
         const type = event.type;
         const colors = {
-            banner_character: 'amber-darken-3',
-            banner: 'amber-darken-3', // handle implicit banner type
-            event: 'red-darken-2',
-            minigame: 'deep-purple-lighten-1',
-            season_pass: 'cyan-darken-2',
-            abyss: 'green-darken-2',
-            other: 'grey-darken-1'
+            banner_character: '#FF8F00', // amber-darken-3
+            banner: '#FF8F00',
+            event: '#D32F2F', // red-darken-2
+            minigame: '#9575CD', // deep-purple-lighten-1
+            season_pass: '#0097A7', // cyan-darken-2
+            abyss: '#388E3C', // green-darken-2
+            other: '#757575'
         };
         return colors[type] || colors.other;
     },
-    formatDate(dateStr) {
-        if (!dateStr) return '';
-        const date = new Date(dateStr);
-        return date.toLocaleDateString(this.settingsStore.selectedLanguage === 'en' ? 'en-US' : 'zh-TW', {
-            month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-        });
+    getEventClass(event) {
+        // Optional: Add specific classes if needed for striping via CSS instead of JS
+        return ''; 
     },
-    getRemainingTime(endTimeStr) {
-      const now = new Date();
-      const end = new Date(endTimeStr);
-      const diffMs = end - now;
-      if (diffMs <= 0) return this.t('events.ended');
-      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-      return diffDays > 0 ? `${diffDays}d` : '< 1d';
+    getEventLeft(event) {
+        const start = new Date(event.startTime);
+        const diffMs = start - this.timelineStart;
+        return Math.max(0, (diffMs / (1000 * 60 * 60)) * this.pixelsPerHour);
     },
-    getProgress(event) {
+    getEventWidth(event) {
+        const start = new Date(event.startTime);
+        const end = new Date(event.endTime);
+        const durationMs = end - start;
+        return (durationMs / (1000 * 60 * 60)) * this.pixelsPerHour;
+    },
+    getEventProgress(event) {
         const start = new Date(event.startTime).getTime();
         const end = new Date(event.endTime).getTime();
-        const now = new Date().getTime();
+        const now = this.nowDate.getTime();
         
         if (now < start) return 0;
         if (now > end) return 100;
         return ((now - start) / (end - start)) * 100;
+    },
+    formatDateShort(date) {
+        return date.toLocaleDateString(this.settingsStore.selectedLanguage === 'en' ? 'en-US' : 'zh-TW', {
+            month: 'numeric', day: 'numeric'
+        });
+    },
+    formatTime(date) {
+         return date.toLocaleTimeString(this.settingsStore.selectedLanguage === 'en' ? 'en-US' : 'zh-TW', {
+            hour: '2-digit', minute: '2-digit', hour12: false
+        });
+    },
+    formatDateFull(dateStr) {
+        const date = new Date(dateStr);
+        return date.toLocaleString(this.settingsStore.selectedLanguage === 'en' ? 'en-US' : 'zh-TW', {
+             month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+    },
+    getRemainingTime(endTimeStr) {
+      const end = new Date(endTimeStr);
+      const diffMs = end - this.nowDate;
+      if (diffMs <= 0) return this.t('events.ended');
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      return diffDays > 0 ? `${diffDays}d` : '< 1d';
+    },
+    scrollToNow() {
+        this.$nextTick(() => {
+            const container = this.$refs.scrollContainer;
+            if (container) {
+                // Center the view on "now"
+                const center = this.currentTimeOffset - (container.clientWidth / 2);
+                container.scrollLeft = Math.max(0, center);
+            }
+        });
     }
   },
   mounted() {
+      this.timer = setInterval(() => {
+          this.nowDate = new Date();
+      }, 60000); // Update every minute
+
       if (!this.appStore.gameEvents || this.appStore.gameEvents.length === 0) {
           this.loading = true;
           this.appStore.fetchGameEvents().finally(() => {
               this.loading = false;
+              this.scrollToNow();
           });
+      } else {
+          this.scrollToNow();
       }
+      
+      // Re-scroll on window resize
+      window.addEventListener('resize', this.scrollToNow);
+  },
+  beforeUnmount() {
+      if (this.timer) clearInterval(this.timer);
+      window.removeEventListener('resize', this.scrollToNow);
+  },
+  watch: {
+    // Re-scroll when switching ended events visibility as the timeline width might change
+    showEndedEvents() {
+        this.scrollToNow();
+    },
+    loading(val) {
+        if (!val) this.scrollToNow();
+    }
   }
 }
 </script>
 
 <style scoped>
 .events-page {
-  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.timeline-card {
-    min-height: 500px;
+.gantt-wrapper {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Enhance striped progress bar visibility */
-:deep(.v-progress-linear__background) {
-    opacity: 0.3 !important;
+.gantt-scroll-container {
+    overflow-x: auto;
+    overflow-y: hidden; /* Main vertical scroll is managed by window/page, but here we might want this to be scrollable if many events? */
+    /* Actually better: keep overflow-y auto for many events */
+    overflow-y: auto;
+    flex: 1;
+    position: relative;
+    background-color: #1e1e1e; /* Dark background */
+    
+    /* Hide scrollbar for cleaner look if desired, or keep standard */
+    scrollbar-width: thin;
+    scrollbar-color: #555 #1e1e1e;
 }
 
-/* Make stripes more visible */
-:deep(.v-progress-linear--striped .v-progress-linear__determinate) {
+.timeline-header {
+    height: 40px;
+    background-color: #2c2c2c;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    border-bottom: 1px solid #444;
+}
+
+.time-tick-label {
+    position: absolute;
+    top: 8px;
+    transform: translateX(-50%);
+    font-size: 0.75rem;
+    color: #aaa;
+    white-space: nowrap;
+}
+
+.grid-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.grid-line {
+    position: absolute;
+    top: 40px; /* Start below header */
+    bottom: 0;
+    width: 1px;
+    background-color: rgba(255, 255, 255, 0.05);
+    height: 100%;
+}
+
+.current-time-line {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    background-color: #ef5350; /* Red line */
+    z-index: 6; /* Above events */
+    pointer-events: none;
+    box-shadow: 0 0 8px rgba(239, 83, 80, 0.6);
+}
+
+.current-time-label {
+    position: sticky;
+    top: 45px;
+    background: #ef5350;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+.events-track-container {
+    position: relative;
+    min-height: 100%;
+    padding-top: 20px; /* Space below header */
+    z-index: 2;
+}
+
+.event-bar-wrapper {
+    position: absolute;
+    padding: 0;
+}
+
+.event-bar {
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.event-bar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    z-index: 3;
+}
+
+.event-progress {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.3); /* Darken the passed part */
+    /* Or use a striped texture for the FUTURE part? */
+    /* User request: "Range bar... scroll to view..." */
+    /* Let's replicate the "striped" look of the original if possible, but maybe subtle */
+}
+
+/* Optional: Add stripes to the whole bar or just the active part */
+.event-bar {
     background-image: linear-gradient(
         45deg, 
-        rgba(255, 255, 255, 0.35) 25%, 
+        rgba(255, 255, 255, 0.1) 25%, 
         transparent 25%, 
         transparent 50%, 
-        rgba(255, 255, 255, 0.35) 50%, 
-        rgba(255, 255, 255, 0.35) 75%, 
+        rgba(255, 255, 255, 0.1) 50%, 
+        rgba(255, 255, 255, 0.1) 75%, 
         transparent 75%, 
         transparent
-    ) !important;
-    background-size: 20px 20px !important; 
-}
-
-/* Make text shadow more prominent */
-.progress-text {
-    text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.8);
-    color: white !important;
-    letter-spacing: 0.5px;
-    z-index: 2;
+    );
+    background-size: 20px 20px; 
 }
 </style>
