@@ -153,7 +153,7 @@
                     <div class="event-content-container">
                          <div class="sticky-content">
                              <!-- Event Title -->
-                             <span class="text-caption font-weight-bold text-truncate text-white" style="text-shadow: 0 1px 2px rgba(0,0,0,0.8); max-width: 200px;">
+                             <span class="text-caption font-weight-bold text-white" style="text-shadow: 0 1px 2px rgba(0,0,0,0.8); white-space: nowrap;">
                                 {{ getLocalizedTitle(event.title) }}
                              </span>
                              
