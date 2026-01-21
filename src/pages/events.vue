@@ -75,7 +75,7 @@
     </div>
 
     <!-- Gantt Chart Container -->
-    <div class="gantt-wrapper position-relative flex-grow-1 px-4" ref="ganttWrapper">
+    <div class="gantt-wrapper position-relative flex-grow-1 px-4 px-md-8 mx-md-4 mb-4" ref="ganttWrapper">
         <div v-if="loading" class="d-flex align-center justify-center h-100">
             <v-progress-circular indeterminate></v-progress-circular>
         </div>
@@ -84,7 +84,12 @@
              {{ t('events.noActiveEvents') }}
         </div>
 
-        <div v-else class="gantt-scroll-container" ref="scrollContainer">
+        <div 
+            v-else 
+            class="gantt-scroll-container" 
+            ref="scrollContainer"
+            @wheel.prevent="handleWheel"
+        >
             <!-- Timeline Header (Dates) -->
             <div class="timeline-header" :style="{ width: totalWidth + 'px' }">
                 <div 
@@ -122,7 +127,7 @@
                 <div 
                     v-for="(event, index) in filteredEvents" 
                     :key="event.id" 
-                    class="event-bar-wrapper"
+                    class="event-wrapper"
                     :style="{ 
                         top: (index * eventRowHeight) + 'px',
                         left: getEventLeft(event) + 'px',
@@ -136,33 +141,33 @@
                          <span class="text-caption">{{ formatDateFull(event.startTime) }} ~ {{ formatDateFull(event.endTime) }}</span>
                     </v-tooltip>
 
+                    <!-- Visual Background (Clipped) -->
                     <div 
-                        class="event-bar"
-                        :class="getEventClass(event)"
+                        class="event-visual"
                         :style="{ backgroundColor: getEventColor(event) }"
                     >
-                        <!-- Progress Overlay for past part of event -->
                         <div class="event-progress" :style="{ width: getEventProgress(event) + '%' }"></div>
-                        
-                        <div class="event-content px-2 d-flex align-center justify-start fill-height">
-                             <div class="sticky-content">
-                                 <!-- Event Title -->
-                                 <span class="text-caption font-weight-bold text-truncate text-white" style="text-shadow: 0 1px 2px rgba(0,0,0,0.8); max-width: 200px;">
-                                    {{ getLocalizedTitle(event.title) }}
-                                 </span>
-                                 
-                                 <!-- Remaining Time Chip -->
-                                 <v-chip 
-                                    size="x-small" 
-                                    color="white" 
-                                    variant="elevated" 
-                                    class="ml-2 font-weight-bold text-black flex-shrink-0"
-                                    style="box-shadow: 0 1px 2px rgba(0,0,0,0.5);"
-                                 >
-                                    {{ getRemainingTime(event.endTime) }}
-                                 </v-chip>
-                             </div>
-                        </div>
+                    </div>
+
+                    <!-- Content Overlay (Not Clipped, allows Sticky) -->
+                    <div class="event-content-container">
+                         <div class="sticky-content">
+                             <!-- Event Title -->
+                             <span class="text-caption font-weight-bold text-truncate text-white" style="text-shadow: 0 1px 2px rgba(0,0,0,0.8); max-width: 200px;">
+                                {{ getLocalizedTitle(event.title) }}
+                             </span>
+                             
+                             <!-- Remaining Time Chip -->
+                             <v-chip 
+                                size="x-small" 
+                                color="white" 
+                                variant="elevated" 
+                                class="ml-2 font-weight-bold text-black flex-shrink-0"
+                                style="box-shadow: 0 1px 2px rgba(0,0,0,0.5);"
+                             >
+                                {{ getRemainingTime(event.endTime) }}
+                             </v-chip>
+                         </div>
                     </div>
                 </div>
             </div>
@@ -292,6 +297,13 @@ export default {
     }
   },
   methods: {
+    handleWheel(e) {
+        if (this.$refs.scrollContainer) {
+            // Horizontal scroll with vertical wheel
+            // Adjust speed factor if needed (e.g., * 1.5)
+            this.$refs.scrollContainer.scrollLeft += e.deltaY;
+        }
+    },
     toggleFilter(val) {
         if (this.selectedFilters.includes(val)) {
             this.selectedFilters = this.selectedFilters.filter(f => f !== val);
@@ -451,7 +463,8 @@ export default {
 
 .gantt-scroll-container {
     overflow-x: auto;
-    overflow-y: auto;
+    /* Use auto to allow scrollbars if user prefers */
+    overflow-y: auto; 
     flex: 1;
     position: relative;
     background-color: #1e1e1e; /* Dark background */
@@ -523,38 +536,34 @@ export default {
     z-index: 2;
 }
 
-.event-bar-wrapper {
+.event-wrapper {
     position: absolute;
     padding: 0;
-}
-
-.event-bar {
-    width: 100%;
-    height: 100%;
     border-radius: 6px;
-    position: relative;
-    overflow: hidden;
+    /* Do NOT overflow hidden here, to allow specific children like shadows or tooltips if needed.
+       But for sticky we definitely need it open or structured carefully. 
+    */
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
-.event-bar:hover {
+.event-wrapper:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.5);
     z-index: 3;
 }
 
-.event-progress {
+/* 1. Visual Bar (Background & Progress) - Clipped */
+.event-visual {
+    width: 100%;
+    height: 100%;
     position: absolute;
     top: 0;
-    bottom: 0;
     left: 0;
-    background-color: rgba(0, 0, 0, 0.3); /* Darken the passed part */
-}
-
-/* Optional: Add stripes to the whole bar or just the active part */
-.event-bar {
+    border-radius: 6px;
+    overflow: hidden; /* Clip the progress bar */
+    
     background-image: linear-gradient(
         45deg, 
         rgba(255, 255, 255, 0.1) 25%, 
@@ -568,15 +577,39 @@ export default {
     background-size: 20px 20px; 
 }
 
-/* Sticky Labels */
+.event-progress {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.3); /* Darken the passed part */
+}
+
+/* 2. Content Container - NOT Clipped, on top */
+.event-content-container {
+    width: 100%;
+    height: 100%;
+    position: relative; /* Relative to wrapper */
+    pointer-events: none; /* Let clicks pass to wrapper/visual */
+    z-index: 2;
+    display: block; /* ensure block layout for sticky child */
+}
+
 .sticky-content {
+    pointer-events: auto; /* Re-enable pointer events for chip/text if needed */
     position: sticky;
     left: 10px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    z-index: 5;
-    /* Ensure it doesn't overflow the bar if the bar is very short */
-    max-width: 100%;
+    height: 100%;
+    /* Constrain max width so it doesn't overflow the event bar itself?
+       Since it's sticky, if we scroll far right, it sticks to left of viewport.
+       We want it to stop when it hits the right edge of the event bar.
+       Sticky implementation does this automatically if the parent has width.
+       The parent 'event-content-container' matches event width.
+    */
+    padding: 0 8px;
+    max-width: 100%; 
 }
 
 /* Mobile Filter Grid */
