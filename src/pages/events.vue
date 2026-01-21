@@ -51,7 +51,7 @@
                 :label="t('events.useLocalTime')"
                 hide-details
                 density="compact"
-                class="mr-3 d-none d-sm-flex"
+                class="mr-3"
             ></v-checkbox>
             <v-checkbox
                 v-model="showEndedEvents"
@@ -75,7 +75,7 @@
     </div>
 
     <!-- Gantt Chart Container -->
-    <div class="gantt-wrapper position-relative flex-grow-1" ref="ganttWrapper">
+    <div class="gantt-wrapper position-relative flex-grow-1 px-4" ref="ganttWrapper">
         <div v-if="loading" class="d-flex align-center justify-center h-100">
             <v-progress-circular indeterminate></v-progress-circular>
         </div>
@@ -144,22 +144,24 @@
                         <!-- Progress Overlay for past part of event -->
                         <div class="event-progress" :style="{ width: getEventProgress(event) + '%' }"></div>
                         
-                        <div class="event-content px-2 d-flex align-center justify-space-between fill-height">
-                             <!-- Sticky Title -->
-                             <span class="text-caption font-weight-bold text-truncate text-white sticky-title" style="z-index: 2; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">
-                                {{ getLocalizedTitle(event.title) }}
-                             </span>
-                             
-                             <!-- Sticky Remaining Time Chip -->
-                             <v-chip 
-                                size="x-small" 
-                                color="white" 
-                                variant="elevated" 
-                                class="sticky-time ml-2 font-weight-bold text-black"
-                                style="z-index: 2; box-shadow: 0 1px 2px rgba(0,0,0,0.5);"
-                             >
-                                {{ getRemainingTime(event.endTime) }}
-                             </v-chip>
+                        <div class="event-content px-2 d-flex align-center justify-start fill-height">
+                             <div class="sticky-content">
+                                 <!-- Event Title -->
+                                 <span class="text-caption font-weight-bold text-truncate text-white" style="text-shadow: 0 1px 2px rgba(0,0,0,0.8); max-width: 200px;">
+                                    {{ getLocalizedTitle(event.title) }}
+                                 </span>
+                                 
+                                 <!-- Remaining Time Chip -->
+                                 <v-chip 
+                                    size="x-small" 
+                                    color="white" 
+                                    variant="elevated" 
+                                    class="ml-2 font-weight-bold text-black flex-shrink-0"
+                                    style="box-shadow: 0 1px 2px rgba(0,0,0,0.5);"
+                                 >
+                                    {{ getRemainingTime(event.endTime) }}
+                                 </v-chip>
+                             </div>
                         </div>
                     </div>
                 </div>
@@ -453,8 +455,6 @@ export default {
     flex: 1;
     position: relative;
     background-color: #1e1e1e; /* Dark background */
-    
-    /* Hide scrollbar for cleaner look if desired, or keep standard */
     scrollbar-width: thin;
     scrollbar-color: #555 #1e1e1e;
 }
@@ -551,9 +551,6 @@ export default {
     bottom: 0;
     left: 0;
     background-color: rgba(0, 0, 0, 0.3); /* Darken the passed part */
-    /* Or use a striped texture for the FUTURE part? */
-    /* User request: "Range bar... scroll to view..." */
-    /* Let's replicate the "striped" look of the original if possible, but maybe subtle */
 }
 
 /* Optional: Add stripes to the whole bar or just the active part */
@@ -572,25 +569,9 @@ export default {
 }
 
 /* Sticky Labels */
-.sticky-title {
+.sticky-content {
     position: sticky;
     left: 10px;
-    max-width: 60%; /* Prevent overlap with time chip if event is short */
-}
-
-.sticky-time {
-    position: sticky;
-    right: 10px; 
-    /* To stick to the right edge of the *viewport*, we'd need fixed/absolute logic relative to screen. 
-       But 'position: sticky; right: 10px' inside the bar sticks to the right edge of the BAR.
-       The user wants it visible... 
-       Actually, `left` sticky works great for the Title (sticks to left edge of screen when scrolling right).
-       For the End Time, we usually want it to stay visible on the right if we scroll left.
-       No, we scroll right to see future. The end time is at the end. 
-       If the bar is super long and extends off screen to the right, we want the text likely on the left.
-       If we scroll past the start, we want the title to stick to the left edge of the screen so we know what it is (Implemented).
-       Do we want the time to stick? Usually the time is 1d, 2d... 
-       If the user wants "Label at the left", I did that. 
        "Remaining time as tag" -> Done.
     */
     /* If the user wants the end time to be visible even if the end of the bar is off-screen,
