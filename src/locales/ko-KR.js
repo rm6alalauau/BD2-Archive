@@ -195,13 +195,17 @@ export default {
     timeline: '이벤트 일정',
     currentEvents: '진행 중인 이벤트',
     upcomingEvents: '진행 예정 이벤트',
-    noActiveEvents: '현재 진행 중인 이벤트가 없습니다',
-    viewAllSchedule: '전체 일정 보기',
+    noActiveEvents: '현재 진행 중인 이벤트가 없습니다.',
     useLocalTime: '현지 시간 사용',
-    serverTime: '서버 시간 (UTC+8)',
-    localTime: '내 시간',
+    serverTime: '서버 시간 표시 (UTC+8)',
+    localTime: '기기의 현지 시간을 표시합니다',
     ended: '종료됨',
     showEndedEvents: '종료된 이벤트 표시',
+    filter_banner: '[픽업]',
+    filter_event: '[이벤트]',
+    filter_abyss: '[악마성]',
+    filter_season: '[시즌 패스]',
+    sort_reverse: '정렬 반전'
   },
 
   // Official media

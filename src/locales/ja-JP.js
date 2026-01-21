@@ -197,11 +197,16 @@ export default {
     upcomingEvents: '開催予定のイベント',
     noActiveEvents: '現在開催中のイベントはありません',
     viewAllSchedule: '全スケジュールを見る',
-    useLocalTime: '現地時間を使用',
-    serverTime: 'サーバー時間 (UTC+8)',
-    localTime: 'あなたの時間',
+    useLocalTime: 'ローカル時間を使用',
+    serverTime: 'サーバー時間を表示 (UTC+8)',
+    localTime: 'あなたの端末の時間を表示',
     ended: '終了',
     showEndedEvents: '終了したイベントを表示',
+    filter_banner: '【ピックアップ】',
+    filter_event: '【イベント】',
+    filter_abyss: '【悪魔の城】',
+    filter_season: '【シーズンパス】',
+    sort_reverse: '並び替え'
   },
 
   // Official media

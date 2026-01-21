@@ -1,30 +1,54 @@
 <template>
   <v-container fluid class="events-page pa-0">
-    <v-row no-gutters>
-      <v-col cols="12">
-        <div class="d-flex align-center pa-4 bg-surface elevation-1 position-relative" style="z-index: 10;">
-          <v-btn icon="mdi-arrow-left" variant="text" @click="$router.back()" class="mr-2"></v-btn>
-          <h1 class="text-h5 font-weight-bold">{{ t('events.timeline') }}</h1>
-          
-          <v-spacer></v-spacer>
-          
-          <div class="d-flex align-center">
-            <v-checkbox
-                v-model="useLocalTime"
-                :label="t('events.useLocalTime')"
-                hide-details
-                density="compact"
-                class="mr-4 d-none d-sm-flex"
-            ></v-checkbox>
-            <v-checkbox
-                v-model="showEndedEvents"
-                :label="t('events.showEndedEvents')"
-                hide-details
-                density="compact"
+    <!-- Header Bar -->
+    <v-row no-gutters class="header-bar bg-surface elevation-1 position-relative" style="z-index: 10;">
+      <v-col cols="12" class="d-flex align-center px-4 py-2">
+        <v-btn icon="mdi-arrow-left" variant="text" @click="$router.back()" class="mr-2"></v-btn>
+        <h1 class="text-h6 font-weight-bold">{{ t('events.timeline') }}</h1>
+        
+        <v-spacer></v-spacer>
+        
+        <!-- Controls -->
+        <div class="d-flex align-center flex-wrap justify-end">
+             <!-- Time Settings -->
+            <div class="d-flex align-center mr-4">
+                <v-checkbox
+                    v-model="useLocalTime"
+                    :label="t('events.useLocalTime')"
+                    hide-details
+                    density="compact"
+                    class="mr-3 d-none d-sm-flex"
+                ></v-checkbox>
+                <v-checkbox
+                    v-model="showEndedEvents"
+                    :label="t('events.showEndedEvents')"
+                    hide-details
+                    density="compact"
+                ></v-checkbox>
+            </div>
+
+             <!-- Sort Button -->
+             <v-btn 
+                icon 
+                variant="text" 
+                :color="sortDescending ? 'primary' : ''"
+                @click="toggleSort"
+                :title="t('events.sort_reverse')"
                 class="mr-2"
-            ></v-checkbox>
-          </div>
+            >
+                <v-icon>{{ sortDescending ? 'mdi-sort-clock-ascending-outline' : 'mdi-sort-clock-descending-outline' }}</v-icon>
+             </v-btn>
         </div>
+      </v-col>
+      
+      <!-- Filter Bar -->
+      <v-col cols="12" class="px-4 pb-2 pt-0 d-flex flex-wrap align-center gap-2">
+          <v-chip-group v-model="selectedFilters" multiple column filter>
+               <v-chip value="banner" density="compact" label size="small" color="amber-darken-3" variant="outlined">{{ t('events.filter_banner') }}</v-chip>
+               <v-chip value="event" density="compact" label size="small" color="red-darken-2" variant="outlined">{{ t('events.filter_event') }}</v-chip>
+               <v-chip value="abyss" density="compact" label size="small" color="green-darken-2" variant="outlined">{{ t('events.filter_abyss') }}</v-chip>
+               <v-chip value="season" density="compact" label size="small" color="cyan-darken-2" variant="outlined">{{ t('events.filter_season') }}</v-chip>
+          </v-chip-group>
       </v-col>
     </v-row>
 
@@ -134,6 +158,10 @@ export default {
       pixelsPerHour: 5, // Width per hour
       eventRowHeight: 50,
       paddingDays: 2, // Days to show before/after events
+      
+      // Filters & Sorting
+      selectedFilters: ['banner', 'event', 'abyss', 'season'],
+      sortDescending: false // Default: Ascending end time (ending soonest first)
     }
   },
   computed: {
@@ -141,11 +169,32 @@ export default {
       return (key, params) => this.settingsStore.t(key, null, params);
     },
     filteredEvents() {
-        const events = this.appStore.gameEvents || [];
+        let events = [...(this.appStore.gameEvents || [])];
+        
+        // 1. Filter by Ended Status
         if (!this.showEndedEvents) {
-            return events.filter(e => new Date(e.endTime) >= this.nowDate).sort((a,b) => new Date(a.startTime) - new Date(b.startTime));
+            events = events.filter(e => new Date(e.endTime) >= this.nowDate);
         }
-        return [...events].sort((a,b) => new Date(a.startTime) - new Date(b.startTime));
+        
+        // 2. Filter by Category
+        events = events.filter(e => {
+            const category = this.getEventCategory(e.type);
+            return this.selectedFilters.includes(category);
+        });
+
+        // 3. Sort
+        // Default (sortDescending=false): Ascending End Time (Ending Soon first)
+        // Reverse (sortDescending=true): Descending End Time
+        return events.sort((a,b) => {
+            const endA = new Date(a.endTime).getTime();
+            const endB = new Date(b.endTime).getTime();
+            
+            if (this.sortDescending) {
+                return endB - endA;
+            } else {
+                return endA - endB;
+            }
+        });
     },
     // Dynamically calculate timeline range based on filtered events
     timelineStart() {
@@ -193,6 +242,16 @@ export default {
     }
   },
   methods: {
+    getEventCategory(type) {
+        if (type === 'banner_character' || type === 'banner') return 'banner';
+        if (type === 'event' || type === 'minigame') return 'event'; // Group event & minigame
+        if (type === 'abyss') return 'abyss';
+        if (type === 'season_pass') return 'season';
+        return 'other'; // Should ideally not happen or handle as 'event'
+    },
+    toggleSort() {
+        this.sortDescending = !this.sortDescending;
+    },
     getLocalizedTitle(titleObj) {
         if (!titleObj) return '';
         const lang = this.settingsStore.selectedLanguage;
@@ -215,7 +274,6 @@ export default {
         return colors[type] || colors.other;
     },
     getEventClass(event) {
-        // Optional: Add specific classes if needed for striping via CSS instead of JS
         return ''; 
     },
     getEventLeft(event) {
@@ -273,6 +331,16 @@ export default {
     }
   },
   mounted() {
+      // Load filters from localStorage
+      const savedFilters = localStorage.getItem('events_filters');
+      if (savedFilters) {
+          try {
+              this.selectedFilters = JSON.parse(savedFilters);
+          } catch (e) {
+              console.error("Failed to parse saved filters", e);
+          }
+      }
+
       this.timer = setInterval(() => {
           this.nowDate = new Date();
       }, 60000); // Update every minute
@@ -301,6 +369,12 @@ export default {
     },
     loading(val) {
         if (!val) this.scrollToNow();
+    },
+    selectedFilters: {
+        handler(val) {
+            localStorage.setItem('events_filters', JSON.stringify(val));
+        },
+        deep: true
     }
   }
 }

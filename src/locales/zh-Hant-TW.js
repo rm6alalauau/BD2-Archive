@@ -204,7 +204,12 @@ export default {
     useLocalTime: '使用本機時間',
     localTime: '顯示您裝置的當地時間',
     serverTime: '顯示伺服器時間 (UTC+8)',
-    showEndedEvents: '顯示已結束活動'
+    showEndedEvents: '顯示已結束活動',
+    filter_banner: '【卡池】',
+    filter_event: '【活動】',
+    filter_abyss: '【惡魔城】',
+    filter_season: '【通行證】',
+    sort_reverse: '反轉排序'
   },
 
   // 官方媒體
