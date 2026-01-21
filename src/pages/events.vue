@@ -572,15 +572,11 @@ export default {
 .sticky-content {
     position: sticky;
     left: 10px;
-       "Remaining time as tag" -> Done.
-    */
-    /* If the user wants the end time to be visible even if the end of the bar is off-screen,
-       we would need it to stick to the *right edge of the screen* but constrained by the bar.
-       Sticky relative to the container works. Let's try to keep it simple first.
-       If we want it to always be near the Title, we can just put it next to the title (sticky-left).
-       But the user said "Remaining time change to tag...".
-       Let's put the Time Chip next to the Title inside the sticky container.
-    */
+    display: flex;
+    align-items: center;
+    z-index: 5;
+    /* Ensure it doesn't overflow the bar if the bar is very short */
+    max-width: 100%;
 }
 
 /* Mobile Filter Grid */
