@@ -197,11 +197,16 @@ export default {
     upcomingEvents: '即将开始的活动',
     noActiveEvents: '目前没有进行中的活动',
     viewAllSchedule: '查看完整时间表',
-    useLocalTime: '使用本地时间',
-    serverTime: '服务器时间 (UTC+8)',
-    localTime: '您的时间',
+    useLocalTime: '使用本机时间',
+    serverTime: '显示服务器时间 (UTC+8)',
+    localTime: '显示您当地的时间',
     ended: '已结束',
     showEndedEvents: '显示已结束活动',
+    filter_banner: '【卡池】',
+    filter_event: '【活动】',
+    filter_abyss: '【恶魔城】',
+    filter_season: '【通行证】',
+    sort_reverse: '反转排序'
   },
 
   // 官方媒体

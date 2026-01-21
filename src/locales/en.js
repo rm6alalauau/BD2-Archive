@@ -194,12 +194,18 @@ export default {
   events: {
     timeline: 'Event Timeline',
     currentEvents: 'Current Events',
-    noActiveEvents: 'No active events',
+    noActiveEvents: 'No active events at the moment.',
     viewAllSchedule: 'View Schedule',
+    showEndedEvents: 'Show Ended Events',
+    useLocalTime: 'Use Local Time',
+    localTime: 'Your Local Time',
+    serverTime: 'Server Time (UTC+8)',
     ended: 'Ended',
-    localTime: 'Displaying your device local time',
-    serverTime: 'Displaying server time (UTC+8)',
-    showEndedEvents: 'Show Ended Events'
+    filter_banner: 'Pickup',
+    filter_event: 'Event',
+    filter_abyss: 'Evil Castle',
+    filter_season: 'Season Pass',
+    sort_reverse: 'Reverse Order'
   },
 
   // Official media
