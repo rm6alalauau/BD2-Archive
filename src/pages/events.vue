@@ -1,15 +1,50 @@
+```html
 <template>
   <div class="events-page d-flex flex-column">
-    <!-- Header Bar -->
-    <div class="d-flex flex-column flex-shrink-0 bg-surface elevation-1 position-relative" style="z-index: 10;">
-      <!-- Title & Controls -->
-      <div class="d-flex align-center px-4 py-2 border-b" style="border-color: rgba(255, 255, 255, 0.1) !important;">
-        <v-btn icon="mdi-arrow-left" variant="text" @click="$router.back()" class="mr-2"></v-btn>
-        <h1 class="text-h6 font-weight-bold">{{ t('events.timeline') }}</h1>
+    <!-- Unified Header Control Bar -->
+    <div class="d-flex flex-wrap align-center px-4 py-2 bg-surface elevation-1 position-relative border-b" style="z-index: 10; border-color: rgba(255, 255, 255, 0.1) !important; min-height: 56px;">
         
-        <v-spacer></v-spacer>
-        
-        <div class="d-flex align-center">
+        <!-- Left: Filters -->
+        <div class="filter-section d-flex flex-grow-1" :class="{'mobile-filters': $vuetify.display.xs}">
+            <!-- Desktop/Tablet: Single Row -->
+            <v-chip-group v-if="!$vuetify.display.xs" v-model="selectedFilters" multiple column filter class="my-0">
+               <v-chip value="banner" density="compact" label size="small" color="amber-darken-3" variant="outlined">{{ t('events.filter_banner') }}</v-chip>
+               <v-chip value="event" density="compact" label size="small" color="red-darken-2" variant="outlined">{{ t('events.filter_event') }}</v-chip>
+               <v-chip value="abyss" density="compact" label size="small" color="green-darken-2" variant="outlined">{{ t('events.filter_abyss') }}</v-chip>
+               <v-chip value="season" density="compact" label size="small" color="cyan-darken-2" variant="outlined">{{ t('events.filter_season') }}</v-chip>
+            </v-chip-group>
+
+            <!-- Mobile: 2x2 Grid -->
+            <div v-else class="d-grid mobile-filter-grid w-100">
+               <v-chip 
+                    :class="{'v-chip--selected': selectedFilters.includes('banner')}"
+                    @click="toggleFilter('banner')"
+                    density="compact" label size="small" color="amber-darken-3" variant="outlined" 
+                    class="ma-1 justify-center"
+                >{{ t('events.filter_banner') }}</v-chip>
+               <v-chip 
+                    :class="{'v-chip--selected': selectedFilters.includes('event')}"
+                    @click="toggleFilter('event')"
+                    density="compact" label size="small" color="red-darken-2" variant="outlined" 
+                    class="ma-1 justify-center"
+                >{{ t('events.filter_event') }}</v-chip>
+               <v-chip 
+                    :class="{'v-chip--selected': selectedFilters.includes('abyss')}"
+                    @click="toggleFilter('abyss')"
+                    density="compact" label size="small" color="green-darken-2" variant="outlined" 
+                    class="ma-1 justify-center"
+                >{{ t('events.filter_abyss') }}</v-chip>
+               <v-chip 
+                    :class="{'v-chip--selected': selectedFilters.includes('season')}"
+                    @click="toggleFilter('season')"
+                    density="compact" label size="small" color="cyan-darken-2" variant="outlined" 
+                    class="ma-1 justify-center"
+                >{{ t('events.filter_season') }}</v-chip>
+            </div>
+        </div>
+
+        <!-- Right: Controls -->
+        <div class="controls-section d-flex align-center flex-shrink-0 ml-auto">
              <!-- Time Settings -->
             <v-checkbox
                 v-model="useLocalTime"
@@ -37,17 +72,6 @@
                 <v-icon>{{ sortDescending ? 'mdi-sort-clock-ascending-outline' : 'mdi-sort-clock-descending-outline' }}</v-icon>
              </v-btn>
         </div>
-      </div>
-      
-      <!-- Filter Bar -->
-      <div class="px-4 py-2 d-flex flex-wrap align-center gap-2">
-          <v-chip-group v-model="selectedFilters" multiple column filter class="my-0">
-               <v-chip value="banner" density="compact" label size="small" color="amber-darken-3" variant="outlined">{{ t('events.filter_banner') }}</v-chip>
-               <v-chip value="event" density="compact" label size="small" color="red-darken-2" variant="outlined">{{ t('events.filter_event') }}</v-chip>
-               <v-chip value="abyss" density="compact" label size="small" color="green-darken-2" variant="outlined">{{ t('events.filter_abyss') }}</v-chip>
-               <v-chip value="season" density="compact" label size="small" color="cyan-darken-2" variant="outlined">{{ t('events.filter_season') }}</v-chip>
-          </v-chip-group>
-      </div>
     </div>
 
     <!-- Gantt Chart Container -->
@@ -121,12 +145,21 @@
                         <div class="event-progress" :style="{ width: getEventProgress(event) + '%' }"></div>
                         
                         <div class="event-content px-2 d-flex align-center justify-space-between fill-height">
-                             <span class="text-caption font-weight-bold text-truncate text-white" style="z-index: 2; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">
+                             <!-- Sticky Title -->
+                             <span class="text-caption font-weight-bold text-truncate text-white sticky-title" style="z-index: 2; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">
                                 {{ getLocalizedTitle(event.title) }}
                              </span>
-                             <span class="text-caption text-white d-none d-sm-block ml-2" style="z-index: 2; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">
+                             
+                             <!-- Sticky Remaining Time Chip -->
+                             <v-chip 
+                                size="x-small" 
+                                color="white" 
+                                variant="elevated" 
+                                class="sticky-time ml-2 font-weight-bold text-black"
+                                style="z-index: 2; box-shadow: 0 1px 2px rgba(0,0,0,0.5);"
+                             >
                                 {{ getRemainingTime(event.endTime) }}
-                             </span>
+                             </v-chip>
                         </div>
                     </div>
                 </div>
@@ -257,6 +290,13 @@ export default {
     }
   },
   methods: {
+    toggleFilter(val) {
+        if (this.selectedFilters.includes(val)) {
+            this.selectedFilters = this.selectedFilters.filter(f => f !== val);
+        } else {
+            this.selectedFilters.push(val);
+        }
+    },
     getEventCategory(type) {
         if (type === 'banner_character' || type === 'banner') return 'banner';
         if (type === 'event' || type === 'minigame') return 'event'; // Group event & minigame
@@ -530,4 +570,56 @@ export default {
     );
     background-size: 20px 20px; 
 }
+
+/* Sticky Labels */
+.sticky-title {
+    position: sticky;
+    left: 10px;
+    max-width: 60%; /* Prevent overlap with time chip if event is short */
+}
+
+.sticky-time {
+    position: sticky;
+    right: 10px; 
+    /* To stick to the right edge of the *viewport*, we'd need fixed/absolute logic relative to screen. 
+       But 'position: sticky; right: 10px' inside the bar sticks to the right edge of the BAR.
+       The user wants it visible... 
+       Actually, `left` sticky works great for the Title (sticks to left edge of screen when scrolling right).
+       For the End Time, we usually want it to stay visible on the right if we scroll left.
+       No, we scroll right to see future. The end time is at the end. 
+       If the bar is super long and extends off screen to the right, we want the text likely on the left.
+       If we scroll past the start, we want the title to stick to the left edge of the screen so we know what it is (Implemented).
+       Do we want the time to stick? Usually the time is 1d, 2d... 
+       If the user wants "Label at the left", I did that. 
+       "Remaining time as tag" -> Done.
+    */
+    /* If the user wants the end time to be visible even if the end of the bar is off-screen,
+       we would need it to stick to the *right edge of the screen* but constrained by the bar.
+       Sticky relative to the container works. Let's try to keep it simple first.
+       If we want it to always be near the Title, we can just put it next to the title (sticky-left).
+       But the user said "Remaining time change to tag...".
+       Let's put the Time Chip next to the Title inside the sticky container.
+    */
+}
+
+/* Mobile Filter Grid */
+.mobile-filter-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+}
+
+@media (max-width: 600px) {
+    .filter-section {
+        flex: 0 0 100%; /* Filters take full width on mobile */
+        order: 1;
+        margin-bottom: 8px; /* Spacing before controls */
+    }
+    .controls-section {
+        flex: 0 0 100%;
+        order: 2;
+        justify-content: space-between; /* Spread controls on second line */
+    }
+}
 </style>
+```
