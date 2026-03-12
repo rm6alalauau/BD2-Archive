@@ -128,6 +128,18 @@ export default {
             'zh-Hans-CN': '/events/spring_2026_checkin/zh-CN.png',
             'zh-Hant-TW': '/events/spring_2026_checkin/zh-TW.png'
           }
+        },
+        {
+          id: 'spring_2026_2_checkin',
+          startDate: new Date('2026-03-12T00:00:00+08:00'),
+          endDate: new Date('2026-04-09T07:59:59+08:00'),
+          banners: {
+            'ko-KR': '/events/spring_2026_2_checkin/ko-KR.jpg',
+            'ja-JP': '/events/spring_2026_2_checkin/ja-JP.jpg',
+            'en': '/events/spring_2026_2_checkin/en.jpg',
+            'zh-Hans-CN': '/events/spring_2026_2_checkin/zh-CN.jpg',
+            'zh-Hant-TW': '/events/spring_2026_2_checkin/zh-TW.jpg'
+          }
         }
       ]
     }
