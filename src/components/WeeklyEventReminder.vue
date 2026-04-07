@@ -11,9 +11,9 @@
     >
       <template #text>
         <div class="banner-text">
-          <div class="banner-title">{{ t('serviceAnnouncement.title') }}</div>
+          <div class="banner-title">{{ t(`${activeServiceAnnouncement.i18nKey}.title`) }}</div>
           <div class="banner-content">
-            {{ t('serviceAnnouncement.content') }}
+            {{ t(`${activeServiceAnnouncement.i18nKey}.content`) }}
           </div>
         </div>
       </template>
@@ -112,9 +112,20 @@ export default {
       settingsStore: useSettingsStore(),
       webshopUrl: 'https://webshop.browndust2.global/',
       currentTime: new Date(),
-      bannerStartDate: new Date('2025-12-10T00:00:00+08:00'),
-      bannerEndDate: new Date('2025-12-25T23:59:59+08:00'),
-      serviceAnnouncementId: '2025-holiday-update-delay',
+      serviceAnnouncements: [
+        {
+          id: '2025-holiday-update-delay',
+          startDate: new Date('2025-12-10T00:00:00+08:00'),
+          endDate: new Date('2025-12-25T23:59:59+08:00'),
+          i18nKey: 'serviceAnnouncement'
+        },
+        {
+          id: '2026-spring-update-delay',
+          startDate: new Date('2026-04-17T00:00:00+08:00'),
+          endDate: new Date('2026-04-27T23:59:59+08:00'),
+          i18nKey: 'serviceAnnouncement2026Spring'
+        }
+      ],
       
       // 官方活動時間配置 - 使用台灣標準時間 (CST, UTC+8)
       // JavaScript 會自動根據用戶的本地時區進行轉換和計算
@@ -182,10 +193,11 @@ export default {
       return this.currentWeekData !== undefined
     },
     
-    // 是否已關閉服務公告
+    // 是否已關閉服務公告 (舊版本相容保留，但內部邏輯已改在 activeServiceAnnouncement 處理)
     isServiceAnnouncementDismissed() {
+      if (!this.activeServiceAnnouncement) return true
       const dismissed = this.settingsStore.dismissedServiceAnnouncements || {}
-      return Boolean(dismissed[this.serviceAnnouncementId])
+      return Boolean(dismissed[this.activeServiceAnnouncement.id])
     },
 
     // 是否應該顯示提醒
@@ -210,14 +222,19 @@ export default {
       return true
     },
 
-    // 是否在公告顯示期間內
-    isWithinBannerPeriod() {
-      return this.currentTime >= this.bannerStartDate && this.currentTime <= this.bannerEndDate
+    // 當前有效的服務公告
+    activeServiceAnnouncement() {
+      const dismissed = this.settingsStore.dismissedServiceAnnouncements || {}
+      return this.serviceAnnouncements.find(ann => {
+        return this.currentTime >= ann.startDate && 
+               this.currentTime <= ann.endDate && 
+               !dismissed[ann.id]
+      })
     },
 
     // 服務公告是否應該顯示
     shouldDisplayServiceAnnouncement() {
-      return this.isWithinBannerPeriod && !this.isServiceAnnouncementDismissed
+      return !!this.activeServiceAnnouncement
     }
   },
   
@@ -304,7 +321,9 @@ export default {
 
     // 關閉服務公告
     dismissServiceAnnouncement() {
-      this.settingsStore.dismissServiceAnnouncement(this.serviceAnnouncementId)
+      if (this.activeServiceAnnouncement) {
+        this.settingsStore.dismissServiceAnnouncement(this.activeServiceAnnouncement.id)
+      }
     },
     
     // 更新週期狀態
