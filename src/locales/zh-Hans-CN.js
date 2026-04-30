@@ -41,6 +41,8 @@ export default {
     retryButton: '重新加载',
     processing: '处理中...',
     expiryDate: '到期',
+    claimAll: '一键兑换',
+    manualClaim: '手动输入',
 
     // 用户信息
     userProfile: {

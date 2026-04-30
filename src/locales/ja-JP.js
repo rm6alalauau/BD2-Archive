@@ -41,6 +41,8 @@ export default {
     retryButton: '再読み込み',
     processing: '処理中...',
     expiryDate: '期限',
+    claimAll: '一括引き換え',
+    manualClaim: '手動入力',
 
     // User profile
     userProfile: {
