@@ -37,12 +37,18 @@ export function useRedeemCodes(currentNickname, t) {
 
     const saveClaimedStatus = () => {
         if (!currentNickname.value) return;
-        const claimedCodes = redeemCodes.value
+        const visibleClaimedCodes = redeemCodes.value
             .filter((coupon) => coupon.claimed)
             .map((coupon) => coupon.code);
+            
+        // 取得原本存在 localStorage 的代碼並合併，避免覆蓋不在畫面上的手動兌換碼
+        const existingStr = localStorage.getItem(`claimedCodes_${currentNickname.value}`);
+        const existingCodes = existingStr ? JSON.parse(existingStr) : [];
+        const mergedCodes = [...new Set([...existingCodes, ...visibleClaimedCodes])];
+        
         localStorage.setItem(
             `claimedCodes_${currentNickname.value}`,
-            JSON.stringify(claimedCodes)
+            JSON.stringify(mergedCodes)
         );
     };
 
@@ -584,9 +590,111 @@ export function useRedeemCodes(currentNickname, t) {
 
                 // 保存兌換狀態到 localStorage
                 saveClaimedStatus();
+            } else {
+                // 如果不在列表中，直接存進 localStorage
+                const existingStr = localStorage.getItem(`claimedCodes_${currentNickname.value}`);
+                const existingCodes = existingStr ? JSON.parse(existingStr) : [];
+                if (!existingCodes.includes(code)) {
+                    existingCodes.push(code);
+                    localStorage.setItem(`claimedCodes_${currentNickname.value}`, JSON.stringify(existingCodes));
+                }
             }
         } catch (error) {
             console.error('標記兌換碼為已兌換時發生錯誤:', error);
+        }
+    };
+
+    const isClaimingAll = ref(false);
+
+    const claimAllCoupons = async (profileCardRef) => {
+        if (isClaimingAll.value) return;
+        isClaimingAll.value = true;
+        
+        // 過濾出尚未兌換、且非錯誤訊息的兌換碼
+        const unclaimedCoupons = redeemCodes.value
+            .map((c, index) => ({...c, originalIndex: index}))
+            .filter(c => !c.claimed && !c.claiming && !["API_ERROR", "LOAD_ERROR", "SYSTEM_ERROR", "NO_DATA"].includes(c.code));
+            
+        for (const coupon of unclaimedCoupons) {
+            // 每次兌換前檢查元件是否還活著，並且狀態沒有被手動變更
+            if (!redeemCodes.value[coupon.originalIndex] || redeemCodes.value[coupon.originalIndex].claimed) continue;
+            
+            await executeClaim(redeemCodes.value[coupon.originalIndex], coupon.originalIndex, null, profileCardRef);
+            
+            // 延遲以避免請求過於頻繁
+            await new Promise(resolve => setTimeout(resolve, 800));
+        }
+        
+        isClaimingAll.value = false;
+    };
+
+    const executeManualClaim = async (code, profileCardRef) => {
+        if (!code) return { success: false, error: '請輸入兌換碼' };
+        
+        code = code.trim().toUpperCase();
+        
+        // 檢查是否已在列表且已兌換
+        const existingIndex = redeemCodes.value.findIndex(c => c.code === code);
+        if (existingIndex !== -1 && redeemCodes.value[existingIndex].claimed) {
+            return { success: false, error: t.value("profile.errors.alreadyUsed") || '此兌換碼已兌換' };
+        }
+
+        try {
+            const result = await claimCoupon(currentNickname.value, code);
+            
+            if (result.success === true) {
+                if (existingIndex !== -1) {
+                    redeemCodes.value[existingIndex].claimed = true;
+                    redeemCodes.value[existingIndex].statusMessage = t.value("profile.errors.claimSuccess");
+                    redeemCodes.value[existingIndex].messageType = "success";
+                } else {
+                    redeemCodes.value.unshift({
+                        code: code,
+                        reward: { "zh-Hant-TW": "手動輸入", "en": "Manual Input" },
+                        description: "手動輸入",
+                        status: "目前可用",
+                        claimed: true,
+                        claiming: false,
+                        statusMessage: t.value("profile.errors.claimSuccess"),
+                        messageType: "success"
+                    });
+                }
+                
+                showRedeemAnimation(null, profileCardRef);
+                saveClaimedStatus();
+                
+                return { success: true };
+            } else {
+                throw result;
+            }
+        } catch (error) {
+            console.error("手動兌換錯誤:", error);
+            let errorMsg = t.value("profile.errors.claimFailed") || "兌換失敗";
+            if (error.errorCode === "AlreadyUsed") {
+                 errorMsg = t.value("profile.errors.alreadyUsed") || "已兌換過此代碼";
+                 if (existingIndex !== -1) {
+                     redeemCodes.value[existingIndex].claimed = true;
+                 } else {
+                     redeemCodes.value.unshift({
+                        code: code,
+                        reward: { "zh-Hant-TW": "手動輸入", "en": "Manual Input" },
+                        description: "手動輸入",
+                        status: "已兌換",
+                        claimed: true,
+                        claiming: false,
+                        statusMessage: errorMsg,
+                        messageType: "warning"
+                    });
+                 }
+                 saveClaimedStatus();
+            } else if (error.errorCode === "InvalidCode") {
+                 errorMsg = t.value("profile.errors.invalidCoupon") || "無效的兌換碼";
+            } else if (error.errorCode === "ExpiredCode") {
+                 errorMsg = t.value("profile.errors.couponExpired") || "兌換碼已過期";
+            } else if (error.errorCode === "IncorrectUser") {
+                 errorMsg = t.value("profile.errors.nicknameValidationFailed") || "暱稱驗證失敗";
+            }
+            return { success: false, error: errorMsg };
         }
     };
 
@@ -663,6 +771,9 @@ export function useRedeemCodes(currentNickname, t) {
         getLocalizedReward,
         isDateStatus,
         loadClaimedStatus,
-        openOfficialRedeemPage
+        openOfficialRedeemPage,
+        isClaimingAll,
+        claimAllCoupons,
+        executeManualClaim
     };
 }

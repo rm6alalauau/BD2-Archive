@@ -40,6 +40,29 @@
           @logout="exitNicknameMode"
         />
 
+        <!-- Action Bar -->
+        <div class="d-flex justify-space-between align-center mb-2 px-1">
+          <v-btn
+            size="small"
+            variant="tonal"
+            color="primary"
+            @click="manualClaimDialog = true"
+          >
+            <v-icon start size="16">mdi-keyboard</v-icon>
+            {{ t('profile.manualClaim') || '手動輸入' }}
+          </v-btn>
+          <v-btn
+            size="small"
+            color="primary"
+            @click="handleClaimAll"
+            :loading="isClaimingAll"
+            :disabled="!hasUnclaimedCoupons"
+          >
+            <v-icon start size="16">mdi-check-all</v-icon>
+            {{ t('profile.claimAll') || '一鍵兌換' }}
+          </v-btn>
+        </div>
+
         <CouponList
           :loading="loading"
           :redeem-codes="redeemCodes"
@@ -109,6 +132,35 @@
             @click="closeImagePreview"
           >
             關閉
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- 手動輸入兌換碼對話框 -->
+    <v-dialog v-model="manualClaimDialog" max-width="400">
+      <v-card rounded="xl">
+        <v-card-title class="pt-4 px-4 pb-2">
+          {{ t('profile.manualClaim') || '手動輸入兌換碼' }}
+        </v-card-title>
+        <v-card-text class="px-4 py-2">
+          <v-text-field
+            v-model="manualCodeInput"
+            label="兌換碼 (Coupon Code)"
+            variant="outlined"
+            density="compact"
+            hide-details="auto"
+            :error-messages="manualClaimError"
+            @keyup.enter="handleManualClaim"
+            autofocus
+          ></v-text-field>
+        </v-card-text>
+        <v-card-actions class="px-4 pb-4 pt-2 justify-end">
+          <v-btn variant="text" @click="manualClaimDialog = false" :disabled="manualClaimLoading">
+            {{ t('common.cancel') || '取消' }}
+          </v-btn>
+          <v-btn color="primary" variant="flat" @click="handleManualClaim" :loading="manualClaimLoading">
+            {{ t('profile.confirm') || '確認' }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -224,7 +276,10 @@ const {
   redeemAnimation,
   loadRedeemCodes,
   executeClaim,
-  openOfficialRedeemPage
+  openOfficialRedeemPage,
+  isClaimingAll,
+  claimAllCoupons,
+  executeManualClaim
 } = useRedeemCodes(currentNickname, t);
 
 // --- Local State ---
@@ -232,9 +287,19 @@ const nicknameDialog = ref(false);
 const showHelpDialog = ref(false);
 const profileCardRef = ref(null);
 
+// 手動兌換相關
+const manualClaimDialog = ref(false);
+const manualCodeInput = ref("");
+const manualClaimLoading = ref(false);
+const manualClaimError = ref("");
+
 // 圖片預覽相關
 const imagePreviewDialog = ref(false);
 const selectedCouponImage = ref(null);
+
+const hasUnclaimedCoupons = computed(() => {
+  return redeemCodes.value.some(c => !c.claimed && !["API_ERROR", "LOAD_ERROR", "SYSTEM_ERROR", "NO_DATA"].includes(c.code));
+});
 
 // --- Methods ---
 
@@ -280,6 +345,29 @@ const enterNewNickname = () => {
 
 const handleClaim = (coupon, index, event) => {
   executeClaim(coupon, index, event, profileCardRef.value);
+};
+
+const handleClaimAll = () => {
+  claimAllCoupons(profileCardRef.value);
+};
+
+const handleManualClaim = async () => {
+  if (!manualCodeInput.value) {
+    manualClaimError.value = "請輸入兌換碼";
+    return;
+  }
+  manualClaimLoading.value = true;
+  manualClaimError.value = "";
+  
+  const result = await executeManualClaim(manualCodeInput.value, profileCardRef.value);
+  
+  manualClaimLoading.value = false;
+  if (result.success) {
+    manualClaimDialog.value = false;
+    manualCodeInput.value = "";
+  } else {
+    manualClaimError.value = result.error;
+  }
 };
 
 // Image Preview Methods
