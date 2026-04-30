@@ -41,6 +41,8 @@ export default {
     retryButton: 'Reload',
     processing: 'Processing...',
     expiryDate: 'Expires',
+    claimAll: 'Claim All',
+    manualClaim: 'Manual Input',
 
     // User profile
     userProfile: {

@@ -41,6 +41,8 @@ export default {
     retryButton: '重新載入',
     processing: '處理中...',
     expiryDate: '到期',
+    claimAll: '一鍵兌換',
+    manualClaim: '手動輸入',
 
     // 用戶資訊
     userProfile: {
