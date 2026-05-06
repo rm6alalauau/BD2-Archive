@@ -43,6 +43,8 @@ export default {
     expiryDate: '期限',
     claimAll: '一括引き換え',
     manualClaim: '手動入力',
+    manualClaimLabel: 'クーポンコード',
+    manualClaimEmpty: 'クーポンコードを入力してください',
 
     // User profile
     userProfile: {

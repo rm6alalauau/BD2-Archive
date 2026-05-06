@@ -629,7 +629,7 @@ export function useRedeemCodes(currentNickname, t) {
     };
 
     const executeManualClaim = async (code, profileCardRef) => {
-        if (!code) return { success: false, error: '請輸入兌換碼' };
+        if (!code) return { success: false, error: t.value('profile.manualClaimEmpty') || '請輸入兌換碼' };
         
         code = code.trim().toUpperCase();
         
@@ -650,9 +650,9 @@ export function useRedeemCodes(currentNickname, t) {
                 } else {
                     redeemCodes.value.unshift({
                         code: code,
-                        reward: { "zh-Hant-TW": "手動輸入", "en": "Manual Input" },
-                        description: "手動輸入",
-                        status: "目前可用",
+                        reward: null,
+                        description: t.value('profile.manualClaim'),
+                        status: t.value('profile.status.available') || '目前可用',
                         claimed: true,
                         claiming: false,
                         statusMessage: t.value("profile.errors.claimSuccess"),
@@ -677,9 +677,9 @@ export function useRedeemCodes(currentNickname, t) {
                  } else {
                      redeemCodes.value.unshift({
                         code: code,
-                        reward: { "zh-Hant-TW": "手動輸入", "en": "Manual Input" },
-                        description: "手動輸入",
-                        status: "已兌換",
+                        reward: null,
+                        description: t.value('profile.manualClaim'),
+                        status: t.value('profile.actions.claimed') || '已兌換',
                         claimed: true,
                         claiming: false,
                         statusMessage: errorMsg,

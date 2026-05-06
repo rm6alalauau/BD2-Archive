@@ -131,7 +131,7 @@
             variant="text"
             @click="closeImagePreview"
           >
-            關閉
+            {{ t('common.close') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -146,7 +146,7 @@
         <v-card-text class="px-4 py-2">
           <v-text-field
             v-model="manualCodeInput"
-            label="兌換碼 (Coupon Code)"
+            :label="t('profile.manualClaimLabel')"
             variant="outlined"
             density="compact"
             hide-details="auto"
@@ -160,7 +160,7 @@
             {{ t('common.cancel') || '取消' }}
           </v-btn>
           <v-btn color="primary" variant="flat" @click="handleManualClaim" :loading="manualClaimLoading">
-            {{ t('profile.confirm') || '確認' }}
+            {{ t('common.confirm') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -353,7 +353,7 @@ const handleClaimAll = () => {
 
 const handleManualClaim = async () => {
   if (!manualCodeInput.value) {
-    manualClaimError.value = "請輸入兌換碼";
+    manualClaimError.value = t.value('profile.manualClaimEmpty');
     return;
   }
   manualClaimLoading.value = true;

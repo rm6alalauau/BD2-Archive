@@ -43,6 +43,8 @@ export default {
     expiryDate: '到期',
     claimAll: '一鍵兌換',
     manualClaim: '手動輸入',
+    manualClaimLabel: '兌換碼',
+    manualClaimEmpty: '請輸入兌換碼',
 
     // 用戶資訊
     userProfile: {
