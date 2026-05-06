@@ -43,6 +43,8 @@ export default {
     expiryDate: 'Expires',
     claimAll: 'Claim All',
     manualClaim: 'Manual Input',
+    manualClaimLabel: 'Coupon Code',
+    manualClaimEmpty: 'Please enter a coupon code',
 
     // User profile
     userProfile: {

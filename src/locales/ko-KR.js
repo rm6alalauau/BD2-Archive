@@ -43,6 +43,8 @@ export default {
     expiryDate: '만료',
     claimAll: '일괄 교환',
     manualClaim: '수동 입력',
+    manualClaimLabel: '쿠폰 코드',
+    manualClaimEmpty: '쿠폰 코드를 입력해 주세요',
 
     // User profile
     userProfile: {

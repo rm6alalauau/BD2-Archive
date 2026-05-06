@@ -43,6 +43,8 @@ export default {
     expiryDate: '到期',
     claimAll: '一键兑换',
     manualClaim: '手动输入',
+    manualClaimLabel: '兑换码',
+    manualClaimEmpty: '请输入兑换码',
 
     // 用户信息
     userProfile: {
