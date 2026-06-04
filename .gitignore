@@ -20,3 +20,5 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+Playwright/auth.json
+Playwright/save_state.py
