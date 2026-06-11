@@ -282,7 +282,10 @@ export default {
       pushDescription: 'Get notified when new coupon codes are available',
       testNotification: 'Test Notification',
       iosNeedPWA: 'iOS needs to be added to Home Screen',
-      iosInstallGuide: 'On iOS, tap the Safari share button, select "Add to Home Screen", then open the site from Home Screen to enable push notifications'
+      iosInstallGuide: 'On iOS, tap the Safari share button, select "Add to Home Screen", then open the site from Home Screen to enable push notifications',
+      assistantTitle: 'BD2 Assistant Desktop Pet',
+      assistantDesc: 'Ever forgot to check in? Install the browser extension to automatically complete WebShop check-ins in the background, along with desktop pets and coupon notifications.',
+      assistantSecurity: 'Security & Privacy Statement'
     },
     notifications: {
       title: 'Notification Settings'
@@ -353,6 +356,15 @@ Thank you to every player who uses The BD2 Pulse! Knowing that this little tool 
 To handle the growing traffic and ensure the site remains fast and stable, I've upgraded our infrastructure to a paid plan.
 If you find this website useful and would like to support its long-term operation, please consider "buying me a coffee" through the link below. Every bit of support goes directly towards server and domain costs, and encourages me to spend more time on maintenance and developing new features.
 Thank you again for all your support!`,
+    assistantSecurityDialog: {
+      title: 'Security & Privacy Statement',
+      section1Title: '1. The Truth About Token Permissions',
+      section1Content: 'During sync login, the extension captures and stores Firebase refresh tokens (refreshToken) locally. Technically, possessing this token grants full login control over your WebShop account (including performing store purchases and other actions).',
+      section2Title: '2. How We Protect Your Token',
+      section2Content: 'The extension stores all credentials 100% locally in your own browser (chrome.storage.local) and never transmits any token to external or developer-controlled servers. The source code is fully open-source on GitHub for public review, and contains only the logic to call the official check-in API with zero billing or transaction capabilities.',
+      section3Title: '3. Advice and Choice',
+      section3Content: 'If you have any safety concerns regarding local token storage, we strongly recommend NOT enabling the WebShop sync feature. Disabling it does not affect your normal use of desktop pets or coupon code notifications.'
+    }
   },
 
   // Feedback page

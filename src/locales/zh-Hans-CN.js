@@ -283,7 +283,10 @@ export default {
       pushDescription: '启用后有新的兑换码时会通知您',
       testNotification: '测试通知',
       iosNeedPWA: 'iOS 需要先添加到桌面',
-      iosInstallGuide: '在 iOS 上需要先点击 Safari 分享按钮，选择“添加到主屏幕”，然后在主屏幕打开网站才能使用推送通知'
+      iosInstallGuide: '在 iOS 上需要先点击 Safari 分享按钮，选择“添加到主屏幕”，然后在主屏幕打开网站才能使用推送通知',
+      assistantTitle: 'BD2 Assistant 桌宠小帮手',
+      assistantDesc: '是否有过忘记签到的经历？安装浏览器扩展程序，在后台自动完成网页商店签到，并提供桌宠与兑换码提示。',
+      assistantSecurity: '安全与权限声明'
     },
     notifications: {
       title: '通知设置'
@@ -354,6 +357,15 @@ export default {
 为了应对日益增长的访问量，并确保网站能持续提供快速、稳定的服务，我已将网站的基础设施升级至付费方案。
 如果您觉得这个网站对您有帮助，并且愿意支持它的长期运营，欢迎通过下方的链接「请我喝杯咖啡」。您的任何一点支持，都将直接用于支付服务器和域名的费用，并激励我投入更多时间来维护和开发新功能。
 再次感谢大家的支持！`,
+    assistantSecurityDialog: {
+      title: '安全与权限声明',
+      section1Title: '1. 关于 Token 权限的实话',
+      section1Content: '在同步登录时，小工具会捕获并在浏览器本地存储 Firebase 的刷新凭证 (refreshToken)。在技术上，拥有这个凭证确实等同于拥有了你 WebShop 的完整登录控制权（包括执行商店消费等所有操作）。',
+      section2Title: '2. 我们如何保护你的 Token？',
+      section2Content: '小工具百分之百将资料存储在你个人的浏览器本地中 (chrome.storage.local)，绝对不会将任何 Token 发送到任何外部服务器。源码完全在 GitHub 开源供任何人监督，且代码内只包含调用官方签到 API 的逻辑，无任何消费或扣款逻辑。',
+      section3Title: '3. 建议与选择权',
+      section3Content: '如果你对本地存储 Token 有任何顾虑或疑虑，强烈建议你不要启用网页商店同步功能。不启用此功能完全不影响你正常使用桌宠和兑换码提示。'
+    }
   },
 
   // 意见反馈页面
