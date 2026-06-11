@@ -306,6 +306,18 @@
                   Edge
                 </v-btn>
                 <v-btn
+                  href="https://github.com/rm6alalauau/BD2-Assistant"
+                  target="_blank"
+                  color="primary"
+                  variant="tonal"
+                  size="small"
+                  rounded="lg"
+                  class="mr-2 mb-2"
+                >
+                  <v-icon start size="16">mdi-github</v-icon>
+                  GitHub
+                </v-btn>
+                <v-btn
                   @click="showAssistantSecurityDialog = true"
                   color="secondary"
                   variant="text"
