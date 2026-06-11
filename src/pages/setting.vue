@@ -271,6 +271,54 @@
               ></v-switch>
             </div>
 
+            <!-- 桌寵小幫手推廣 (BD2 Assistant) -->
+            <div class="setting-item mt-6 align-start" style="flex-direction: column;">
+              <div class="setting-info w-100 mb-2">
+                <div class="setting-label d-flex align-center">
+                  <v-icon color="primary" class="mr-2" size="20">mdi-puzzle-outline</v-icon>
+                  {{ t('settings.contentSettings.assistantTitle') }}
+                </div>
+                <div class="setting-description mt-1">{{ t('settings.contentSettings.assistantDesc') }}</div>
+              </div>
+              <div class="d-flex flex-wrap gap-2 w-100 mt-1">
+                <v-btn
+                  href="https://chromewebstore.google.com/detail/oehoeoilhngfbkblpbflljckfphdgphg"
+                  target="_blank"
+                  color="primary"
+                  variant="tonal"
+                  size="small"
+                  rounded="lg"
+                  class="mr-2 mb-2"
+                >
+                  <v-icon start size="16">mdi-google-chrome</v-icon>
+                  Chrome
+                </v-btn>
+                <v-btn
+                  href="https://microsoftedge.microsoft.com/addons/detail/bd2-assistant/famjnidglcmgfleijneljeobkipndkaf"
+                  target="_blank"
+                  color="primary"
+                  variant="tonal"
+                  size="small"
+                  rounded="lg"
+                  class="mr-2 mb-2"
+                >
+                  <v-icon start size="16">mdi-microsoft-edge</v-icon>
+                  Edge
+                </v-btn>
+                <v-btn
+                  @click="showAssistantSecurityDialog = true"
+                  color="secondary"
+                  variant="text"
+                  size="small"
+                  rounded="lg"
+                  class="mb-2"
+                >
+                  <v-icon start size="16">mdi-shield-check-outline</v-icon>
+                  {{ t('settings.contentSettings.assistantSecurity') }}
+                </v-btn>
+              </div>
+            </div>
+
             <!-- 贊助支持（開啟 R18 時顯示） -->
             <div v-if="showR18Content" class="mt-4">
               <v-divider class="mb-4"></v-divider>
@@ -475,6 +523,47 @@
       </v-card>
     </v-dialog>
 
+    <!-- 小幫手安全與權限聲明對話框 -->
+    <v-dialog v-model="showAssistantSecurityDialog" max-width="500">
+      <v-card rounded="xl">
+        <v-card-title class="text-h6 pt-4 px-4 pb-2">
+          <v-icon class="mr-2" color="primary">mdi-shield-check-outline</v-icon>
+          {{ t('settings.assistantSecurityDialog.title') }}
+        </v-card-title>
+        <v-card-text class="px-4 py-2">
+          <div class="mb-4">
+            <h3 class="text-subtitle-1 font-weight-bold mb-1 text-primary">
+              {{ t('settings.assistantSecurityDialog.section1Title') }}
+            </h3>
+            <div class="text-body-2 text-medium-emphasis">
+              {{ t('settings.assistantSecurityDialog.section1Content') }}
+            </div>
+          </div>
+          <div class="mb-4">
+            <h3 class="text-subtitle-1 font-weight-bold mb-1 text-primary">
+              {{ t('settings.assistantSecurityDialog.section2Title') }}
+            </h3>
+            <div class="text-body-2 text-medium-emphasis">
+              {{ t('settings.assistantSecurityDialog.section2Content') }}
+            </div>
+          </div>
+          <div>
+            <h3 class="text-subtitle-1 font-weight-bold mb-1 text-warning">
+              {{ t('settings.assistantSecurityDialog.section3Title') }}
+            </h3>
+            <div class="text-body-2 text-medium-emphasis">
+              {{ t('settings.assistantSecurityDialog.section3Content') }}
+            </div>
+          </div>
+        </v-card-text>
+        <v-card-actions class="px-4 pb-4 pt-2 justify-end">
+          <v-btn color="primary" variant="flat" @click="showAssistantSecurityDialog = false">
+            {{ t('common.close') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <!-- 成功提示 -->
     <v-snackbar
       v-model="showSuccessMessage"
@@ -520,6 +609,7 @@ export default {
       // 對話框狀態
       showClearDataDialog: false,
       showResetDialog: false,
+      showAssistantSecurityDialog: false,
       
       // 成功訊息
       showSuccessMessage: false,
