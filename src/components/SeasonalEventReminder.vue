@@ -152,6 +152,18 @@ export default {
             'zh-Hans-CN': '/events/summer_2026_checkin/zh-CN.jpg',
             'zh-Hant-TW': '/events/summer_2026_checkin/zh-TW.jpg'
           }
+        },
+        {
+          id: 'summer_2026_2_checkin',
+          startDate: new Date('2026-07-30T12:00:00+08:00'),
+          endDate: new Date('2026-08-27T07:59:59+08:00'),
+          banners: {
+            'ko-KR': '/events/summer_2026_2_checkin/ko-KR.png',
+            'ja-JP': '/events/summer_2026_2_checkin/ja-JP.png',
+            'en': '/events/summer_2026_2_checkin/en.png',
+            'zh-Hans-CN': '/events/summer_2026_2_checkin/zh-CN.png',
+            'zh-Hant-TW': '/events/summer_2026_2_checkin/zh-TW.png'
+          }
         }
       ]
     }
