@@ -110,7 +110,6 @@ export default {
     return {
       showReminder: false,
       settingsStore: useSettingsStore(),
-      webshopUrl: 'https://webshop.browndust2.global/',
       currentTime: new Date(),
       serviceAnnouncements: [
         {
@@ -170,6 +169,19 @@ export default {
       return (key, params) => {
         return this.settingsStore.t(key, null, params)
       }
+    },
+
+    // 根據語言返回對應的 WebShop URL
+    webshopUrl() {
+      const langPathMap = {
+        'en': 'en-US',
+        'ko-KR': 'ko-KR',
+        'ja-JP': 'ja-JP',
+        'zh-Hans-CN': 'CS',
+        'zh-Hant-TW': 'CT'
+      }
+      const langPath = langPathMap[this.settingsStore.selectedLanguage] || 'en-US'
+      return `https://webshop.browndust2.global/${langPath}/`
     },
     
     // 獲取當前活動週期
